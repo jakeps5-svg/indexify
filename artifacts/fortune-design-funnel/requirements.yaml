@@ -1,0 +1,16 @@
+packages:
+  "framer-motion": "For premium scroll animations and smooth page transitions"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility for merging tailwind classes safely"
+
+images:
+  - path: "artifacts/fortune-design-funnel/public/images/hero-bg.png"
+    description: "Dark luxury abstract background with subtle deep gold and amber light leaks, professional corporate aesthetic, volumetric lighting"
+    aspect_ratio: "16:9"
+  - path: "artifacts/fortune-design-funnel/public/images/pattern.png"
+    description: "Subtle dark geometric grid pattern on a near-black background, very low opacity, tech and data vibe"
+    aspect_ratio: "16:9"
+
+notes:
+  - "The app uses a dark theme with gold/amber accents to represent the Fortune Design agency."
+  - "The useSubmitInquiry mutation expects { data: InquiryInput }."

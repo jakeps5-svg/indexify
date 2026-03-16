@@ -14,3 +14,16 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * Submit a WhatsApp inquiry form
+ * @summary Submit an inquiry
+ */
+
+export const SubmitInquiryBody = zod.object({
+  name: zod.string().min(1),
+  email: zod.string().email(),
+  phone: zod.string().optional(),
+  service: zod.enum(["seo", "google-ads", "both"]),
+  message: zod.string().min(1),
+});

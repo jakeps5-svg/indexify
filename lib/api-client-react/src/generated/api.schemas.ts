@@ -8,3 +8,32 @@
 export interface HealthStatus {
   status: string;
 }
+
+export type InquiryInputService =
+  (typeof InquiryInputService)[keyof typeof InquiryInputService];
+
+export const InquiryInputService = {
+  seo: "seo",
+  "google-ads": "google-ads",
+  both: "both",
+} as const;
+
+export interface InquiryInput {
+  /** @minLength 1 */
+  name: string;
+  email: string;
+  phone?: string;
+  service: InquiryInputService;
+  /** @minLength 1 */
+  message: string;
+}
+
+export interface InquiryResponse {
+  id: number;
+  message: string;
+  whatsappUrl: string;
+}
+
+export interface ErrorResponse {
+  error: string;
+}

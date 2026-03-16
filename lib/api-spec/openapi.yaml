@@ -1,6 +1,5 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
   description: API specification
@@ -10,6 +9,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: inquiry
+    description: Inquiry form submissions
 paths:
   /healthz:
     get:
@@ -24,6 +25,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /inquiries:
+    post:
+      operationId: submitInquiry
+      tags: [inquiry]
+      summary: Submit an inquiry
+      description: Submit a WhatsApp inquiry form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InquiryInput"
+      responses:
+        "201":
+          description: Inquiry submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InquiryResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +59,45 @@ components:
           type: string
       required:
         - status
-
+    InquiryInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        service:
+          type: string
+          enum: [seo, google-ads, both]
+        message:
+          type: string
+          minLength: 1
+      required:
+        - name
+        - email
+        - service
+        - message
+    InquiryResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        message:
+          type: string
+        whatsappUrl:
+          type: string
+      required:
+        - id
+        - message
+        - whatsappUrl
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

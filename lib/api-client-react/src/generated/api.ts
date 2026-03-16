@@ -5,18 +5,26 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { HealthStatus } from "./api.schemas";
+import type {
+  ErrorResponse,
+  HealthStatus,
+  InquiryInput,
+  InquiryResponse,
+} from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
-import type { ErrorType } from "../custom-fetch";
+import type { ErrorType, BodyType } from "../custom-fetch";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
@@ -99,3 +107,90 @@ export function useHealthCheck<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * Submit a WhatsApp inquiry form
+ * @summary Submit an inquiry
+ */
+export const getSubmitInquiryUrl = () => {
+  return `/api/inquiries`;
+};
+
+export const submitInquiry = async (
+  inquiryInput: InquiryInput,
+  options?: RequestInit,
+): Promise<InquiryResponse> => {
+  return customFetch<InquiryResponse>(getSubmitInquiryUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(inquiryInput),
+  });
+};
+
+export const getSubmitInquiryMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof submitInquiry>>,
+    TError,
+    { data: BodyType<InquiryInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof submitInquiry>>,
+  TError,
+  { data: BodyType<InquiryInput> },
+  TContext
+> => {
+  const mutationKey = ["submitInquiry"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof submitInquiry>>,
+    { data: BodyType<InquiryInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return submitInquiry(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SubmitInquiryMutationResult = NonNullable<
+  Awaited<ReturnType<typeof submitInquiry>>
+>;
+export type SubmitInquiryMutationBody = BodyType<InquiryInput>;
+export type SubmitInquiryMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Submit an inquiry
+ */
+export const useSubmitInquiry = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof submitInquiry>>,
+    TError,
+    { data: BodyType<InquiryInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof submitInquiry>>,
+  TError,
+  { data: BodyType<InquiryInput> },
+  TContext
+> => {
+  return useMutation(getSubmitInquiryMutationOptions(options));
+};
