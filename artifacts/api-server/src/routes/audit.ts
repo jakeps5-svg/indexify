@@ -331,6 +331,171 @@ router.post("/audit", async (req, res) => {
     linkChecks.push({ name: "External Links", status: "pass", value: `${externalLinks} external links`, description: `${externalLinks} external links found. Ensure they link to reputable, relevant sources.` });
   }
 
+  // ─── BACKLINKS & AUTHORITY ───────────────────────────────────────────────────
+  const backlinkChecks: AuditCheck[] = [];
+
+  // 1. Domain age / establishment via Wayback Machine CDX API (free, no key)
+  let domainFirstSeen: string | null = null;
+  let domainCrawlCount = 0;
+  try {
+    const cdxUrl = `https://web.archive.org/cdx/search/cdx?url=${parsedUrl.hostname}/*&output=json&limit=1&fl=timestamp&from=20000101&to=20150101`;
+    const cdxRes = await fetch(cdxUrl, { signal: AbortSignal.timeout(6000) });
+    if (cdxRes.ok) {
+      const cdxJson = await cdxRes.json() as string[][];
+      if (cdxJson.length > 1 && cdxJson[1]?.[0]) {
+        const ts = cdxJson[1][0];
+        const year = ts.slice(0, 4);
+        const month = ts.slice(4, 6);
+        const day = ts.slice(6, 8);
+        domainFirstSeen = `${year}-${month}-${day}`;
+      }
+    }
+    // Count crawls in the last 2 years
+    const countUrl = `https://web.archive.org/cdx/search/cdx?url=${parsedUrl.hostname}/*&output=json&limit=1&fl=timestamp&from=20230101&showNumPages=true`;
+    const countRes = await fetch(countUrl, { signal: AbortSignal.timeout(6000) });
+    if (countRes.ok) {
+      const countText = await countRes.text();
+      domainCrawlCount = parseInt(countText.trim(), 10) || 0;
+    }
+  } catch { /* network issues */ }
+
+  if (domainFirstSeen) {
+    const firstYear = parseInt(domainFirstSeen.slice(0, 4), 10);
+    const age = new Date().getFullYear() - firstYear;
+    if (age >= 5) {
+      backlinkChecks.push({
+        name: "Domain Age",
+        status: "pass",
+        value: `Est. ${age}+ years old (first seen ${domainFirstSeen})`,
+        description: `This domain has a significant history (${age}+ years). Older domains tend to carry more authority with Google.`,
+      });
+    } else if (age >= 2) {
+      backlinkChecks.push({
+        name: "Domain Age",
+        status: "warn",
+        value: `~${age} years old (first seen ${domainFirstSeen})`,
+        description: `Domain is relatively young (${age} years). Domain age contributes to authority — continue building links consistently to strengthen it.`,
+      });
+    } else {
+      backlinkChecks.push({
+        name: "Domain Age",
+        status: "warn",
+        value: `New domain (first seen ${domainFirstSeen})`,
+        description: "New domain detected. Building a consistent backlink profile early is essential for long-term SEO growth.",
+      });
+    }
+  } else {
+    backlinkChecks.push({
+      name: "Domain Age",
+      status: "warn",
+      value: "Unable to determine",
+      description: "Could not verify domain history. Ensure your domain is being actively crawled and indexed by search engines.",
+    });
+  }
+
+  if (domainCrawlCount > 500) {
+    backlinkChecks.push({ name: "Crawl Activity", status: "pass", value: `High activity (est. ${domainCrawlCount}+ pages indexed)`, description: "High crawl activity indicates an established domain with good crawlability and link signals." });
+  } else if (domainCrawlCount > 50) {
+    backlinkChecks.push({ name: "Crawl Activity", status: "warn", value: `Moderate activity (~${domainCrawlCount} pages indexed)`, description: "Moderate crawl activity. Publishing new content regularly and earning backlinks will improve crawl frequency." });
+  } else {
+    backlinkChecks.push({ name: "Crawl Activity", status: "warn", value: "Low crawl activity detected", description: "Low crawl activity suggests this domain may lack strong backlink signals. Increase link building and content publishing." });
+  }
+
+  // 2. Follow vs NoFollow ratio
+  const totalLinksForRatio = internalLinks + externalLinks + noFollowLinks;
+  if (totalLinksForRatio > 0) {
+    const noFollowPct = Math.round((noFollowLinks / totalLinksForRatio) * 100);
+    if (noFollowPct > 80) {
+      backlinkChecks.push({ name: "NoFollow Link Ratio", status: "warn", value: `${noFollowPct}% of links are nofollow`, description: "Most links on this page use rel='nofollow'. A mix of follow and nofollow links looks more natural to search engines." });
+    } else {
+      backlinkChecks.push({ name: "NoFollow Link Ratio", status: "pass", value: `${noFollowLinks} nofollow of ${totalLinksForRatio} links`, description: "Healthy mix of follow and nofollow links. This looks natural to search engines." });
+    }
+  }
+
+  // 3. Outbound link domain diversity (unique external domains)
+  const externalDomains = new Set<string>();
+  $("a[href]").each((_, el) => {
+    const href = $(el).attr("href") ?? "";
+    try {
+      const abs = new URL(href, finalUrl);
+      if (abs.protocol.startsWith("http") && abs.hostname !== baseHost && abs.hostname !== `www.${baseHost}`) {
+        externalDomains.add(abs.hostname.replace(/^www\./, ""));
+      }
+    } catch { /* skip */ }
+  });
+  const uniqueExternalDomains = externalDomains.size;
+  if (uniqueExternalDomains >= 5) {
+    backlinkChecks.push({ name: "Outbound Link Diversity", status: "pass", value: `${uniqueExternalDomains} unique external domains`, description: "Linking to a diverse set of external domains signals a well-connected page to search engines." });
+  } else if (uniqueExternalDomains > 0) {
+    backlinkChecks.push({ name: "Outbound Link Diversity", status: "warn", value: `${uniqueExternalDomains} unique external domain(s)`, description: "Limited outbound link diversity. Linking to authoritative external sources (industry directories, Google, partners) can strengthen your page's credibility." });
+  } else {
+    backlinkChecks.push({ name: "Outbound Link Diversity", status: "warn", value: "No external domains linked", description: "No external links detected. Linking to relevant, authoritative sources is good SEO practice and builds trust." });
+  }
+
+  // 4. Anchor text diversity
+  const anchors: string[] = [];
+  $("a[href]").each((_, el) => {
+    const text = $(el).text().trim().toLowerCase();
+    if (text.length > 1 && text.length < 80 && !["here", "click here", "read more", "learn more", "more", "link"].includes(text)) {
+      anchors.push(text);
+    }
+  });
+  const genericAnchors = $("a").filter((_, el) => {
+    const t = $(el).text().trim().toLowerCase();
+    return ["here", "click here", "read more", "learn more", "more", "link"].includes(t);
+  }).length;
+  if (genericAnchors > 5) {
+    backlinkChecks.push({ name: "Anchor Text Quality", status: "warn", value: `${genericAnchors} generic anchor(s) detected`, description: `Found ${genericAnchors} generic link texts (e.g. "click here", "read more"). Replace with keyword-rich descriptive text — this improves both SEO and accessibility.` });
+  } else {
+    backlinkChecks.push({ name: "Anchor Text Quality", status: "pass", value: "Descriptive anchor text used", description: "Links use descriptive anchor text rather than generic phrases. This is good for SEO and users." });
+  }
+
+  // 5. Social profile links (brand presence)
+  const socialDomains = ["facebook.com", "instagram.com", "linkedin.com", "twitter.com", "x.com", "youtube.com", "tiktok.com", "pinterest.com"];
+  const foundSocials: string[] = [];
+  $("a[href]").each((_, el) => {
+    const href = $(el).attr("href") ?? "";
+    for (const sd of socialDomains) {
+      if (href.includes(sd) && !foundSocials.includes(sd)) {
+        foundSocials.push(sd.replace(".com", ""));
+      }
+    }
+  });
+  if (foundSocials.length >= 3) {
+    backlinkChecks.push({ name: "Social Profile Links", status: "pass", value: foundSocials.join(", "), description: "Multiple social media profiles are linked. Social signals contribute to brand authority and can drive indirect link-building opportunities." });
+  } else if (foundSocials.length > 0) {
+    backlinkChecks.push({ name: "Social Profile Links", status: "warn", value: `Only ${foundSocials.join(", ")} linked`, description: "Limited social media profiles are linked from this page. Link to all active social profiles to strengthen brand signals." });
+  } else {
+    backlinkChecks.push({ name: "Social Profile Links", status: "fail", value: "No social profiles linked", description: "No social media profile links found. Linking to active social profiles builds brand authority and creates additional backlink opportunities." });
+  }
+
+  // 6. Blog / content section (link-worthy content potential)
+  const hasBlogLinks = $("a[href]").toArray().some(el => {
+    const href = $(el).attr("href") ?? "";
+    const text = $(el).text().toLowerCase();
+    return /blog|article|news|post|resource|guide|tip/.test(href + text);
+  });
+  if (hasBlogLinks) {
+    backlinkChecks.push({ name: "Link-Worthy Content", status: "pass", value: "Blog / articles section detected", description: "Content marketing section found. Regularly publishing helpful content attracts natural backlinks over time — a core long-term SEO strategy." });
+  } else {
+    backlinkChecks.push({ name: "Link-Worthy Content", status: "warn", value: "No blog / content section detected", description: "No blog or articles section found. Creating valuable, shareable content is one of the most effective ways to earn natural backlinks." });
+  }
+
+  // ─── BACKLINK-SPECIFIC RECOMMENDATIONS ──────────────────────────────────────
+  const backlinkRecs: string[] = [];
+
+  // Always add SA-specific directory recommendations
+  backlinkRecs.push(
+    "[Backlinks] SA Business Directories: Submit your site to South African directories — Brabys (brabys.com), Yellow Pages SA (yellowpages.co.za), Hotfrog SA (hotfrog.co.za), Yalwa SA (yalwa.co.za), and SA Business Hub. Each listing creates a citation and a do-follow backlink.",
+    "[Backlinks] Google Business Profile: Claim and fully optimise your Google Business Profile (GBP). This is the single highest-impact citation for local SEO and directly influences your Google Maps ranking.",
+    "[Backlinks] Guest Posting: Write one helpful article per month for a South African industry blog or news site (e.g. IAB SA, Bizcommunity.com, MarketingWeb.co.za). A guest post on a DA30+ site can pass significant link authority.",
+    "[Backlinks] Link Reclamation: Search Google for your brand name and find any unlinked mentions. Use a polite outreach email asking the site owner to turn the mention into a clickable link — this is low-effort, high-reward.",
+    "[Backlinks] Supplier & Partner Links: Ask your suppliers, business partners, and satisfied clients to link to your website from their website or testimonials page. These contextual links carry strong trust signals.",
+    "[Backlinks] HARO / Media Outreach: Sign up for Help A Reporter Out (HARO) or PressLink SA to respond to journalist queries. Getting featured in news articles creates high-authority editorial backlinks.",
+    "[Backlinks] Broken Link Building: Use tools like Ahrefs Free Backlink Checker or Moz Link Explorer to find broken links on competitors' referring domains. Reach out to offer your content as a replacement.",
+    "[Backlinks] Local Sponsorships: Sponsor local events, charities, or community groups in your area. Many organisations link back to sponsors from their websites — giving you high-trust local backlinks.",
+  );
+
   // ─── SOCIAL & STRUCTURED DATA ───────────────────────────────────────────────
   const socialChecks: AuditCheck[] = [];
 
@@ -385,6 +550,7 @@ router.post("/audit", async (req, res) => {
     { title: "Technical SEO", score: scoreSection(techChecks), checks: techChecks },
     { title: "Images", score: scoreSection(imageChecks), checks: imageChecks },
     { title: "Links", score: scoreSection(linkChecks), checks: linkChecks },
+    { title: "Backlinks & Authority", score: scoreSection(backlinkChecks), checks: backlinkChecks },
     { title: "Social & Structured Data", score: scoreSection(socialChecks), checks: socialChecks },
   ];
 
@@ -405,6 +571,8 @@ router.post("/audit", async (req, res) => {
       }
     }
   }
+  // Append specific backlink-building recommendations at the end
+  recommendations.push(...backlinkRecs);
 
   res.json({
     url,
