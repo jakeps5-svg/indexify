@@ -88,7 +88,7 @@ export default function Home() {
           >
             <button 
               onClick={() => scrollTo("contact")}
-              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-primary-foreground font-bold text-lg hover:bg-primary/90 hover:-translate-y-1 transition-all duration-300 shadow-[0_0_30px_rgba(245,158,11,0.25)] flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-primary-foreground font-bold text-lg hover:bg-primary/90 hover:-translate-y-1 transition-all duration-300 shadow-[0_0_30px_rgba(110,193,228,0.25)] flex items-center justify-center gap-2"
             >
               Get Free Strategy Audit <ArrowRight size={20} />
             </button>
@@ -237,24 +237,24 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-6">
             {[
               {
-                text: "Fortune Design completely transformed our online presence. We went from page 5 to page 1 on Google within 3 months!",
-                author: "Sarah M.",
-                role: "Cape Town Restaurant Owner"
+                text: "We are extremely impressed with the results delivered by Fortune Design! Thanks to their strategic approach and consistent efforts, Rapple is now ranking on Page 1 of Google — a major milestone for our brand visibility and online growth. Highly recommend their services to any business looking to seriously boost their online presence.",
+                author: "Leon De Wet",
+                role: "Rapple Products"
               },
               {
-                text: "Our Google Ads campaigns are now actually profitable. Fortune Design knows exactly how to target the right customers.",
-                author: "James K.",
-                role: "E-commerce Store Owner"
+                text: "Captuna Charters would like to thank Fortune Designs for our stunning website. We can personally recommend your service and will most definitely make use of your services in the future. You rock!",
+                author: "Michael",
+                role: "Captuna Charters"
               },
               {
-                text: "The ROI on our SEO investment has been incredible. We're getting 3x more enquiries than before.",
-                author: "Thabo N.",
-                role: "Johannesburg Contractor"
+                text: "Fortune Design created a great looking website at an affordable rate with fast delivery. Very happy with my new website, thank you guys!",
+                author: "Megan van Niekerk",
+                role: "Precision Gates"
               },
               {
-                text: "Professional, results-driven team. They explained everything clearly and delivered exactly what they promised.",
-                author: "Michelle D.",
-                role: "Durban Salon Owner"
+                text: "Our new website is ready and we are absolutely stunned about the outcome. It was such a pleasure working with Fortune Design — they immediately visualised what we wanted and their turnaround time was excellent.",
+                author: "Bettina Williams",
+                role: "DesignAfrique"
               }
             ].map((review, i) => (
               <motion.div 
@@ -312,7 +312,7 @@ export default function Home() {
             {/* Premium (Highlighted) */}
             <motion.div 
               variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className="bg-zinc-900 border-2 border-primary rounded-3xl p-8 relative shadow-[0_0_30px_rgba(245,158,11,0.15)] md:scale-105 z-10"
+              className="bg-zinc-900 border-2 border-primary rounded-3xl p-8 relative shadow-[0_0_30px_rgba(110,193,228,0.15)] md:scale-105 z-10"
             >
               <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
                 Most Popular
@@ -395,7 +395,7 @@ export default function Home() {
           
           <button 
             onClick={() => document.querySelector('button[aria-label="Chat on WhatsApp"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }))}
-            className="inline-flex items-center gap-3 px-8 py-5 rounded-2xl bg-primary text-primary-foreground font-black text-xl hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-[0_0_40px_rgba(245,158,11,0.4)]"
+            className="inline-flex items-center gap-3 px-8 py-5 rounded-2xl bg-primary text-primary-foreground font-black text-xl hover:bg-primary/90 hover:scale-105 transition-all duration-300 shadow-[0_0_40px_rgba(110,193,228,0.4)]"
           >
             <MessageCircle size={28} />
             Chat with us on WhatsApp
