@@ -11,13 +11,14 @@ tags:
     description: Health operations
   - name: inquiry
     description: Inquiry form submissions
+  - name: audit
+    description: SEO audit operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -30,7 +31,6 @@ paths:
       operationId: submitInquiry
       tags: [inquiry]
       summary: Submit an inquiry
-      description: Submit a WhatsApp inquiry form
       requestBody:
         required: true
         content:
@@ -46,6 +46,30 @@ paths:
                 $ref: "#/components/schemas/InquiryResponse"
         "400":
           description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /audit:
+    post:
+      operationId: runSeoAudit
+      tags: [audit]
+      summary: Run an SEO audit on a URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuditInput"
+      responses:
+        "200":
+          description: SEO audit results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditResult"
+        "400":
+          description: Invalid URL or fetch error
           content:
             application/json:
               schema:
@@ -101,3 +125,74 @@ components:
           type: string
       required:
         - error
+    AuditInput:
+      type: object
+      properties:
+        url:
+          type: string
+      required:
+        - url
+    AuditCheck:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+          enum: [pass, warn, fail]
+        value:
+          type: string
+        description:
+          type: string
+      required:
+        - name
+        - status
+        - value
+        - description
+    AuditSection:
+      type: object
+      properties:
+        title:
+          type: string
+        score:
+          type: integer
+        checks:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditCheck"
+      required:
+        - title
+        - score
+        - checks
+    AuditResult:
+      type: object
+      properties:
+        url:
+          type: string
+        finalUrl:
+          type: string
+        overallScore:
+          type: integer
+        loadTimeMs:
+          type: integer
+        pageTitle:
+          type: string
+        metaDescription:
+          type: string
+        sections:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditSection"
+        recommendations:
+          type: array
+          items:
+            type: string
+      required:
+        - url
+        - finalUrl
+        - overallScore
+        - loadTimeMs
+        - pageTitle
+        - metaDescription
+        - sections
+        - recommendations

@@ -70,12 +70,12 @@ export function Navbar() {
                 {link.name}
               </button>
             ))}
-            <button 
-              onClick={() => scrollTo("contact")}
+            <a 
+              href={`${import.meta.env.BASE_URL}audit`}
               className="px-5 py-2.5 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 hover:scale-105 transition-all duration-200 shadow-[0_0_20px_rgba(110,193,228,0.3)]"
             >
               Get Free Audit
-            </button>
+            </a>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -110,12 +110,12 @@ export function Navbar() {
                 </button>
               ))}
               <div className="px-4 pt-2">
-                <button 
-                  onClick={() => scrollTo("contact")}
-                  className="w-full px-5 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors"
+                <a 
+                  href={`${import.meta.env.BASE_URL}audit`}
+                  className="block w-full px-5 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors text-center"
                 >
                   Get Free Audit
-                </button>
+                </a>
               </div>
             </div>
           </motion.div>

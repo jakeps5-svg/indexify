@@ -17,6 +17,8 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AuditInput,
+  AuditResult,
   ErrorResponse,
   HealthStatus,
   InquiryInput,
@@ -33,7 +35,6 @@ type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const getHealthCheckUrl = () => {
@@ -109,7 +110,6 @@ export function useHealthCheck<
 }
 
 /**
- * Submit a WhatsApp inquiry form
  * @summary Submit an inquiry
  */
 export const getSubmitInquiryUrl = () => {
@@ -193,4 +193,90 @@ export const useSubmitInquiry = <
   TContext
 > => {
   return useMutation(getSubmitInquiryMutationOptions(options));
+};
+
+/**
+ * @summary Run an SEO audit on a URL
+ */
+export const getRunSeoAuditUrl = () => {
+  return `/api/audit`;
+};
+
+export const runSeoAudit = async (
+  auditInput: AuditInput,
+  options?: RequestInit,
+): Promise<AuditResult> => {
+  return customFetch<AuditResult>(getRunSeoAuditUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(auditInput),
+  });
+};
+
+export const getRunSeoAuditMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof runSeoAudit>>,
+    TError,
+    { data: BodyType<AuditInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof runSeoAudit>>,
+  TError,
+  { data: BodyType<AuditInput> },
+  TContext
+> => {
+  const mutationKey = ["runSeoAudit"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof runSeoAudit>>,
+    { data: BodyType<AuditInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return runSeoAudit(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RunSeoAuditMutationResult = NonNullable<
+  Awaited<ReturnType<typeof runSeoAudit>>
+>;
+export type RunSeoAuditMutationBody = BodyType<AuditInput>;
+export type RunSeoAuditMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Run an SEO audit on a URL
+ */
+export const useRunSeoAudit = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof runSeoAudit>>,
+    TError,
+    { data: BodyType<AuditInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof runSeoAudit>>,
+  TError,
+  { data: BodyType<AuditInput> },
+  TContext
+> => {
+  return useMutation(getRunSeoAuditMutationOptions(options));
 };

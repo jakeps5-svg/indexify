@@ -8,7 +8,6 @@
 import * as zod from "zod";
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
@@ -16,7 +15,6 @@ export const HealthCheckResponse = zod.object({
 });
 
 /**
- * Submit a WhatsApp inquiry form
  * @summary Submit an inquiry
  */
 
@@ -26,4 +24,35 @@ export const SubmitInquiryBody = zod.object({
   phone: zod.string().optional(),
   service: zod.enum(["seo", "google-ads", "both"]),
   message: zod.string().min(1),
+});
+
+/**
+ * @summary Run an SEO audit on a URL
+ */
+export const RunSeoAuditBody = zod.object({
+  url: zod.string(),
+});
+
+export const RunSeoAuditResponse = zod.object({
+  url: zod.string(),
+  finalUrl: zod.string(),
+  overallScore: zod.number(),
+  loadTimeMs: zod.number(),
+  pageTitle: zod.string(),
+  metaDescription: zod.string(),
+  sections: zod.array(
+    zod.object({
+      title: zod.string(),
+      score: zod.number(),
+      checks: zod.array(
+        zod.object({
+          name: zod.string(),
+          status: zod.enum(["pass", "warn", "fail"]),
+          value: zod.string(),
+          description: zod.string(),
+        }),
+      ),
+    }),
+  ),
+  recommendations: zod.array(zod.string()),
 });

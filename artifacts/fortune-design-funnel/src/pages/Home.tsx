@@ -86,12 +86,12 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <button 
-              onClick={() => scrollTo("contact")}
+            <a 
+              href={`${import.meta.env.BASE_URL}audit`}
               className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-primary-foreground font-bold text-lg hover:bg-primary/90 hover:-translate-y-1 transition-all duration-300 shadow-[0_0_30px_rgba(110,193,228,0.25)] flex items-center justify-center gap-2"
             >
               Get Free Strategy Audit <ArrowRight size={20} />
-            </button>
+            </a>
             <button 
               onClick={() => scrollTo("services")}
               className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 text-white font-bold text-lg border border-white/10 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300"

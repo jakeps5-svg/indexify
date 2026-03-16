@@ -37,3 +37,40 @@ export interface InquiryResponse {
 export interface ErrorResponse {
   error: string;
 }
+
+export interface AuditInput {
+  url: string;
+}
+
+export type AuditCheckStatus =
+  (typeof AuditCheckStatus)[keyof typeof AuditCheckStatus];
+
+export const AuditCheckStatus = {
+  pass: "pass",
+  warn: "warn",
+  fail: "fail",
+} as const;
+
+export interface AuditCheck {
+  name: string;
+  status: AuditCheckStatus;
+  value: string;
+  description: string;
+}
+
+export interface AuditSection {
+  title: string;
+  score: number;
+  checks: AuditCheck[];
+}
+
+export interface AuditResult {
+  url: string;
+  finalUrl: string;
+  overallScore: number;
+  loadTimeMs: number;
+  pageTitle: string;
+  metaDescription: string;
+  sections: AuditSection[];
+  recommendations: string[];
+}
