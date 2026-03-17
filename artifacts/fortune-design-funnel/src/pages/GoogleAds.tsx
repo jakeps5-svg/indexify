@@ -7,7 +7,6 @@ import {
 import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { WhatsAppModal } from "@/components/WhatsAppModal";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
 
 const fadeInUp = {
@@ -86,7 +85,6 @@ export default function GoogleAdsPage() {
   return (
     <div className="min-h-screen bg-white text-foreground">
       <Navbar />
-      <WhatsAppModal />
 
       {/* HERO */}
       <section className="relative pt-36 pb-24 md:pt-52 md:pb-36 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-amber-50">

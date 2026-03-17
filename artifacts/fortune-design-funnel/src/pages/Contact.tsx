@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Send, Phone, Mail, MapPin, MessageSquare, CheckCircle2, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { WhatsAppModal } from "@/components/WhatsAppModal";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -60,7 +59,6 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-white text-foreground">
       <Navbar />
-      <WhatsAppModal />
 
       {/* HERO */}
       <section className="relative pt-32 pb-16 md:pt-44 md:pb-20 overflow-hidden bg-gradient-to-br from-sky-50 via-white to-blue-50">

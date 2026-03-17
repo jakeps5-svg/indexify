@@ -3,7 +3,6 @@ import { ArrowRight, CheckCircle2, Target, TrendingUp, Search, MousePointerClick
 import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { WhatsAppModal } from "@/components/WhatsAppModal";
 import { cn } from "@/lib/utils";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -56,7 +55,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white text-foreground">
       <Navbar />
-      <WhatsAppModal />
 
       {/* 1. HERO SECTION */}
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-gradient-to-br from-sky-50 via-white to-blue-50">
