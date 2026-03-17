@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MousePointerClick, Lock, Unlock, Download, Building2,
-  MapPin, Phone, Tag, Target, Zap, BarChart3, ChevronDown, ChevronRight,
-  TrendingUp, DollarSign, Users, Eye, FileText, CheckCircle2, XCircle,
-  Loader2, Search, Megaphone, RefreshCw
+  Lock, Unlock, Download, Target, Zap,
+  TrendingUp, DollarSign, Users, MousePointerClick,
+  Loader2, Search, Megaphone, RefreshCw, Lightbulb,
+  BarChart3, ChevronDown
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -62,49 +62,142 @@ function formatRand(n: number) {
   return `R${n.toLocaleString("en-ZA")}`;
 }
 
-function CampaignCard({ campaign, index, unlocked }: { campaign: Campaign; index: number; unlocked: boolean }) {
-  const [open, setOpen] = useState(index === 0);
-  const isLocked = !unlocked && index > 0;
-  const typeIcon = campaign.type === "Display" ? Eye : campaign.type === "Shopping" ? Tag : Search;
-  const TypeIcon = typeIcon;
+function slugify(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function getCompetition(cpcMax: number): string {
+  if (cpcMax > 30) return "High";
+  if (cpcMax > 15) return "Medium";
+  return "Low";
+}
+
+function getCompetitionColor(comp: string) {
+  if (comp === "High") return "text-red-600 bg-red-50 border-red-200";
+  if (comp === "Medium") return "text-amber-600 bg-amber-50 border-amber-200";
+  return "text-emerald-600 bg-emerald-50 border-emerald-200";
+}
+
+function generateMarketData(services: string[], cpc: { min: number; max: number }) {
+  return services.map((svc, i) => {
+    const spread = cpc.max - cpc.min;
+    const svcCpcMin = cpc.min + ((i * 3) % Math.max(spread, 1));
+    const svcCpcMax = Math.min(cpc.max, svcCpcMin + spread * 0.4 + 2);
+    const avgCpc = ((svcCpcMin + svcCpcMax) / 2).toFixed(2);
+    const baseVol = 400 + (i % 3) * 300 + Math.round(cpc.min * 40);
+    const competition = getCompetition(svcCpcMax);
+    return { category: svc, volume: baseVol, competition, cpc: `R${avgCpc}` };
+  });
+}
+
+function AdPreviewMock({ adGroup, domain, businessName }: {
+  adGroup: AdGroup; domain: string; businessName: string;
+}) {
+  const slug = slugify(adGroup.name);
+  const h1 = adGroup.headlines[0] ?? adGroup.name;
+  const h2 = adGroup.headlines[1] ?? businessName;
+  const h3 = adGroup.headlines[4] ?? adGroup.headlines[2] ?? "Get a Quote";
+  const titleLine = [h1, h2, h3].filter(Boolean).join(" | ");
+  const desc = adGroup.descriptions[0] ?? `Professional ${adGroup.name.toLowerCase()} services. Contact us today.`;
+  const displayUrl = `${domain}/${slug}`;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.08 }}
-      className={cn("bg-white rounded-2xl border overflow-hidden", isLocked ? "border-gray-100 opacity-70" : "border-gray-200 shadow-sm")}
-    >
-      <button
-        onClick={() => !isLocked && setOpen(!open)}
-        className={cn("w-full flex items-center justify-between px-5 py-4 text-left gap-4", !isLocked && "hover:bg-gray-50 transition-colors", isLocked && "cursor-default")}
-      >
-        <div className="flex items-center gap-4 min-w-0">
-          <div className={cn(
-            "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-white",
-            campaign.type === "Display" ? "bg-purple-500" : campaign.type === "Search" && index === 1 ? "bg-blue-500" : "bg-primary"
-          )}>
-            <TypeIcon size={20} />
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className="font-bold text-sm text-gray-900 truncate">{campaign.name}</span>
-              {isLocked && <Lock size={12} className="text-gray-300 shrink-0" />}
-            </div>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-              <span className="px-2 py-0.5 rounded-full bg-gray-100 font-medium">{campaign.type}</span>
-              <span>·</span>
-              <span>{campaign.objective}</span>
-              {!isLocked && (
-                <>
-                  <span>·</span>
-                  <span className="text-emerald-600 font-semibold">{formatRand(campaign.monthlyBudget)}/mo</span>
-                </>
-              )}
-            </div>
+    <div className="mt-3 border border-gray-200 rounded-xl p-4 bg-white">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Ad Preview</p>
+      <div className="border border-gray-200 rounded-lg p-4 bg-white hover:shadow-sm transition-shadow">
+        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
+          <span className="border border-gray-400 rounded px-1 py-0.5 text-[10px] font-semibold text-gray-500 leading-none">Ad</span>
+          <span>· {displayUrl}</span>
+        </div>
+        <p className="text-blue-700 font-medium text-sm leading-snug mb-1.5 line-clamp-2 hover:underline cursor-default">
+          {titleLine}
+        </p>
+        <p className="text-xs text-gray-600 leading-relaxed mb-3 line-clamp-2">{desc}</p>
+        <div className="flex flex-wrap gap-x-4 gap-y-1">
+          {["Get a Quote", "View More", "Contact Us"].map(link => (
+            <span key={link} className="text-xs text-blue-700 hover:underline cursor-default">{link}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AdGroupRow({ adGroup, domain, businessName, showPreview, estClicks }: {
+  adGroup: AdGroup; domain: string; businessName: string; showPreview: boolean; estClicks: number;
+}) {
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-3 bg-gray-50 border-b border-gray-100">
+        <div>
+          <p className="font-bold text-sm text-gray-900">{adGroup.name}</p>
+          <p className="text-xs text-gray-400 mt-0.5">Targeting: {adGroup.keywords.length} keywords</p>
+        </div>
+        <div className="text-right shrink-0">
+          <p className="text-xs text-gray-400">Est. Clicks</p>
+          <p className="font-bold text-sm text-gray-700">~{estClicks.toLocaleString()}/mo</p>
+        </div>
+      </div>
+      <div className="px-5 py-4 space-y-4">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Keywords</p>
+          <div className="flex flex-wrap gap-1.5">
+            {adGroup.keywords.map((kw, i) => (
+              <span key={i} className="px-2.5 py-1 text-xs bg-blue-50 text-blue-700 rounded border border-blue-100 font-medium">
+                {kw}
+              </span>
+            ))}
           </div>
         </div>
-        <div className="flex items-center gap-3 shrink-0">
+        {showPreview
+          ? <AdPreviewMock adGroup={adGroup} domain={domain} businessName={businessName} />
+          : (
+            <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+              <Lock size={14} className="text-gray-300 shrink-0" />
+              <p className="text-xs text-gray-400">Ad preview (15 headlines + 4 descriptions) included in full proposal</p>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  );
+}
+
+function CampaignSection({ campaign, index, unlocked, result }: {
+  campaign: Campaign; index: number; unlocked: boolean; result: ProposalResult;
+}) {
+  const [open, setOpen] = useState(index === 0);
+  const isLocked = !unlocked && index > 0;
+  const domain = (() => { try { return new URL(result.finalUrl).hostname.replace(/^www\./, ""); } catch { return result.finalUrl; } })();
+  const totalClicksForCampaign = Math.round((result.expectedMonthlyClicks.min + result.expectedMonthlyClicks.max) / 2 * 0.6);
+  const clicksPerGroup = Math.round(totalClicksForCampaign / Math.max(campaign.adGroups.length, 1));
+  const typeColors: Record<string, string> = {
+    Search: "bg-blue-600",
+    Display: "bg-purple-600",
+    Shopping: "bg-emerald-600",
+  };
+  const typeBg = typeColors[campaign.type] ?? "bg-gray-600";
+
+  return (
+    <div className={cn("rounded-2xl border overflow-hidden", isLocked ? "border-gray-100 opacity-60" : "border-gray-200 shadow-sm")}>
+      <button
+        onClick={() => !isLocked && setOpen(v => !v)}
+        className={cn("w-full flex items-center justify-between px-5 py-4 bg-gray-900 text-left", !isLocked && "hover:bg-gray-800 transition-colors", isLocked && "cursor-default")}
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <span className={cn("px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-widest text-white shrink-0", typeBg)}>
+            {campaign.type}
+          </span>
+          <div className="min-w-0">
+            <p className="font-black text-white text-sm truncate">{campaign.name}</p>
+            <p className="text-gray-400 text-xs mt-0.5 hidden sm:block">{campaign.objective} · {formatRand(campaign.monthlyBudget)}/mo · {campaign.biddingStrategy}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {isLocked
+            ? <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-700 text-gray-400 text-xs font-bold"><Lock size={10} /> LOCKED</span>
+            : <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold">● ACTIVE</span>
+          }
           {!isLocked && (
             <ChevronDown size={16} className={cn("text-gray-400 transition-transform duration-300", open && "rotate-180")} />
           )}
@@ -120,115 +213,17 @@ function CampaignCard({ campaign, index, unlocked }: { campaign: Campaign; index
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 pt-1 border-t border-gray-100 space-y-4">
-              <div className="flex flex-wrap gap-4 pt-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <DollarSign size={14} className="text-gray-400" />
-                  <span className="text-gray-500">Daily budget:</span>
-                  <span className="font-bold text-gray-900">{formatRand(campaign.dailyBudget)}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Zap size={14} className="text-gray-400" />
-                  <span className="text-gray-500">Bidding:</span>
-                  <span className="font-bold text-gray-900">{campaign.biddingStrategy}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Target size={14} className="text-gray-400" />
-                  <span className="text-gray-500">Ad groups:</span>
-                  <span className="font-bold text-gray-900">{campaign.adGroups.length}</span>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {campaign.adGroups.map((ag, i) => (
-                  <AdGroupCard key={i} adGroup={ag} unlocked={unlocked} isFirstCampaign={index === 0} groupIndex={i} />
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
-function AdGroupCard({ adGroup, unlocked, isFirstCampaign, groupIndex }: {
-  adGroup: AdGroup; unlocked: boolean; isFirstCampaign: boolean; groupIndex: number;
-}) {
-  const [open, setOpen] = useState(groupIndex === 0);
-  const showFull = unlocked;
-  const showPreview = isFirstCampaign && groupIndex === 0;
-
-  return (
-    <div className="border border-gray-100 rounded-xl overflow-hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
-      >
-        <div className="flex items-center gap-2">
-          <ChevronRight size={14} className={cn("text-gray-400 transition-transform duration-200", open && "rotate-90")} />
-          <span className="font-semibold text-sm text-gray-800">{adGroup.name}</span>
-          <span className="text-xs text-gray-400">
-            {showFull ? `${adGroup.keywords.length} keywords · ${adGroup.headlines.length} headlines` : `${adGroup.previewKeywords.length} preview keywords`}
-          </span>
-        </div>
-      </button>
-
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0 }}
-            animate={{ height: "auto" }}
-            exit={{ height: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="p-4 space-y-4">
-              {/* Keywords */}
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
-                  {showFull ? `Keywords (${adGroup.keywords.length})` : "Sample Keywords"}
-                  {!showFull && <span className="ml-2 text-amber-500 font-normal normal-case">· Full list unlocked with proposal</span>}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {(showFull ? adGroup.keywords : adGroup.previewKeywords).map((kw, i) => (
-                    <span key={i} className="px-2.5 py-1 text-xs bg-blue-50 text-blue-700 rounded-full border border-blue-100 font-medium">
-                      {kw}
-                    </span>
-                  ))}
-                  {!showFull && (
-                    <span className="px-2.5 py-1 text-xs bg-gray-100 text-gray-400 rounded-full border border-gray-200 italic">
-                      +{adGroup.keywords.length - adGroup.previewKeywords.length} more…
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Ad Copy — locked unless full */}
-              {showFull ? (
-                <>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Headlines (15)</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
-                      {adGroup.headlines.map((h, i) => (
-                        <div key={i} className="px-3 py-2 text-xs bg-emerald-50 text-emerald-800 rounded-lg border border-emerald-100 font-medium truncate" title={h}>{h}</div>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Descriptions (4)</p>
-                    <div className="space-y-1.5">
-                      {adGroup.descriptions.map((d, i) => (
-                        <div key={i} className="px-3 py-2 text-xs bg-amber-50 text-amber-800 rounded-lg border border-amber-100 leading-relaxed">{d}</div>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                  <Lock size={14} className="text-gray-300 shrink-0" />
-                  <p className="text-xs text-gray-400">Ad copy (15 headlines + 4 descriptions) included in full proposal</p>
-                </div>
-              )}
+            <div className="p-4 space-y-3 bg-slate-50">
+              {campaign.adGroups.map((ag, i) => (
+                <AdGroupRow
+                  key={i}
+                  adGroup={ag}
+                  domain={domain}
+                  businessName={result.businessName}
+                  showPreview={unlocked || index === 0}
+                  estClicks={clicksPerGroup}
+                />
+              ))}
             </div>
           </motion.div>
         )}
@@ -239,6 +234,7 @@ function AdGroupCard({ adGroup, unlocked, isFirstCampaign, groupIndex }: {
 
 function generateProposalHTML(result: ProposalResult): string {
   const now = new Date().toLocaleDateString("en-ZA", { year: "numeric", month: "long", day: "numeric" });
+  const domain = (() => { try { return new URL(result.finalUrl).hostname.replace(/^www\./, ""); } catch { return result.finalUrl; } })();
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -261,25 +257,42 @@ function generateProposalHTML(result: ProposalResult): string {
   .services { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
   .svc-tag { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; }
   .campaign { border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; overflow: hidden; page-break-inside: avoid; }
-  .campaign-header { background: #f9fafb; padding: 14px 18px; border-bottom: 1px solid #e5e7eb; }
-  .campaign-name { font-size: 15px; font-weight: 800; color: #111827; margin-bottom: 4px; }
-  .campaign-meta { font-size: 12px; color: #6b7280; }
-  .campaign-meta span { font-weight: 700; color: #059669; }
-  .ad-group { padding: 16px 18px; border-bottom: 1px solid #f3f4f6; }
+  .campaign-header { background: #111827; padding: 14px 18px; border-bottom: 1px solid #374151; }
+  .campaign-name { font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+  .campaign-meta { font-size: 12px; color: #9ca3af; }
+  .campaign-meta span { font-weight: 700; color: #10b981; }
+  .ad-group { padding: 16px 18px; border-bottom: 1px solid #f3f4f6; background: #fff; }
   .ad-group:last-child { border-bottom: none; }
-  .ag-name { font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 10px; }
-  .kw-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-  .kw { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; }
-  .hl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
-  .hl { background: #f0fdf4; border: 1px solid #bbf7d0; color: #065f46; padding: 5px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-  .desc { background: #fffbeb; border: 1px solid #fde68a; color: #78350f; padding: 8px 10px; border-radius: 6px; font-size: 11px; margin-bottom: 6px; line-height: 1.5; }
+  .ag-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .ag-name { font-size: 13px; font-weight: 700; color: #374151; }
+  .ag-clicks { font-size: 11px; color: #6b7280; text-align: right; }
+  .ag-clicks strong { display: block; font-size: 13px; color: #374151; }
+  .kw-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .kw { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .ad-preview { border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; background: #fff; }
+  .ad-preview-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #9ca3af; margin-bottom: 8px; }
+  .ad-indicator { border: 1px solid #9ca3af; border-radius: 3px; padding: 1px 4px; font-size: 10px; color: #6b7280; font-weight: 600; margin-right: 4px; }
+  .ad-url { font-size: 12px; color: #4b5563; }
+  .ad-title { font-size: 14px; color: #1a73e8; font-weight: 500; margin: 4px 0; line-height: 1.4; }
+  .ad-desc { font-size: 12px; color: #4b5563; line-height: 1.5; margin-bottom: 8px; }
+  .ad-sitelinks { display: flex; gap: 16px; }
+  .ad-sitelinks span { font-size: 12px; color: #1a73e8; }
+  .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; margin-bottom: 6px; }
   .neg-kws { display: flex; flex-wrap: wrap; gap: 6px; }
   .neg-kw { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; }
   .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
   .info-item { padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; }
   .info-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; margin-bottom: 2px; }
   .info-value { font-size: 14px; font-weight: 700; color: #111827; }
-  .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; margin-bottom: 8px; }
+  .mktable { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  .mktable th { background: #f9fafb; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; padding: 8px 12px; text-align: left; border-bottom: 2px solid #e5e7eb; }
+  .mktable td { padding: 8px 12px; font-size: 12px; border-bottom: 1px solid #f3f4f6; }
+  .comp-high { color: #dc2626; font-weight: 600; }
+  .comp-med { color: #d97706; font-weight: 600; }
+  .comp-low { color: #059669; font-weight: 600; }
+  .guide-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; }
+  .guide-title { font-size: 12px; font-weight: 800; color: #78350f; margin-bottom: 8px; }
+  .guide-item { font-size: 12px; color: #92400e; margin-bottom: 4px; }
   .footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #9ca3af; text-align: center; }
   @media print { body { padding: 24px; } .campaign { page-break-inside: avoid; } }
 </style>
@@ -287,14 +300,37 @@ function generateProposalHTML(result: ProposalResult): string {
 <body>
 <div class="logo">FORTUNE<span>DESIGN</span></div>
 <div class="badge">Google Ads Proposal</div>
-<h1>${result.businessName} — Google Ads Proposal</h1>
-<p class="subtitle">Prepared by Fortune Design · fortunedesign.co.za · Generated ${now}</p>
+<h1>${result.businessName} — Strategy Plan</h1>
+<p class="subtitle">High-conversion Google Ads blueprint for ${result.businessName}. Prepared by Fortune Design · Generated ${now}</p>
 
 <div class="grid-4">
-  <div class="card"><div class="num">${formatRand(result.totalMonthlyBudget)}</div><div class="lbl">Recommended Monthly Budget</div></div>
-  <div class="card"><div class="num">R${result.expectedCPC.min}–R${result.expectedCPC.max}</div><div class="lbl">Estimated CPC Range</div></div>
+  <div class="card"><div class="num">${formatRand(result.totalMonthlyBudget)}</div><div class="lbl">Monthly Budget</div></div>
+  <div class="card"><div class="num">R${result.expectedCPC.min}–R${result.expectedCPC.max}</div><div class="lbl">Avg. CPC Range</div></div>
   <div class="card"><div class="num">${result.expectedMonthlyClicks.min}–${result.expectedMonthlyClicks.max}</div><div class="lbl">Est. Monthly Clicks</div></div>
-  <div class="card"><div class="num">${result.campaigns.length}</div><div class="lbl">Campaigns Proposed</div></div>
+  <div class="card"><div class="num">~${Math.round((result.expectedMonthlyClicks.min + result.expectedMonthlyClicks.max) / 2 * 0.062)}</div><div class="lbl">Est. Conversions</div></div>
+</div>
+
+<div class="section">
+  <div class="section-title">Market Intelligence</div>
+  <table class="mktable">
+    <thead><tr><th>Category</th><th>Est. Monthly Searches</th><th>Competition</th><th>Avg. CPC</th></tr></thead>
+    <tbody>
+      ${generateMarketData(result.servicesDetected, result.expectedCPC).map(row => `
+      <tr>
+        <td>${row.category}</td>
+        <td>${row.volume.toLocaleString()}</td>
+        <td class="${row.competition === "High" ? "comp-high" : row.competition === "Medium" ? "comp-med" : "comp-low"}">${row.competition}</td>
+        <td>${row.cpc}</td>
+      </tr>`).join("")}
+    </tbody>
+  </table>
+</div>
+
+<div class="guide-box">
+  <div class="guide-title">Guide: Effective Ad Copy</div>
+  <div class="guide-item">1. <strong>Specificity:</strong> Match headlines to keywords.</div>
+  <div class="guide-item">2. <strong>Speed:</strong> Highlight fast delivery or quick response.</div>
+  <div class="guide-item">3. <strong>Credibility:</strong> Emphasise "${result.businessName}" by name.</div>
 </div>
 
 <div class="section">
@@ -314,19 +350,37 @@ function generateProposalHTML(result: ProposalResult): string {
   ${result.campaigns.map(c => `
   <div class="campaign">
     <div class="campaign-header">
-      <div class="campaign-name">${c.name}</div>
-      <div class="campaign-meta">${c.type} Campaign · ${c.objective} · Budget: <span>${formatRand(c.monthlyBudget)}/month (${formatRand(c.dailyBudget)}/day)</span> · Bidding: ${c.biddingStrategy}</div>
+      <div class="campaign-name">Campaign: ${c.name}</div>
+      <div class="campaign-meta">${c.type} · ${c.objective} · Budget: <span>${formatRand(c.monthlyBudget)}/month</span> · ${c.biddingStrategy}</div>
     </div>
-    ${c.adGroups.map(ag => `
+    ${c.adGroups.map((ag, i) => {
+      const slug = ag.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const h1 = ag.headlines[0] ?? ag.name;
+      const h2 = ag.headlines[1] ?? result.businessName;
+      const h3 = ag.headlines[4] ?? ag.headlines[2] ?? "Get a Quote";
+      const titleLine = [h1, h2, h3].filter(Boolean).join(" | ");
+      const descText = ag.descriptions[0] ?? "";
+      const clicksPerGroup = Math.round(((result.expectedMonthlyClicks.min + result.expectedMonthlyClicks.max) / 2 * 0.6) / Math.max(c.adGroups.length, 1));
+      return `
     <div class="ad-group">
-      <div class="ag-name">Ad Group: ${ag.name}</div>
-      <div class="section-label">Keywords (${ag.keywords.length})</div>
+      <div class="ag-header">
+        <div>
+          <div class="ag-name">Ad Group: ${ag.name}</div>
+          <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Targeting: ${ag.keywords.length} keywords</div>
+        </div>
+        <div class="ag-clicks"><span>Est. Clicks</span><strong>~${clicksPerGroup.toLocaleString()}/mo</strong></div>
+      </div>
+      <div class="section-label">Keywords</div>
       <div class="kw-grid">${ag.keywords.map(k => `<span class="kw">${k}</span>`).join("")}</div>
-      <div class="section-label">Headlines</div>
-      <div class="hl-grid">${ag.headlines.map(h => `<div class="hl">${h}</div>`).join("")}</div>
-      <div class="section-label">Descriptions</div>
-      ${ag.descriptions.map(d => `<div class="desc">${d}</div>`).join("")}
-    </div>`).join("")}
+      <div class="ad-preview">
+        <div class="ad-preview-label">Ad Preview</div>
+        <div><span class="ad-indicator">Ad</span><span class="ad-url">${domain}/${slug}</span></div>
+        <div class="ad-title">${titleLine}</div>
+        <div class="ad-desc">${descText}</div>
+        <div class="ad-sitelinks"><span>Get a Quote</span><span>View More</span><span>Contact Us</span></div>
+      </div>
+    </div>`;
+    }).join("")}
   </div>`).join("")}
 </div>
 
@@ -348,7 +402,7 @@ function downloadProposal(result: ProposalResult) {
   const blob = new Blob([html], { type: "text/html" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  const domain = new URL(result.finalUrl).hostname;
+  const domain = (() => { try { return new URL(result.finalUrl).hostname; } catch { return result.finalUrl; } })();
   a.download = `google-ads-proposal-${domain}-${new Date().toISOString().slice(0, 10)}.html`;
   a.click();
   URL.revokeObjectURL(a.href);
@@ -359,10 +413,11 @@ export default function AdsAuditPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ProposalResult | null>(null);
-  const [unlockOpen, setUnlockOpen] = useState(false);
   const [codeInput, setCodeInput] = useState("");
   const [codeError, setCodeError] = useState("");
   const [unlocked, setUnlocked] = useState(false);
+  const [unlockOpen, setUnlockOpen] = useState(false);
+  const codeRef = useRef<HTMLInputElement>(null);
 
   async function runProposal(e: React.FormEvent) {
     e.preventDefault();
@@ -389,7 +444,8 @@ export default function AdsAuditPage() {
 
   function tryUnlock() {
     if (!result) return;
-    if (codeInput.trim() === result.unlockCode) {
+    const entered = (codeRef.current?.value ?? codeInput).trim();
+    if (entered === result.unlockCode) {
       setUnlocked(true);
       setUnlockOpen(false);
       setCodeError("");
@@ -399,19 +455,22 @@ export default function AdsAuditPage() {
   }
 
   function openWhatsApp() {
-    const domain = result ? new URL(result.finalUrl).hostname : inputUrl;
+    const domain = (() => { try { return new URL(result?.finalUrl ?? inputUrl).hostname; } catch { return inputUrl; } })();
     const biz = result?.businessName ?? domain;
     const msg = encodeURIComponent(`Hi Fortune Design! I'd like to receive my full Google Ads Proposal for *${biz}* (${domain}). Please send payment details for R500.`);
     window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, "_blank");
   }
 
-  const lockedCampaigns = result ? result.campaigns.length - 1 : 0;
+  const domain = result ? (() => { try { return new URL(result.finalUrl).hostname.replace(/^www\./, ""); } catch { return result.finalUrl; } })() : "";
+  const avgClicks = result ? Math.round((result.expectedMonthlyClicks.min + result.expectedMonthlyClicks.max) / 2) : 0;
+  const estConversions = Math.round(avgClicks * 0.062);
+  const marketData = result ? generateMarketData(result.servicesDetected, result.expectedCPC) : [];
 
   return (
     <div className="min-h-screen bg-slate-50 text-gray-900">
       <Navbar />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-28 pb-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-28 pb-16">
 
         {/* Hero */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
@@ -424,7 +483,7 @@ export default function AdsAuditPage() {
             <span style={{ color: PRIMARY }}>In 30 Seconds</span>
           </h1>
           <p className="text-base text-gray-500 max-w-xl mx-auto leading-relaxed">
-            Enter your website URL and we'll scan your services & products, then generate a full Google Ads campaign strategy tailored to your business — including keywords, ad copy and budget recommendations.
+            Enter your website URL and we'll scan your services, then generate a full Google Ads campaign strategy tailored to your business — keywords, ad copy and budget included.
           </p>
         </motion.div>
 
@@ -480,14 +539,11 @@ export default function AdsAuditPage() {
                   "Scanning website for services & products…",
                   "Detecting industry & target audience…",
                   "Building campaign structure…",
-                  "Generating keyword recommendations…",
-                  "Writing ad copy for each service…",
+                  "Generating keywords & ad copy…",
                 ].map((step, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 1.2 }}
-                    className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: PRIMARY }} />
+                  <motion.p key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.7 }}>
                     {step}
-                  </motion.div>
+                  </motion.p>
                 ))}
               </div>
             </motion.div>
@@ -495,228 +551,239 @@ export default function AdsAuditPage() {
         </AnimatePresence>
 
         {/* Error */}
-        <AnimatePresence>
-          {error && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              className="max-w-2xl mx-auto bg-red-50 border border-red-200 rounded-2xl p-6 text-center mb-8">
-              <XCircle size={32} className="text-red-400 mx-auto mb-3" />
-              <h3 className="font-bold text-red-800 mb-1">Could Not Generate Proposal</h3>
-              <p className="text-red-600 text-sm">{error}</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {error && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-xl mx-auto mb-8 px-5 py-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
+            <span className="text-red-400 mt-0.5 shrink-0">✕</span>
+            <div>
+              <p className="font-bold text-red-700 text-sm mb-1">Could not generate proposal</p>
+              <p className="text-red-600 text-xs leading-relaxed">{error}</p>
+            </div>
+          </motion.div>
+        )}
 
-        {/* Results */}
+        {/* Result */}
         <AnimatePresence>
           {result && !loading && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-5">
 
-              {/* Business Intelligence Card */}
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 md:p-8 mb-6">
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-6">
+              {/* Report Header */}
+              <div className="bg-gray-900 text-white rounded-2xl p-6 shadow-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Business Detected</p>
-                    <h2 className="text-2xl font-black text-gray-900">{result.businessName}</h2>
-                    <p className="text-sm text-gray-500 mt-0.5">{result.industry}</p>
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
+                      Strategy Report · Budget: {formatRand(result.totalMonthlyBudget)} / Month
+                    </p>
+                    <h2 className="text-2xl font-black text-white">{result.businessName} — Strategy Plan</h2>
+                    <p className="text-gray-400 text-sm mt-1 max-w-lg">
+                      High-conversion Google Ads blueprint for {result.businessName}. This plan covers{" "}
+                      {result.servicesDetected.slice(0, 3).join(", ")}{result.servicesDetected.length > 3 ? ", and more" : ""}.
+                    </p>
                   </div>
-                  <button
-                    onClick={() => { setInputUrl(""); setResult(null); setUnlocked(false); }}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors shrink-0"
-                  >
-                    <RefreshCw size={14} /> New Website
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="flex items-start gap-3">
-                    <MapPin size={16} className="text-gray-400 mt-0.5 shrink-0" />
-                    <div>
-                      <p className="text-xs text-gray-400 mb-0.5">Location</p>
-                      <p className="text-sm font-semibold text-gray-900">{result.location}</p>
-                    </div>
-                  </div>
-                  {result.phone && (
-                    <div className="flex items-start gap-3">
-                      <Phone size={16} className="text-gray-400 mt-0.5 shrink-0" />
-                      <div>
-                        <p className="text-xs text-gray-400 mb-0.5">Phone</p>
-                        <p className="text-sm font-semibold text-gray-900">{result.phone}</p>
-                      </div>
-                    </div>
-                  )}
-                  <div className="flex items-start gap-3">
-                    <BarChart3 size={16} className="text-gray-400 mt-0.5 shrink-0" />
-                    <div>
-                      <p className="text-xs text-gray-400 mb-0.5">Rec. Budget</p>
-                      <p className="text-sm font-semibold text-emerald-600">{formatRand(result.totalMonthlyBudget)}/mo</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <TrendingUp size={16} className="text-gray-400 mt-0.5 shrink-0" />
-                    <div>
-                      <p className="text-xs text-gray-400 mb-0.5">Est. CPC</p>
-                      <p className="text-sm font-semibold text-gray-900">R{result.expectedCPC.min}–R{result.expectedCPC.max}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Detected Services */}
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">
-                    Services / Products Detected ({result.servicesDetected.length})
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {result.servicesDetected.map((svc, i) => (
-                      <span key={i} className="px-3 py-1.5 rounded-full text-sm font-semibold border"
-                        style={{ background: "hsl(198 69% 52% / 0.08)", color: PRIMARY, borderColor: "hsl(198 69% 52% / 0.25)" }}>
-                        {svc}
-                      </span>
-                    ))}
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={() => { setInputUrl(""); setResult(null); setUnlocked(false); }}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs font-medium transition-colors"
+                    >
+                      <RefreshCw size={12} /> New
+                    </button>
+                    {unlocked && (
+                      <button
+                        onClick={() => downloadProposal(result)}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-white transition-colors"
+                        style={{ background: PRIMARY }}
+                      >
+                        <Download size={12} /> Download
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* KPI Preview */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+              {/* Market Intelligence */}
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
+                  <BarChart3 size={16} className="text-gray-400" />
+                  <h3 className="font-black text-sm text-gray-900">Market Intelligence</h3>
+                  <span className="text-xs text-gray-400 ml-1">— Estimated monthly search volumes for your services</span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th className="text-left px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100">Category</th>
+                        <th className="text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100">Est. Monthly Searches</th>
+                        <th className="text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100">Competition</th>
+                        <th className="text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 border-b border-gray-100">Avg. CPC</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {marketData.map((row, i) => (
+                        <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                          <td className="px-5 py-3 font-medium text-gray-900">{row.category}</td>
+                          <td className="px-4 py-3 text-gray-600">{row.volume.toLocaleString()}</td>
+                          <td className="px-4 py-3">
+                            <span className={cn("px-2 py-0.5 rounded text-xs font-bold border", getCompetitionColor(row.competition))}>
+                              {row.competition}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 font-semibold text-gray-900">{row.cpc}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* KPI Cards */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { label: "Monthly Budget", value: formatRand(result.totalMonthlyBudget), icon: DollarSign, color: "text-emerald-600" },
-                  { label: "Est. Monthly Clicks", value: `${result.expectedMonthlyClicks.min}–${result.expectedMonthlyClicks.max}`, icon: MousePointerClick, color: "text-blue-600" },
-                  { label: "Cost Per Click", value: `R${result.expectedCPC.min}–R${result.expectedCPC.max}`, icon: TrendingUp, color: "text-purple-600" },
-                  { label: "Campaigns", value: result.campaigns.length.toString(), icon: Megaphone, color: "text-amber-600" },
-                ].map((stat, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
-                    className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
-                    <stat.icon size={18} className={cn("mx-auto mb-2", stat.color)} />
-                    <p className={cn("text-xl font-black", stat.color)}>{stat.value}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{stat.label}</p>
-                  </motion.div>
+                  { icon: DollarSign, label: "Monthly Budget", value: formatRand(result.totalMonthlyBudget), sub: "Recommended spend" },
+                  { icon: Target, label: "Avg. CPC", value: `R${result.expectedCPC.min}–R${result.expectedCPC.max}`, sub: "Cost per click" },
+                  { icon: MousePointerClick, label: "Est. Clicks", value: `${result.expectedMonthlyClicks.min}–${result.expectedMonthlyClicks.max}`, sub: "Monthly visitors" },
+                  { icon: Users, label: "Est. Conversions", value: `~${estConversions}`, sub: "~6.2% conv. rate" },
+                ].map(({ icon: Icon, label, value, sub }) => (
+                  <div key={label} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 text-center">
+                    <div className="w-9 h-9 rounded-xl mx-auto mb-3 flex items-center justify-center" style={{ background: "hsl(198 69% 52% / 0.12)" }}>
+                      <Icon size={16} style={{ color: PRIMARY }} />
+                    </div>
+                    <p className="text-2xl font-black text-gray-900 mb-0.5">{value}</p>
+                    <p className="text-xs font-bold text-gray-700 mb-0.5">{label}</p>
+                    <p className="text-xs text-gray-400">{sub}</p>
+                  </div>
                 ))}
               </div>
 
-              {/* Campaign Structure */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-black text-gray-900">Campaign Structure</h3>
-                  {!unlocked && (
-                    <span className="text-xs text-gray-400 flex items-center gap-1">
-                      <Lock size={12} /> {lockedCampaigns} campaign{lockedCampaigns !== 1 ? "s" : ""} locked
-                    </span>
-                  )}
+              {/* Ad Copy Guide */}
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Lightbulb size={16} className="text-amber-600" />
+                  <h4 className="font-black text-sm text-amber-900">Guide: Effective Ad Copy</h4>
                 </div>
-                <div className="space-y-3">
-                  {result.campaigns.map((c, i) => (
-                    <CampaignCard key={i} campaign={c} index={i} unlocked={unlocked} />
+                <div className="grid sm:grid-cols-3 gap-3">
+                  {[
+                    { n: "1", title: "Specificity", desc: "Match your headlines directly to the keywords in each ad group." },
+                    { n: "2", title: "Speed", desc: `Highlight fast turnaround or same-day availability.` },
+                    { n: "3", title: "Credibility", desc: `Emphasise "${result.businessName}" by name to build brand trust.` },
+                  ].map(tip => (
+                    <div key={tip.n} className="flex items-start gap-3">
+                      <span className="w-6 h-6 rounded-full bg-amber-200 text-amber-800 font-black text-xs flex items-center justify-center shrink-0 mt-0.5">{tip.n}</span>
+                      <div>
+                        <p className="font-bold text-xs text-amber-900">{tip.title}</p>
+                        <p className="text-xs text-amber-700 leading-relaxed mt-0.5">{tip.desc}</p>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
 
-              {/* Negative Keywords Preview */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                    <XCircle size={16} className="text-red-400" />
-                    Negative Keywords
-                  </h3>
-                  {!unlocked && <Lock size={13} className="text-gray-300" />}
-                </div>
-                {unlocked ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {result.negativeKeywords.map((k, i) => (
-                      <span key={i} className="px-2.5 py-1 text-xs bg-red-50 text-red-600 rounded-full border border-red-100 font-medium">−{k}</span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-400">{result.negativeKeywords.slice(0, 4).join(", ")} <span className="italic">+{result.negativeKeywords.length - 4} more in full proposal…</span></p>
-                )}
+              {/* Campaigns */}
+              <div className="space-y-3">
+                {result.campaigns.map((campaign, idx) => (
+                  <CampaignSection key={idx} campaign={campaign} index={idx} unlocked={unlocked} result={result} />
+                ))}
               </div>
 
-              {/* Unlock / Download CTA */}
-              {!unlocked ? (
+              {/* Negative Keywords (unlocked only) */}
+              {unlocked && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+                  <h4 className="font-black text-sm text-gray-900 mb-3">Negative Keywords — Exclusions ({result.negativeKeywords.length})</h4>
+                  <div className="flex flex-wrap gap-1.5">
+                    {result.negativeKeywords.map((kw, i) => (
+                      <span key={i} className="px-2.5 py-1 text-xs bg-red-50 text-red-600 rounded border border-red-100 font-medium">−{kw}</span>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Unlock Section */}
+              {!unlocked && (
                 <motion.div
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="relative rounded-3xl overflow-hidden border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6 md:p-8 mb-6"
+                  className="bg-white rounded-2xl border-2 border-dashed shadow-sm overflow-hidden"
+                  style={{ borderColor: "hsl(198 69% 52% / 0.4)" }}
                 >
-                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Lock size={18} style={{ color: ACCENT }} />
-                        <span className="font-bold text-sm" style={{ color: ACCENT }}>Full Proposal — R500</span>
-                      </div>
-                      <h3 className="text-xl font-black text-gray-900 mb-2">Unlock the Complete Google Ads Strategy</h3>
-                      <ul className="space-y-1.5 text-sm text-gray-600">
-                        {[
-                          `All ${result.campaigns.length} campaigns with full campaign settings`,
-                          `${result.campaigns.reduce((s, c) => s + c.adGroups.reduce((sum, ag) => sum + ag.keywords.length, 0), 0)}+ keywords across all ad groups`,
-                          `${result.campaigns.reduce((s, c) => s + c.adGroups.length, 0) * 15} headlines + ${result.campaigns.reduce((s, c) => s + c.adGroups.length, 0) * 4} descriptions`,
-                          `${result.negativeKeywords.length} negative keywords to save budget`,
-                          "Downloadable HTML report (print to PDF)",
-                        ].map((item, i) => (
-                          <li key={i} className="flex items-center gap-2">
-                            <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
+                  <div className="px-6 py-8 text-center">
+                    <div className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: "hsl(198 69% 52% / 0.12)" }}>
+                      <Lock size={22} style={{ color: PRIMARY }} />
                     </div>
-                    <div className="flex flex-col gap-3 shrink-0">
+                    <h3 className="font-black text-xl text-gray-900 mb-2">
+                      Unlock {result.campaigns.length - 1} More Campaigns + Full Ad Copy
+                    </h3>
+                    <p className="text-gray-500 text-sm max-w-md mx-auto mb-6">
+                      Get the Brand Protection & Remarketing campaigns, all 15 headlines, 4 descriptions per ad group, full keyword lists, negative keywords, and a downloadable proposal for <strong>R500</strong>.
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
                       <button
                         onClick={openWhatsApp}
-                        className="flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-white text-sm bg-[#25D366] hover:bg-[#20bd5a] transition-colors"
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5 shadow-md bg-[#25d366] hover:bg-[#20bc5a]"
                       >
-                        <WhatsAppIcon size={18} /> Pay R500 via WhatsApp
+                        <WhatsAppIcon size={16} /> Pay via WhatsApp — R500
                       </button>
                       <button
-                        onClick={() => setUnlockOpen(true)}
-                        className="flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm border border-gray-300 bg-white hover:bg-gray-50 transition-colors text-gray-700"
+                        onClick={() => setUnlockOpen(v => !v)}
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 border border-gray-200 text-gray-700 hover:border-gray-300 bg-white"
                       >
-                        <Unlock size={15} /> Enter Unlock Code
+                        <Unlock size={14} /> Enter Unlock Code
                       </button>
                     </div>
-                  </div>
 
-                  {/* Unlock code input */}
-                  <AnimatePresence>
-                    {unlockOpen && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
-                        className="mt-6 pt-6 border-t border-amber-200">
-                        <div className="flex gap-3 flex-col sm:flex-row max-w-sm">
-                          <input
-                            type="text"
-                            value={codeInput}
-                            onChange={e => { setCodeInput(e.target.value); setCodeError(""); }}
-                            placeholder="Enter unlock code"
-                            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-mono text-gray-900 focus:outline-none focus:ring-2"
-                            style={{ "--tw-ring-color": ACCENT } as React.CSSProperties}
-                            onKeyDown={e => e.key === "Enter" && tryUnlock()}
-                          />
-                          <button onClick={tryUnlock} className="px-5 py-3 rounded-xl font-bold text-white text-sm transition-colors"
-                            style={{ background: ACCENT }}>
-                            Unlock
-                          </button>
-                        </div>
-                        {codeError && <p className="text-red-600 text-xs mt-2">{codeError}</p>}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              ) : (
-                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                  className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl bg-emerald-50 border border-emerald-200 p-5 mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                      <Unlock size={18} className="text-emerald-600" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-emerald-800">Full Proposal Unlocked</p>
-                      <p className="text-xs text-emerald-600">All campaigns, keywords and ad copy are now visible below</p>
-                    </div>
+                    <AnimatePresence>
+                      {unlockOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="max-w-sm mx-auto pt-2">
+                            <div className="flex gap-2">
+                              <input
+                                ref={codeRef}
+                                type="text"
+                                value={codeInput}
+                                onChange={e => { setCodeInput(e.target.value); setCodeError(""); }}
+                                onKeyDown={e => e.key === "Enter" && tryUnlock()}
+                                placeholder="Enter your unlock code"
+                                className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 text-gray-900 text-sm placeholder-gray-400"
+                                style={{ "--tw-ring-color": PRIMARY } as React.CSSProperties}
+                              />
+                              <button
+                                onClick={tryUnlock}
+                                className="px-5 py-3 rounded-xl font-bold text-white text-sm transition-all"
+                                style={{ background: PRIMARY }}
+                              >
+                                Unlock
+                              </button>
+                            </div>
+                            {codeError && <p className="text-red-500 text-xs mt-2 text-left">{codeError}</p>}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
+                </motion.div>
+              )}
+
+              {/* Unlocked download CTA */}
+              {unlocked && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="rounded-2xl p-6 text-white text-center shadow-lg"
+                  style={{ background: "linear-gradient(135deg, hsl(198 69% 42%), hsl(198 69% 52%))" }}
+                >
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Unlock size={20} />
+                    <h3 className="font-black text-lg">Full Proposal Unlocked!</h3>
+                  </div>
+                  <p className="text-white/80 text-sm mb-4">Download your complete Google Ads proposal as an HTML file — print or share as PDF.</p>
                   <button
                     onClick={() => downloadProposal(result)}
-                    className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-white text-sm bg-emerald-600 hover:bg-emerald-700 transition-colors shrink-0"
+                    className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-white font-bold text-sm transition-all hover:-translate-y-0.5 shadow-md"
+                    style={{ color: PRIMARY }}
                   >
-                    <Download size={15} /> Download Proposal
+                    <Download size={15} /> Download Full Proposal
                   </button>
                 </motion.div>
               )}
