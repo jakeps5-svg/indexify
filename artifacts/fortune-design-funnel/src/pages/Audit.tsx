@@ -110,7 +110,7 @@ function GradeBadge({ score, size = "md" }: { score: number; size?: "sm" | "md" 
   );
 }
 
-function SectionCard({ section, index }: { section: AuditSection; index: number }) {
+function SectionCard({ section, index, backlinkRecs }: { section: AuditSection; index: number; backlinkRecs?: string[] }) {
   const [open, setOpen] = useState(false);
   const Icon = sectionIcons[section.title] ?? Globe;
   const g = scoreToGrade(section.score);
@@ -199,6 +199,33 @@ function SectionCard({ section, index }: { section: AuditSection; index: number 
                   </div>
                 );
               })}
+
+              {backlinkRecs && backlinkRecs.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-white/5">
+                  <p className="text-xs font-bold text-primary uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                    <TrendingUp size={12} /> Backlink Building Strategy
+                  </p>
+                  <ol className="space-y-3">
+                    {backlinkRecs.map((rec, i) => {
+                      const clean = rec.replace("[Backlinks] ", "");
+                      const colonIdx = clean.indexOf(": ");
+                      const label = colonIdx !== -1 ? clean.slice(0, colonIdx) : clean;
+                      const body  = colonIdx !== -1 ? clean.slice(colonIdx + 2) : "";
+                      return (
+                        <li key={i} className="flex items-start gap-3 text-sm">
+                          <span className="shrink-0 w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center text-[10px] font-black mt-0.5">
+                            {i + 1}
+                          </span>
+                          <span className="text-muted-foreground leading-relaxed">
+                            <span className="text-foreground font-semibold">{label}</span>
+                            {body && <span>: {body}</span>}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
@@ -656,7 +683,7 @@ export default function AuditPage() {
             )}
 
             {/* ── Recommendations ── */}
-            {(criticalRecs.length > 0 || improveRecs.length > 0 || backlinkRecs.length > 0) && (
+            {(criticalRecs.length > 0 || improveRecs.length > 0) && (
               <div className="bg-card border border-white/5 rounded-2xl overflow-hidden">
                 <div className="px-6 pt-5 pb-4 border-b border-white/5">
                   <h3 className="font-bold text-base flex items-center gap-2">
@@ -709,27 +736,6 @@ export default function AuditPage() {
                     </div>
                   )}
 
-                  {/* Backlinks */}
-                  {backlinkRecs.length > 0 && (
-                    <div className="px-6 py-4">
-                      <p className="text-xs font-bold text-primary uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                        <TrendingUp size={12} /> Backlink Building Strategy
-                      </p>
-                      <ol className="space-y-2.5">
-                        {backlinkRecs.map((rec, i) => {
-                          const [label, ...rest] = rec.replace("[Backlinks] ", "").split(": ");
-                          return (
-                            <li key={i} className="flex items-start gap-3 text-sm">
-                              <span className="shrink-0 w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center text-[10px] font-black mt-0.5">{i + 1}</span>
-                              <span className="text-muted-foreground leading-relaxed">
-                                <span className="text-foreground font-semibold">{label}: </span>{rest.join(": ")}
-                              </span>
-                            </li>
-                          );
-                        })}
-                      </ol>
-                    </div>
-                  )}
                 </div>
               </div>
             )}
@@ -741,7 +747,12 @@ export default function AuditPage() {
               </h3>
               <div className="space-y-3">
                 {result.sections.map((section, i) => (
-                  <SectionCard key={i} section={section} index={i} />
+                  <SectionCard
+                    key={i}
+                    section={section}
+                    index={i}
+                    backlinkRecs={section.title === "Backlinks & Authority" ? backlinkRecs : undefined}
+                  />
                 ))}
               </div>
             </div>
