@@ -246,9 +246,9 @@ export default function Home() {
                 role: "Luxury Villa Rentals"
               },
               {
-                text: "We approached Fortune Design to handle our SEO and Google Ads and the results have been outstanding. Our online leads increased by over 180% in four months and we are now consistently appearing at the top of Google for our key search terms. Highly professional team.",
-                author: "Alltech Rental L.L.C",
-                role: "Equipment Rental"
+                text: "Fortune Design's SEO work has completely changed our online presence. We are now ranking on page 1 for our most important search terms and the leads coming through Google have grown steadily every month. Very happy with the results and the service.",
+                author: "Michael",
+                role: "Captuna Charters"
               },
               {
                 text: "Fortune Design ran our Google Ads campaign and the ROI was exceptional. From the very first month we started receiving high-quality leads. They handled everything professionally and the reporting was always clear and transparent. Highly recommend.",
