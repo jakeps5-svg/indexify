@@ -236,12 +236,78 @@ export async function sendContactEmail(opts: {
 </body>
 </html>`;
 
+  // Internal notification to the team
   await sendEmail({
     to: [{ email: SENDER_EMAIL }],
     cc: [{ email: CC_EMAIL }],
     replyTo: { email: opts.email, name: opts.name },
     subject,
     html,
+  });
+
+  // Client confirmation email
+  const confirmHtml = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);max-width:600px;width:100%;">
+
+        <tr>
+          <td style="background:linear-gradient(135deg,#0ea5c8,#0284a7);padding:36px 40px;text-align:center;">
+            <div style="font-size:26px;font-weight:900;letter-spacing:-0.5px;background:linear-gradient(90deg,#e040fb,#7c4dff,#00b8d9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">indexify.</div>
+            <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px;">indexify.co.za</div>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:40px 40px 32px;">
+            <h1 style="margin:0 0 8px;font-size:24px;font-weight:800;color:#0f172a;">We received your message!</h1>
+            <p style="margin:0 0 24px;color:#64748b;font-size:15px;line-height:1.6;">
+              Hi ${opts.name}, thanks for reaching out. We've received your enquiry and will get back to you within <strong>1 business hour</strong>.
+            </p>
+
+            <div style="background:#f0f9ff;border:2px solid #bae6fd;border-radius:12px;padding:20px;margin-bottom:28px;">
+              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#0ea5c8;margin-bottom:10px;">Your message summary</div>
+              <p style="margin:0 0 8px;font-size:13px;color:#475569;"><strong>Subject:</strong> ${opts.reason ?? "General Enquiry"}</p>
+              <p style="margin:0;font-size:13px;color:#475569;line-height:1.6;">${opts.message.replace(/\n/g, "<br>")}</p>
+            </div>
+
+            <p style="margin:0 0 16px;color:#64748b;font-size:14px;line-height:1.6;">
+              In the meantime, feel free to reach us directly:
+            </p>
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding-right:12px;">
+                  <a href="https://wa.me/27760597724" style="display:inline-block;padding:10px 20px;background:#25D366;color:#fff;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;">WhatsApp Us</a>
+                </td>
+                <td>
+                  <a href="mailto:support@indexify.co.za" style="display:inline-block;padding:10px 20px;background:#0ea5c8;color:#fff;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;">Email Us</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="background:#f1f5f9;padding:20px 40px;text-align:center;border-top:1px solid #e2e8f0;">
+            <p style="margin:0;font-size:12px;color:#94a3b8;">Indexify (Pty) Ltd &middot; indexify.co.za</p>
+            <p style="margin:4px 0 0;font-size:12px;color:#94a3b8;">Powered by Fortune Design &middot; fortunedesign.co.za</p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  await sendEmail({
+    to: [{ email: opts.email, name: opts.name }],
+    subject: `We received your message — Indexify`,
+    html: confirmHtml,
   });
 }
 
