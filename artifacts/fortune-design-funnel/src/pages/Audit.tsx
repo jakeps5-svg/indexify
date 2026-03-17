@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, CheckCircle2, XCircle, AlertTriangle, ChevronDown,
   ExternalLink, Zap, Globe, Image, Link2, Share2, ArrowLeft,
-  Clock, FileText, MessageCircle
+  Clock, FileText, MessageCircle, TrendingUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLink } from "wouter";
@@ -41,6 +41,7 @@ const sectionIcons: Record<string, typeof Search> = {
   "Technical SEO": Zap,
   "Images": Image,
   "Links": Link2,
+  "Backlinks & Authority": TrendingUp,
   "Social & Structured Data": Share2,
 };
 
