@@ -4,6 +4,20 @@
 
 pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
 
+## Key Routes (fortune-design-funnel)
+
+| Route | Page |
+|---|---|
+| `/` | Home |
+| `/audit` | Free SEO Audit tool (25+ checks, screenshots, backlinks) |
+| `/serp-checker` | Google SERP Rank Checker (domain + keyword → position in top 100) |
+| `/services/seo` | SEO service page |
+| `/services/google-ads` | Google Ads service page |
+| `/pricing` | Pricing packages |
+| `/contact` | Contact form (Brevo email) |
+| `/blog` | Blog listing |
+| `/checkout` | Yoco payment checkout |
+
 ## Stack
 
 - **Monorepo tool**: pnpm workspaces

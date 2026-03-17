@@ -5,6 +5,7 @@ import auditRouter from "./audit";
 import adsAuditRouter from "./adsAudit";
 import checkoutRouter from "./checkout";
 import contactRouter from "./contact";
+import serpRouter from "./serp";
 
 const router: IRouter = Router();
 
@@ -14,5 +15,6 @@ router.use(auditRouter);
 router.use(adsAuditRouter);
 router.use(checkoutRouter);
 router.use(contactRouter);
+router.use(serpRouter);
 
 export default router;

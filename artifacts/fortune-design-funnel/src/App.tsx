@@ -17,6 +17,7 @@ import PrivacyPolicyPage from "@/pages/PrivacyPolicy";
 import TermsOfUsePage from "@/pages/TermsOfUse";
 import BlogPage from "@/pages/Blog";
 import BlogPostPage from "@/pages/BlogPost";
+import SerpCheckerPage from "@/pages/SerpChecker";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ function Router() {
       <Route path="/terms-of-use" component={TermsOfUsePage} />
       <Route path="/blog" component={BlogPage} />
       <Route path="/blog/:slug" component={BlogPostPage} />
+      <Route path="/serp-checker" component={SerpCheckerPage} />
       <Route component={NotFound} />
     </Switch>
   );
