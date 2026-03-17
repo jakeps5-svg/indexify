@@ -133,19 +133,19 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="mt-10 flex items-center justify-center gap-2"
+            className="mt-10 flex items-center justify-center gap-3"
           >
-            <span className="text-xs text-gray-400 uppercase tracking-widest font-medium">Powered by</span>
+            <span className="text-base text-gray-500 uppercase tracking-widest font-semibold">Powered by</span>
             <a
               href="https://fortunedesign.co.za"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 opacity-60 hover:opacity-100 transition-opacity duration-300"
+              className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity duration-300"
             >
               <img
                 src={`${import.meta.env.BASE_URL}images/fortune-design-logo.png`}
                 alt="Fortune Design"
-                className="h-5 w-auto object-contain"
+                className="h-14 w-auto object-contain"
               />
             </a>
           </motion.div>
