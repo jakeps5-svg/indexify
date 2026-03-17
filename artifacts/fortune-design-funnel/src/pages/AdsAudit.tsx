@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Lock, Unlock, Download, Target, Zap,
@@ -9,6 +9,7 @@ import {
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
+import { useYocoCheckout } from "@/hooks/useYocoCheckout";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
 const WA_NUMBER = "27760597724";
@@ -459,6 +460,26 @@ export default function AdsAuditPage() {
   const [unlocked, setUnlocked] = useState(false);
   const [unlockOpen, setUnlockOpen] = useState(false);
   const codeRef = useRef<HTMLInputElement>(null);
+  const { startCheckout: startYoco, loading: yocoLoading, error: yocoError } = useYocoCheckout();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paidRef = params.get("paid");
+    if (paidRef) {
+      const saved = localStorage.getItem(`fortune_proposal_${paidRef}`);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved) as ProposalResult;
+          setResult(parsed);
+          setUnlocked(true);
+          const url = new URL(window.location.href);
+          url.searchParams.delete("paid");
+          window.history.replaceState({}, "", url.toString());
+        } catch {
+        }
+      }
+    }
+  }, []);
 
   async function runProposal(e: React.FormEvent) {
     e.preventDefault();
@@ -500,6 +521,20 @@ export default function AdsAuditPage() {
     const biz = result?.businessName ?? domain;
     const msg = encodeURIComponent(`Hi Fortune Design! I'd like to receive my full Google Ads Proposal for *${biz}* (${domain}). Please send payment details for R500.`);
     window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, "_blank");
+  }
+
+  function startProposalPayment() {
+    if (!result) return;
+    const ref = crypto.randomUUID();
+    localStorage.setItem(`fortune_proposal_${ref}`, JSON.stringify(result));
+    const domain = (() => { try { return new URL(result.finalUrl).hostname; } catch { return result.finalUrl; } })();
+    void startYoco({
+      service: "Google Ads Proposal Full Download",
+      amountInCents: 50000,
+      type: "proposal",
+      ref,
+      metadata: { domain, businessName: result.businessName },
+    });
   }
 
   const domain = result ? (() => { try { return new URL(result.finalUrl).hostname.replace(/^www\./, ""); } catch { return result.finalUrl; } })() : "";
@@ -807,20 +842,34 @@ export default function AdsAuditPage() {
                     <p className="text-gray-500 text-sm max-w-md mx-auto mb-6">
                       Get the Brand Protection & Remarketing campaigns, all 15 headlines, 4 descriptions per ad group, full keyword lists, negative keywords, and a downloadable proposal for <strong>R500</strong>.
                     </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-3">
+                      <button
+                        onClick={startProposalPayment}
+                        disabled={yocoLoading}
+                        className="flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                        style={{ background: "linear-gradient(135deg, hsl(198 69% 42%), hsl(198 69% 58%))", boxShadow: "0 4px 20px hsl(198 69% 52% / 0.4)" }}
+                      >
+                        {yocoLoading
+                          ? <><Loader2 size={16} className="animate-spin" /> Redirecting to Yoco...</>
+                          : <><svg width="16" height="16" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="20" fill="white"/><text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="18" fontWeight="bold" fill="#0099cc">Y</text></svg> Pay R500 with Yoco</>
+                        }
+                      </button>
                       <button
                         onClick={openWhatsApp}
-                        className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5 shadow-md bg-[#25d366] hover:bg-[#20bc5a]"
+                        className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm text-white transition-all hover:-translate-y-0.5 shadow-md bg-[#25d366] hover:bg-[#20bc5a]"
                       >
-                        <WhatsAppIcon size={16} /> Pay via WhatsApp — R500
+                        <WhatsAppIcon size={15} /> Pay via WhatsApp
                       </button>
                       <button
                         onClick={() => setUnlockOpen(v => !v)}
-                        className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 border border-gray-200 text-gray-700 hover:border-gray-300 bg-white"
+                        className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all hover:-translate-y-0.5 border border-gray-200 text-gray-600 hover:border-gray-300 bg-white"
                       >
-                        <Unlock size={14} /> Enter Unlock Code
+                        <Unlock size={13} /> Enter Code
                       </button>
                     </div>
+                    {yocoError && (
+                      <p className="text-red-500 text-xs mb-3">Payment error: {yocoError}</p>
+                    )}
 
                     <AnimatePresence>
                       {unlockOpen && (

@@ -1,10 +1,34 @@
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle2, Target, TrendingUp, Search, MousePointerClick, BarChart3, Users, Star, ChevronDown, MessageCircle } from "lucide-react";
+import { ArrowRight, CheckCircle2, Target, TrendingUp, Search, MousePointerClick, BarChart3, Users, Star, ChevronDown, MessageCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppModal } from "@/components/WhatsAppModal";
 import { cn } from "@/lib/utils";
+import { useYocoCheckout } from "@/hooks/useYocoCheckout";
+
+function YocoButton({ service, amountInCents, type, label, dark = false }: {
+  service: string; amountInCents: number; type: string; label: string; dark?: boolean;
+}) {
+  const { startCheckout, loading } = useYocoCheckout();
+  return (
+    <button
+      onClick={() => void startCheckout({ service, amountInCents, type })}
+      disabled={loading}
+      className={cn(
+        "w-full py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed",
+        dark
+          ? "bg-primary hover:bg-primary/90 text-white hover:shadow-primary/30"
+          : "bg-gray-900 hover:bg-gray-800 text-white hover:shadow-gray-900/20"
+      )}
+    >
+      {loading
+        ? <><Loader2 size={15} className="animate-spin" /> Redirecting...</>
+        : label
+      }
+    </button>
+  );
+}
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -350,7 +374,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <button onClick={() => scrollTo("contact")} className="w-full py-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 font-semibold transition-colors">Choose Starter</button>
+              <YocoButton service="Growth Starter SEO Package" amountInCents={550000} type="starter" label="Get Started — R5,500/mo" />
             </motion.div>
 
             {/* Premium (Highlighted) — kept dark for visual contrast */}
@@ -374,7 +398,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <button onClick={() => scrollTo("contact")} className="w-full py-3 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold transition-all shadow-lg hover:shadow-xl hover:shadow-primary/30">Choose Leader</button>
+              <YocoButton service="Market Leader Digital Marketing Package" amountInCents={1250000} type="leader" label="Choose Leader — R12,500/mo" dark />
             </motion.div>
 
             {/* Enterprise */}
