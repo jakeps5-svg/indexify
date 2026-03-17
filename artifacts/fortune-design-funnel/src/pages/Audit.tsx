@@ -457,7 +457,7 @@ export default function AuditPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] text-muted-foreground">
-                      {result.topBacklinks.filter(b => b.verified).length} verified · {result.topBacklinks.filter(b => b.note).length} recommended
+                      {result.topBacklinks.filter(b => b.verified).length} verified listings found
                     </span>
                   </div>
                 </div>

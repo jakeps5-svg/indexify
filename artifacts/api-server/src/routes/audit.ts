@@ -6,24 +6,19 @@ const router: IRouter = Router();
 // ── Known high-authority candidate sources to check for backlinks ─────────────
 // DR values are industry-standard approximations (publicly available from Ahrefs/Moz studies)
 const CANDIDATE_SOURCES: { domain: string; dr: number; checkUrl: (target: string) => string; label: string }[] = [
-  { domain: "facebook.com",           dr: 100, label: "Facebook",           checkUrl: t => `https://www.facebook.com/search/pages/?q=${encodeURIComponent(t)}` },
-  { domain: "linkedin.com",           dr: 98,  label: "LinkedIn",           checkUrl: t => `https://www.linkedin.com/search/results/companies/?keywords=${encodeURIComponent(t)}` },
-  { domain: "instagram.com",          dr: 93,  label: "Instagram",          checkUrl: t => `https://www.instagram.com/web/search/topsearch/?query=${encodeURIComponent(t)}` },
-  { domain: "twitter.com",            dr: 90,  label: "Twitter/X",          checkUrl: t => `https://twitter.com/search?q=${encodeURIComponent(t)}&f=users` },
-  { domain: "youtube.com",            dr: 100, label: "YouTube",            checkUrl: t => `https://www.youtube.com/results?search_query=${encodeURIComponent(t)}` },
+  { domain: "trustpilot.com",         dr: 91,  label: "Trustpilot",         checkUrl: t => `https://www.trustpilot.com/search?query=${encodeURIComponent(t)}` },
+  { domain: "google.com",             dr: 100, label: "Google Business",    checkUrl: t => `https://www.google.com/search?q=${encodeURIComponent(t)}+site:business.google.com` },
   { domain: "clutch.co",              dr: 79,  label: "Clutch",             checkUrl: t => `https://clutch.co/agencies/digital-marketing?query=${encodeURIComponent(t)}` },
+  { domain: "kompass.com",            dr: 68,  label: "Kompass",            checkUrl: t => `https://za.kompass.com/en/s/?q=${encodeURIComponent(t)}` },
   { domain: "bizcommunity.com",       dr: 55,  label: "Bizcommunity",       checkUrl: t => `https://www.bizcommunity.com/Search.aspx?q=${encodeURIComponent(t)}` },
+  { domain: "brownbook.net",          dr: 47,  label: "Brownbook",          checkUrl: t => `https://www.brownbook.net/businesses/?search=${encodeURIComponent(t)}&near=South+Africa` },
+  { domain: "storeboard.com",         dr: 44,  label: "Storeboard",         checkUrl: t => `https://www.storeboard.com/search?q=${encodeURIComponent(t)}` },
   { domain: "yellowpages.co.za",      dr: 42,  label: "Yellow Pages SA",    checkUrl: t => `https://www.yellowpages.co.za/search?q=${encodeURIComponent(t)}` },
   { domain: "hotfrog.co.za",          dr: 38,  label: "Hotfrog SA",         checkUrl: t => `https://www.hotfrog.co.za/search/page/1/${encodeURIComponent(t)}` },
   { domain: "brabys.com",             dr: 36,  label: "Brabys",             checkUrl: t => `https://www.brabys.com/search.asp?Search=${encodeURIComponent(t)}` },
   { domain: "yalwa.co.za",            dr: 33,  label: "Yalwa SA",           checkUrl: t => `https://yalwa.co.za/Search/Results/?q=${encodeURIComponent(t)}` },
-  { domain: "kompass.com",            dr: 68,  label: "Kompass",            checkUrl: t => `https://za.kompass.com/en/s/?q=${encodeURIComponent(t)}` },
   { domain: "cylex-sa.co.za",         dr: 30,  label: "Cylex SA",           checkUrl: t => `https://www.cylex-sa.co.za/${encodeURIComponent(t)}.html` },
   { domain: "businessdirectory.co.za",dr: 28,  label: "SA Business Dir",    checkUrl: t => `https://businessdirectory.co.za/search/?search=${encodeURIComponent(t)}` },
-  { domain: "brownbook.net",          dr: 47,  label: "Brownbook",          checkUrl: t => `https://www.brownbook.net/businesses/?search=${encodeURIComponent(t)}&near=South+Africa` },
-  { domain: "storeboard.com",         dr: 44,  label: "Storeboard",         checkUrl: t => `https://www.storeboard.com/search?q=${encodeURIComponent(t)}` },
-  { domain: "trustpilot.com",         dr: 91,  label: "Trustpilot",         checkUrl: t => `https://www.trustpilot.com/search?query=${encodeURIComponent(t)}` },
-  { domain: "google.com",             dr: 100, label: "Google Business",    checkUrl: t => `https://www.google.com/search?q=${encodeURIComponent(t)}+site:business.google.com` },
 ];
 
 interface BacklinkResult {
@@ -51,22 +46,12 @@ async function discoverBacklinks(targetDomain: string, targetUrl: string): Promi
           },
         });
         if (!res.ok) {
-          // Social networks/big platforms often block bots — we still show them with their known DR
-          // since any business should have profiles there
-          const alwaysInclude = ["facebook.com","linkedin.com","instagram.com","twitter.com","youtube.com","trustpilot.com","google.com"];
-          if (alwaysInclude.includes(source.domain)) {
-            return { domain: source.domain, dr: source.dr, label: source.label, checkUrl, verified: false, note: "Profile recommended" };
-          }
           return { domain: source.domain, dr: source.dr, label: source.label, checkUrl, verified: false };
         }
         const html = await res.text();
         const found = domainVariants.some(v => html.toLowerCase().includes(v.toLowerCase()));
         return { domain: source.domain, dr: source.dr, label: source.label, checkUrl, verified: found };
       } catch {
-        const alwaysInclude = ["facebook.com","linkedin.com","instagram.com","twitter.com","youtube.com"];
-        if (alwaysInclude.includes(source.domain)) {
-          return { domain: source.domain, dr: source.dr, label: source.label, checkUrl, verified: false, note: "Profile recommended" };
-        }
         return { domain: source.domain, dr: source.dr, label: source.label, checkUrl, verified: false };
       }
     })
@@ -75,8 +60,9 @@ async function discoverBacklinks(targetDomain: string, targetUrl: string): Promi
   return results
     .filter(r => r.status === "fulfilled")
     .map(r => (r as PromiseFulfilledResult<BacklinkResult>).value)
-    .filter(r => r.verified || r.note)
-    .sort((a, b) => b.dr - a.dr);
+    .filter(r => r.verified)
+    .sort((a, b) => b.dr - a.dr)
+    .slice(0, 10);
 }
 
 type CheckStatus = "pass" | "warn" | "fail";
