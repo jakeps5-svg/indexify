@@ -111,7 +111,7 @@ export default function PricingPage() {
               </div>
               <div>
                 <p className="font-bold text-gray-900">Not sure which package fits?</p>
-                <p className="text-sm text-gray-500">Get a free AI-generated Google Ads proposal for your website — takes 30 seconds.</p>
+                <p className="text-sm text-gray-500">Get a free generated Google Ads proposal for your website — takes 30 seconds.</p>
               </div>
             </div>
             <a
@@ -119,6 +119,29 @@ export default function PricingPage() {
               className="shrink-0 flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md shadow-primary/20"
             >
               Get Free Proposal <ArrowRight size={14} />
+            </a>
+          </motion.div>
+
+          {/* SEO Audit blob */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+            className="mt-4 rounded-2xl border-2 border-dashed border-accent/30 bg-violet-50/50 p-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
+                <Search size={20} className="text-accent" />
+              </div>
+              <div>
+                <p className="font-bold text-gray-900">Want to see how your website ranks?</p>
+                <p className="text-sm text-gray-500">Get a free generated SEO audit for your website — instant results, no sign-up needed.</p>
+              </div>
+            </div>
+            <a
+              href={`${BASE}/audit`}
+              className="shrink-0 flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-all shadow-md"
+              style={{ background: "hsl(259 100% 65%)", boxShadow: "0 4px 16px hsl(259 100% 65% / 0.25)" }}
+            >
+              Get Free SEO Audit <ArrowRight size={14} />
             </a>
           </motion.div>
         </div>
