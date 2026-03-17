@@ -133,8 +133,8 @@ function AdPreviewMock({ adGroup, domain, businessName }: {
   );
 }
 
-function AdGroupRow({ adGroup, domain, businessName, showPreview, estClicks }: {
-  adGroup: AdGroup; domain: string; businessName: string; showPreview: boolean; estClicks: number;
+function AdGroupRow({ adGroup, domain, businessName, showPreview, estClicks, unlocked }: {
+  adGroup: AdGroup; domain: string; businessName: string; showPreview: boolean; estClicks: number; unlocked: boolean;
 }) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -150,14 +150,42 @@ function AdGroupRow({ adGroup, domain, businessName, showPreview, estClicks }: {
       </div>
       <div className="px-5 py-4 space-y-4">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Keywords</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+            Keywords
+            <span className="ml-2 normal-case font-normal text-gray-400">
+              ({adGroup.keywords.length} total{!unlocked && adGroup.keywords.length > 5 ? ` · ${adGroup.keywords.length - 5} locked` : ""})
+            </span>
+          </p>
           <div className="flex flex-wrap gap-1.5">
-            {adGroup.keywords.map((kw, i) => (
-              <span key={i} className="px-2.5 py-1 text-xs bg-blue-50 text-blue-700 rounded border border-blue-100 font-medium">
-                {kw}
-              </span>
-            ))}
+            {adGroup.keywords.map((kw, i) => {
+              const visible = unlocked || i < 5;
+              return (
+                <span
+                  key={i}
+                  className="px-2.5 py-1 text-xs rounded border font-medium transition-all duration-300"
+                  style={visible
+                    ? { background: "#eff6ff", color: "#1d4ed8", borderColor: "#bfdbfe" }
+                    : {
+                        background: "#eff6ff",
+                        color: "#1d4ed8",
+                        borderColor: "#bfdbfe",
+                        filter: "blur(5px)",
+                        userSelect: "none",
+                        pointerEvents: "none",
+                        opacity: 0.7,
+                      }
+                  }
+                >
+                  {kw}
+                </span>
+              );
+            })}
           </div>
+          {!unlocked && adGroup.keywords.length > 5 && (
+            <p className="text-[10px] text-gray-400 mt-2 flex items-center gap-1">
+              <Lock size={9} /> Remaining keywords revealed with unlock code
+            </p>
+          )}
         </div>
         {showPreview
           ? <AdPreviewMock adGroup={adGroup} domain={domain} businessName={businessName} />
@@ -232,6 +260,7 @@ function CampaignSection({ campaign, index, unlocked, result }: {
                   businessName={result.businessName}
                   showPreview={unlocked || index === 0}
                   estClicks={clicksPerGroup}
+                  unlocked={unlocked}
                 />
               ))}
             </div>
