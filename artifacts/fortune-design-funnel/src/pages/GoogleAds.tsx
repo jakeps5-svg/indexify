@@ -161,7 +161,7 @@ export default function GoogleAdsPage() {
       </section>
 
       {/* CLIENT LOGOS BANNER */}
-      <section className="py-10 bg-gray-900 overflow-hidden">
+      <section className="py-14 bg-gray-900 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 text-center">
           <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Trusted by businesses across South Africa &amp; beyond</p>
         </div>
@@ -193,11 +193,11 @@ export default function GoogleAdsPage() {
               `${import.meta.env.BASE_URL}images/clients/output-onlinepngtools-11.png`,
               `${import.meta.env.BASE_URL}images/clients/output-onlinepngtools-5.png`,
             ].map((src, i) => (
-              <div key={i} className="flex items-center justify-center mx-8 shrink-0">
+              <div key={i} className="flex items-center justify-center mx-10 shrink-0">
                 <img
                   src={src}
                   alt="Client logo"
-                  className="h-12 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity duration-300"
+                  className="h-24 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
                 />
               </div>
             ))}
