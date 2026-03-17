@@ -1,10 +1,35 @@
 import { Router, type IRouter } from "express";
 import * as cheerio from "cheerio";
-import * as crypto from "crypto";
 
 const router: IRouter = Router();
 
-// ── INDUSTRY DETECTION ───────────────────────────────────────────────────────
+// ── COUNTRY CONFIG ────────────────────────────────────────────────────────────
+// cpcFactor: multiply SA ZAR base CPC by this to get local currency amount
+// Accounts for both exchange rate AND market competition premium
+const COUNTRY_CONFIG: Record<string, {
+  symbol: string;
+  cpcFactor: number;
+  budgetFactor: number;
+  defaultLocation: string;
+  cities: string[];
+}> = {
+  "South Africa":         { symbol: "R",    cpcFactor: 1,     budgetFactor: 1,    defaultLocation: "South Africa",   cities: ["Cape Town", "Johannesburg", "Durban", "Pretoria"] },
+  "United Kingdom":       { symbol: "£",    cpcFactor: 0.14,  budgetFactor: 0.14, defaultLocation: "United Kingdom", cities: ["London", "Manchester", "Birmingham", "Edinburgh"] },
+  "United States":        { symbol: "$",    cpcFactor: 0.17,  budgetFactor: 0.17, defaultLocation: "United States",  cities: ["New York", "Los Angeles", "Chicago", "Houston"] },
+  "Australia":            { symbol: "A$",   cpcFactor: 0.25,  budgetFactor: 0.25, defaultLocation: "Australia",      cities: ["Sydney", "Melbourne", "Brisbane", "Perth"] },
+  "United Arab Emirates": { symbol: "AED",  cpcFactor: 0.62,  budgetFactor: 0.62, defaultLocation: "UAE",            cities: ["Dubai", "Abu Dhabi", "Sharjah", "Ajman"] },
+  "Canada":               { symbol: "CA$",  cpcFactor: 0.15,  budgetFactor: 0.15, defaultLocation: "Canada",         cities: ["Toronto", "Vancouver", "Montreal", "Calgary"] },
+  "Germany":              { symbol: "€",    cpcFactor: 0.14,  budgetFactor: 0.14, defaultLocation: "Germany",        cities: ["Berlin", "Munich", "Hamburg", "Frankfurt"] },
+  "Netherlands":          { symbol: "€",    cpcFactor: 0.15,  budgetFactor: 0.15, defaultLocation: "Netherlands",    cities: ["Amsterdam", "Rotterdam", "The Hague", "Utrecht"] },
+  "New Zealand":          { symbol: "NZ$",  cpcFactor: 0.28,  budgetFactor: 0.28, defaultLocation: "New Zealand",    cities: ["Auckland", "Wellington", "Christchurch", "Hamilton"] },
+  "Kenya":                { symbol: "KSh",  cpcFactor: 2.3,   budgetFactor: 2.3,  defaultLocation: "Kenya",          cities: ["Nairobi", "Mombasa", "Kisumu", "Eldoret"] },
+  "Nigeria":              { symbol: "₦",    cpcFactor: 16,    budgetFactor: 16,   defaultLocation: "Nigeria",        cities: ["Lagos", "Abuja", "Port Harcourt", "Kano"] },
+  "India":                { symbol: "₹",    cpcFactor: 4.7,   budgetFactor: 4.7,  defaultLocation: "India",          cities: ["Mumbai", "Delhi", "Bangalore", "Chennai"] },
+  "Singapore":            { symbol: "S$",   cpcFactor: 0.075, budgetFactor: 0.075,defaultLocation: "Singapore",      cities: ["Singapore City", "Jurong", "Tampines", "Woodlands"] },
+  "Ireland":              { symbol: "€",    cpcFactor: 0.14,  budgetFactor: 0.14, defaultLocation: "Ireland",        cities: ["Dublin", "Cork", "Limerick", "Galway"] },
+};
+
+// ── INDUSTRY KEYWORDS ────────────────────────────────────────────────────────
 const INDUSTRY_KEYWORDS: Record<string, string[]> = {
   "Healthcare & Medical":   ["doctor","medical","health","clinic","dentist","pharmacy","hospital","therapy","physiotherapy","chiropractic","specialist","gp","nursing","optometrist","dietitian"],
   "Legal Services":         ["attorney","lawyer","law firm","legal","advocate","solicitor","paralegal","conveyancing","litigation","divorce"],
@@ -20,8 +45,12 @@ const INDUSTRY_KEYWORDS: Record<string, string[]> = {
   "Security Services":      ["security","alarm","cctv","access control","guard","surveillance","electric fence","biometric","patrol"],
   "Travel & Tourism":       ["travel","tourism","tour","accommodation","hotel","lodge","safari","holiday","booking","airport","transfers"],
   "Events & Entertainment": ["events","wedding","photography","venue","catering","dj","entertainment","birthday","conference","function"],
-  "Retail & E-Commerce":    ["shop","store","retail","products","buy","purchase","online store","delivery","stock","wholesale"],
+  "Retail & E-Commerce":    ["shop","store","retail","products","buy","purchase","online store","delivery","stock","wholesale","ecommerce","e-commerce"],
   "Agriculture":            ["farming","agriculture","livestock","crop","irrigation","fertilizer","harvest","poultry","dairy","agri"],
+  "Technology Rental":      ["rental","hire","rent","equipment","lease","temporary","event tech","audiovisual","av","laptop","ipad","screen","monitor"],
+  "Logistics & Transport":  ["logistics","transport","courier","freight","delivery","shipping","supply chain","fleet","distribution","warehouse"],
+  "Manufacturing":          ["manufacturing","factory","production","fabrication","industrial","machinery","equipment","OEM","supplier","wholesale"],
+  "Home Services":          ["home improvement","gardening","landscaping","pest control","pool","solar","aircon","hvac","appliance repair","home maintenance"],
 };
 
 const INDUSTRY_CPC: Record<string, { min: number; max: number; budget: number }> = {
@@ -41,6 +70,10 @@ const INDUSTRY_CPC: Record<string, { min: number; max: number; budget: number }>
   "Food & Beverage":        { min: 4,  max: 14,  budget: 3500 },
   "Retail & E-Commerce":    { min: 4,  max: 18,  budget: 4500 },
   "Agriculture":            { min: 5,  max: 16,  budget: 3500 },
+  "Technology Rental":      { min: 7,  max: 22,  budget: 5000 },
+  "Logistics & Transport":  { min: 6,  max: 20,  budget: 4500 },
+  "Manufacturing":          { min: 5,  max: 18,  budget: 4000 },
+  "Home Services":          { min: 5,  max: 18,  budget: 4000 },
   "General Business":       { min: 5,  max: 20,  budget: 4000 },
 };
 
@@ -53,10 +86,10 @@ const NEGATIVE_KEYWORDS_BY_INDUSTRY: Record<string, string[]> = {
   "Digital & Technology":   ["free","crack","pirate","torrent","open source","wikipedia","tutorial"],
   "Beauty & Wellness":      ["diy","how to","tutorial","youtube","free","homemade","cheap","ingredients"],
   "Cleaning Services":      ["diy","how to","recipe","homemade","cheap tricks","free tips","wikipedia"],
+  "Technology Rental":      ["buy","purchase","for sale","used","second hand","own","ownership"],
+  "Retail & E-Commerce":    ["free","second hand","used","diy","tutorial","wikipedia","complaint"],
   "General Business":       ["free","diy","how to","tutorial","youtube","wikipedia","complaint","review"],
 };
-
-const SA_CITIES = ["cape town","johannesburg","durban","pretoria","port elizabeth","bloemfontein","east london","nelspruit","polokwane","kimberley","rustenburg","george","pietermaritzburg"];
 
 function normalizeUrl(raw: string): string {
   let url = raw.trim();
@@ -81,36 +114,30 @@ function detectIndustry(text: string, title: string): string {
 
 function looksLikeBusinessName(s: string): boolean {
   if (s.length < 4 || s.length > 45) return false;
-  // Reject all-lowercase single common words
   if (/^[a-z]+$/.test(s) && s.length < 8) return false;
-  // Reject generic marketing words / standalone terms
   if (/^(seo|ads|web|digital|services|solutions|home|about|contact|web design|marketing|agency)$/i.test(s)) return false;
   return true;
 }
 
 function extractBusinessName($: cheerio.CheerioAPI, title: string, domain: string): string {
-  // og:site_name is usually the cleanest
   const siteName = $('meta[property="og:site_name"]').attr("content")?.trim();
   if (siteName && looksLikeBusinessName(siteName)) return siteName;
-
-  // Logo text — only trust it if it's short and clean
   const logo = $('[class*="logo"], [id*="logo"], [class*="brand"], [id*="brand"]').first().text().trim();
   if (logo && looksLikeBusinessName(logo)) return logo;
-
-  // Page title — prefer segments that look like a proper business name
   const parts = title.split(/\s*[|\-–—:]\s*/).map(p => p.trim()).filter(looksLikeBusinessName);
-  // Return the shortest qualifying segment (usually the brand name)
-  if (parts.length > 0) {
-    return parts.sort((a, b) => a.length - b.length)[0];
-  }
-
-  // Domain-based fallback
+  if (parts.length > 0) return parts.sort((a, b) => a.length - b.length)[0];
   return domain.replace(/^www\./, "").split(".")[0]
     .replace(/[-_]/g, " ")
     .replace(/\b\w/g, c => c.toUpperCase());
 }
 
-function extractLocation(bodyText: string): string {
+const SA_CITIES = ["cape town","johannesburg","durban","pretoria","port elizabeth","bloemfontein","east london","nelspruit","polokwane","kimberley","rustenburg","george","pietermaritzburg"];
+
+function extractLocation(bodyText: string, countryOverride?: string): string {
+  if (countryOverride && countryOverride !== "South Africa") {
+    const cfg = COUNTRY_CONFIG[countryOverride];
+    if (cfg) return cfg.cities[0] + ", " + countryOverride;
+  }
   for (const city of SA_CITIES) {
     if (bodyText.toLowerCase().includes(city)) {
       return city.replace(/\b\w/g, c => c.toUpperCase()) + ", South Africa";
@@ -118,7 +145,7 @@ function extractLocation(bodyText: string): string {
   }
   const schemaAddress = bodyText.match(/"addressLocality"\s*:\s*"([^"]+)"/);
   if (schemaAddress) return schemaAddress[1] + ", South Africa";
-  return "South Africa";
+  return countryOverride ?? "South Africa";
 }
 
 function extractPhone(bodyText: string): string {
@@ -126,37 +153,28 @@ function extractPhone(bodyText: string): string {
   return m ? m[0].trim() : "";
 }
 
-const NAV_JUNK = ["home","about","about us","contact","contact us","blog","news","faq","careers","gallery","portfolio","login","sign in","register","menu","search","cart","services","products","team","testimonials","privacy","terms","sitemap","back","next","previous","whatsapp us","whatsapp","call us","email us","get a quote","get quote","free quote","our work","our clients","case studies","read more","learn more","view all","see more","click here"];
+const NAV_JUNK = ["home","about","about us","contact","contact us","blog","news","faq","careers","gallery","portfolio","login","sign in","register","menu","search","cart","services","products","team","testimonials","privacy","terms","sitemap","back","next","previous","whatsapp us","whatsapp","call us","email us","get a quote","get quote","free quote","our work","our clients","case studies","read more","learn more","view all","see more","click here","submit","send","close"];
 
 function isJunkNavItem(text: string): boolean {
   if (NAV_JUNK.some(j => text.toLowerCase() === j || text.toLowerCase() === j + "s")) return true;
-  // Filter long marketing phrases (likely not service names)
   if (text.length > 55) return true;
-  // Filter sentences (contain common connector words at start)
   if (/^(we |our |the |a |get |you |is |are |all |fast|easy|no |with |designed|built|fully)/i.test(text)) return true;
   return false;
 }
 
-function extractServicesFromSite(html: string, $: cheerio.CheerioAPI, bodyText: string, industry: string): string[] {
+function extractServicesFromHTML(html: string, $: cheerio.CheerioAPI): string[] {
   const candidates: { text: string; score: number }[] = [];
 
-  // 1. Nav/menu links (drop-down items especially)
   $("nav a, header a, [class*='menu'] a, [class*='nav'] a").each((_, el) => {
     const text = $(el).text().trim();
-    if (text.length >= 3 && text.length <= 60 && !isJunkNavItem(text)) {
-      candidates.push({ text, score: 2 });
-    }
+    if (text.length >= 3 && text.length <= 60 && !isJunkNavItem(text)) candidates.push({ text, score: 2 });
   });
 
-  // 2. H2/H3 headings in service-like sections
   $("h2, h3").each((_, el) => {
     const text = $(el).text().trim();
-    if (text.length >= 4 && text.length <= 80 && !isJunkNavItem(text)) {
-      candidates.push({ text, score: 3 });
-    }
+    if (text.length >= 4 && text.length <= 80 && !isJunkNavItem(text)) candidates.push({ text, score: 3 });
   });
 
-  // 3. Schema.org Service / Product names
   $('script[type="application/ld+json"]').each((_, el) => {
     try {
       const json = JSON.parse($(el).text());
@@ -174,58 +192,95 @@ function extractServicesFromSite(html: string, $: cheerio.CheerioAPI, bodyText: 
     } catch {}
   });
 
-  // 4. Links that look like service/product pages
   $("a[href]").each((_, el) => {
     const href = ($(el).attr("href") ?? "").toLowerCase();
-    if (/\/(service|product|solution|offering|package)s?\/[a-z\-]+/.test(href)) {
+    if (/\/(service|product|solution|offering|package|shop|category|collection)s?\/[a-z\-]+/.test(href)) {
       const text = $(el).text().trim();
       if (text.length >= 3 && text.length <= 60) candidates.push({ text, score: 4 });
     }
   });
 
-  // Deduplicate and clean
   const seen = new Set<string>();
   const unique: string[] = [];
-  const sorted = candidates.sort((a, b) => b.score - a.score);
-  for (const c of sorted) {
+  for (const c of candidates.sort((a, b) => b.score - a.score)) {
     const key = c.text.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim();
     if (!seen.has(key) && key.length > 2 && !isJunkNavItem(c.text)) {
       seen.add(key);
       unique.push(c.text);
     }
-    if (unique.length >= 8) break;
+    if (unique.length >= 12) break;
   }
-
-  // Fallback: industry-specific default services
-  if (unique.length < 2) {
-    const industryDefaults: Record<string, string[]> = {
-      "Healthcare & Medical":   ["General Practitioner", "Specialist Consultations", "Preventative Healthcare"],
-      "Legal Services":         ["Contract Law", "Family Law", "Commercial Litigation"],
-      "Construction & Trades":  ["Residential Renovation", "Commercial Construction", "Project Management"],
-      "Financial Services":     ["Tax Consulting", "Accounting Services", "Financial Planning"],
-      "Real Estate":            ["Property Sales", "Property Rentals", "Property Management"],
-      "Digital & Technology":   ["Website Design", "SEO Services", "Google Ads Management"],
-      "Automotive":             ["Vehicle Servicing", "Mechanical Repairs", "Tyres & Fitment"],
-      "Beauty & Wellness":      ["Hair Styling", "Beauty Treatments", "Spa Packages"],
-      "Education & Training":   ["Corporate Training", "Online Courses", "Tutoring Services"],
-      "Security Services":      ["Alarm Systems", "CCTV Installation", "Access Control"],
-      "Cleaning Services":      ["Residential Cleaning", "Commercial Cleaning", "Deep Cleaning"],
-      "Events & Entertainment": ["Wedding Planning", "Event Decor", "Photography"],
-      "Travel & Tourism":       ["Tour Packages", "Accommodation", "Airport Transfers"],
-      "Food & Beverage":        ["Restaurant Dining", "Catering Services", "Food Delivery"],
-      "Retail & E-Commerce":    ["Online Store", "Product Catalogue", "Same-Day Delivery"],
-      "General Business":       ["Our Services", "Consulting", "Custom Solutions"],
-    };
-    return industryDefaults[industry] ?? ["Our Services", "Consulting", "Custom Solutions"];
-  }
-
   return unique;
 }
 
-function generateKeywords(service: string, businessName: string, location: string, industry: string): string[] {
+// ── MULTI-PAGE CRAWLER ────────────────────────────────────────────────────────
+const SERVICE_PATH_PATTERNS = /\/(service|product|solution|offering|package|shop|category|collection|what-we-do|we-do|our-work|portfolio|about|industries?|capabilities|work)/i;
+
+async function crawlSitePages(
+  homeUrl: string,
+  homeHtml: string,
+  $home: cheerio.CheerioAPI,
+  maxPages = 5
+): Promise<{ url: string; html: string; $: cheerio.CheerioAPI }[]> {
+  const parsedHome = new URL(homeUrl);
+  const baseHost = parsedHome.hostname;
+  const ua = "Mozilla/5.0 (compatible; GoogleBot/2.1; +http://www.google.com/bot.html)";
+
+  // Collect all internal links
+  const internalLinks: { url: string; priority: number }[] = [];
+  const seen = new Set<string>([parsedHome.pathname]);
+
+  $home("a[href]").each((_, el) => {
+    const href = ($home(el).attr("href") ?? "").split("#")[0].split("?")[0].trim();
+    if (!href || href === "/" || href.startsWith("mailto:") || href.startsWith("tel:")) return;
+
+    let abs: URL;
+    try { abs = new URL(href, homeUrl); }
+    catch { return; }
+
+    if (abs.hostname !== baseHost) return;
+    if (/\.(pdf|jpg|jpeg|png|gif|svg|webp|mp4|zip|doc|docx)$/i.test(abs.pathname)) return;
+    if (seen.has(abs.pathname)) return;
+
+    seen.add(abs.pathname);
+    const priority = SERVICE_PATH_PATTERNS.test(abs.pathname) ? 2 : 1;
+    internalLinks.push({ url: abs.href, priority });
+  });
+
+  // Sort: service-like paths first
+  internalLinks.sort((a, b) => b.priority - a.priority);
+  const toFetch = internalLinks.slice(0, maxPages);
+
+  const results = await Promise.allSettled(
+    toFetch.map(async ({ url }) => {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), 8000);
+      try {
+        const res = await fetch(url, {
+          signal: controller.signal,
+          headers: { "User-Agent": ua, "Accept": "text/html" },
+          redirect: "follow",
+        });
+        clearTimeout(t);
+        if (!res.ok) return null;
+        const html = await res.text();
+        const $ = cheerio.load(html);
+        return { url, html, $ };
+      } catch { clearTimeout(t); return null; }
+    })
+  );
+
+  return results
+    .filter(r => r.status === "fulfilled" && r.value !== null)
+    .map(r => (r as PromiseFulfilledResult<{url:string;html:string;$:cheerio.CheerioAPI}>).value);
+}
+
+// ── KEYWORD + AD COPY GENERATION ─────────────────────────────────────────────
+function generateKeywords(service: string, businessName: string, location: string, countryName: string): string[] {
   const s = service.toLowerCase();
   const loc = location.split(",")[0].trim();
   const biz = businessName.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim();
+  const country = countryName.toLowerCase();
 
   const kws = [
     s,
@@ -256,7 +311,7 @@ function generateKeywords(service: string, businessName: string, location: strin
     `local ${s}`,
     `${s} ${loc} price`,
     `${loc} ${s}`,
-    `${s} south africa`,
+    `${s} ${country}`,
     `${biz} ${s}`,
   ];
   return [...new Set(kws.filter(k => k.length > 3))].slice(0, 30);
@@ -315,13 +370,18 @@ interface Campaign {
   adGroups: AdGroup[];
 }
 
-function buildCampaigns(services: string[], businessName: string, location: string, industry: string): Campaign[] {
+function buildCampaigns(services: string[], businessName: string, location: string, industry: string, countryName: string): Campaign[] {
   const cpcData = INDUSTRY_CPC[industry] ?? INDUSTRY_CPC["General Business"];
+  const countryCfg = COUNTRY_CONFIG[countryName] ?? COUNTRY_CONFIG["South Africa"];
   const campaigns: Campaign[] = [];
 
-  // Primary Search Campaign (covers all services)
+  // Apply country factors to budget
+  const budget = Math.round(cpcData.budget * countryCfg.budgetFactor);
+  const dailyDiv = 30;
+
+  // Primary Search Campaign
   const primaryGroups: AdGroup[] = services.map(svc => {
-    const kws = generateKeywords(svc, businessName, location, industry);
+    const kws = generateKeywords(svc, businessName, location, countryName);
     const copy = generateAdCopy(svc, businessName, location);
     return {
       name: svc,
@@ -336,8 +396,8 @@ function buildCampaigns(services: string[], businessName: string, location: stri
     name: `${businessName} — Search (All Services)`,
     type: "Search",
     objective: "Leads & Enquiries",
-    monthlyBudget: Math.round(cpcData.budget * 0.6),
-    dailyBudget: Math.round((cpcData.budget * 0.6) / 30),
+    monthlyBudget: Math.round(budget * 0.6),
+    dailyBudget: Math.round((budget * 0.6) / dailyDiv),
     biddingStrategy: "Maximise Conversions",
     adGroups: primaryGroups,
   });
@@ -354,8 +414,8 @@ function buildCampaigns(services: string[], businessName: string, location: stri
     name: `${businessName} — Brand Protection`,
     type: "Search",
     objective: "Brand Awareness & Direct Traffic",
-    monthlyBudget: Math.round(cpcData.budget * 0.15),
-    dailyBudget: Math.round((cpcData.budget * 0.15) / 30),
+    monthlyBudget: Math.round(budget * 0.15),
+    dailyBudget: Math.round((budget * 0.15) / dailyDiv),
     biddingStrategy: "Target Impression Share (Top of Page)",
     adGroups: [{
       name: `${businessName} Brand Terms`,
@@ -387,13 +447,13 @@ function buildCampaigns(services: string[], businessName: string, location: stri
     }],
   });
 
-  // Remarketing / Display Campaign
+  // Remarketing Campaign
   campaigns.push({
     name: `${businessName} — Remarketing (Past Visitors)`,
     type: "Display",
     objective: "Re-engage Website Visitors",
-    monthlyBudget: Math.round(cpcData.budget * 0.15),
-    dailyBudget: Math.round((cpcData.budget * 0.15) / 30),
+    monthlyBudget: Math.round(budget * 0.15),
+    dailyBudget: Math.round((budget * 0.15) / dailyDiv),
     biddingStrategy: "Target CPA",
     adGroups: [{
       name: "All Website Visitors — 30 Days",
@@ -414,7 +474,7 @@ function buildCampaigns(services: string[], businessName: string, location: stri
         hl("Call or WhatsApp"),
         hl("Same-Day Response"),
         hl("Get Started Today"),
-        hl(`Back for a Reason`),
+        hl("Back for a Reason"),
       ],
       descriptions: [
         desc(`You visited ${businessName} recently — we'd love to help. Get your free quote today with no commitment.`),
@@ -438,8 +498,20 @@ function generateNegativeKeywords(industry: string): string[] {
   ];
 }
 
+function parseUserServices(raw: string): string[] {
+  return raw
+    .split(/[,\n;]+/)
+    .map(s => s.trim())
+    .filter(s => s.length >= 2 && s.length <= 80)
+    .slice(0, 12);
+}
+
+// ── ROUTE ────────────────────────────────────────────────────────────────────
 router.post("/ads-audit", async (req, res) => {
-  let { url } = req.body as { url: string };
+  let { url, services: rawServices, country: rawCountry } = req.body as {
+    url: string; services?: string; country?: string;
+  };
+
   if (!url || typeof url !== "string") {
     res.status(400).json({ error: "URL is required" });
     return;
@@ -453,8 +525,11 @@ router.post("/ads-audit", async (req, res) => {
 
   const domain = parsedUrl.hostname.replace(/^www\./, "");
   const unlockCode = generateUnlockCode(domain);
+  const countryName = rawCountry && COUNTRY_CONFIG[rawCountry] ? rawCountry : "South Africa";
+  const countryCfg = COUNTRY_CONFIG[countryName];
 
-  let html = "";
+  // ── Fetch homepage ────────────────────────────────────────────────────────
+  let homeHtml = "";
   let finalUrl = url;
 
   try {
@@ -463,15 +538,15 @@ router.post("/ads-audit", async (req, res) => {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (compatible; GoogleBot/2.1; +http://www.google.com/bot.html)",
         "Accept": "text/html,application/xhtml+xml",
-        "Accept-Language": "en-ZA,en;q=0.9",
+        "Accept-Language": "en-US,en;q=0.9",
       },
       redirect: "follow",
     });
     clearTimeout(timeout);
     finalUrl = response.url || url;
-    html = await response.text();
+    homeHtml = await response.text();
   } catch (err: any) {
     const msg = err?.name === "AbortError"
       ? "The website took too long to respond (timeout after 15s)."
@@ -480,24 +555,85 @@ router.post("/ads-audit", async (req, res) => {
     return;
   }
 
-  const $ = cheerio.load(html);
-  const bodyText = $("body").text();
+  const $home = cheerio.load(homeHtml);
+  const pageTitle = $home("title").first().text().trim();
+  const homeBodyText = $home("body").text();
 
-  const pageTitle = $("title").first().text().trim();
-  const businessName = extractBusinessName($, pageTitle, domain);
-  const industry = detectIndustry(bodyText, pageTitle);
-  const location = extractLocation(bodyText);
-  const phone = extractPhone(bodyText);
-  const services = extractServicesFromSite(html, $, bodyText, industry);
-  const campaigns = buildCampaigns(services, businessName, location, industry);
+  // ── Multi-page crawl ─────────────────────────────────────────────────────
+  const subpages = await crawlSitePages(finalUrl, homeHtml, $home, 6);
+
+  // ── Business metadata from homepage ────────────────────────────────────
+  const businessName = extractBusinessName($home, pageTitle, domain);
+  const allBodyText = homeBodyText + subpages.map(p => p.$.root().text()).join(" ");
+  const industry = detectIndustry(allBodyText, pageTitle);
+  const location = extractLocation(allBodyText, countryName !== "South Africa" ? countryName : undefined);
+  const phone = extractPhone(homeBodyText);
+
+  // ── Service detection — priority: user-provided > scraped across all pages ─
+  let services: string[] = [];
+
+  if (rawServices && rawServices.trim().length > 0) {
+    services = parseUserServices(rawServices);
+  }
+
+  if (services.length < 3) {
+    // Scrape homepage
+    const homeServices = extractServicesFromHTML(homeHtml, $home);
+    // Scrape all crawled subpages
+    const subpageServices: string[] = [];
+    for (const page of subpages) {
+      const pageServices = extractServicesFromHTML(page.html, page.$);
+      subpageServices.push(...pageServices);
+    }
+    // Deduplicate merged list
+    const allScraped = [...homeServices, ...subpageServices];
+    const seenKeys = new Set<string>(services.map(s => s.toLowerCase()));
+    for (const svc of allScraped) {
+      const key = svc.toLowerCase();
+      if (!seenKeys.has(key)) {
+        seenKeys.add(key);
+        services.push(svc);
+      }
+      if (services.length >= 10) break;
+    }
+  }
+
+  // Fallback if still empty
+  if (services.length === 0) {
+    const industryDefaults: Record<string, string[]> = {
+      "Healthcare & Medical":   ["General Practitioner", "Specialist Consultations", "Preventative Healthcare"],
+      "Legal Services":         ["Contract Law", "Family Law", "Commercial Litigation"],
+      "Construction & Trades":  ["Residential Renovation", "Commercial Construction", "Project Management"],
+      "Financial Services":     ["Tax Consulting", "Accounting Services", "Financial Planning"],
+      "Real Estate":            ["Property Sales", "Property Rentals", "Property Management"],
+      "Digital & Technology":   ["Website Design", "SEO Services", "Google Ads Management"],
+      "Automotive":             ["Vehicle Servicing", "Mechanical Repairs", "Tyres & Fitment"],
+      "Beauty & Wellness":      ["Hair Styling", "Beauty Treatments", "Spa Packages"],
+      "Education & Training":   ["Corporate Training", "Online Courses", "Tutoring Services"],
+      "Security Services":      ["Alarm Systems", "CCTV Installation", "Access Control"],
+      "Cleaning Services":      ["Residential Cleaning", "Commercial Cleaning", "Deep Cleaning"],
+      "Events & Entertainment": ["Wedding Planning", "Event Decor", "Photography"],
+      "Travel & Tourism":       ["Tour Packages", "Accommodation", "Airport Transfers"],
+      "Food & Beverage":        ["Restaurant Dining", "Catering Services", "Food Delivery"],
+      "Retail & E-Commerce":    ["Online Store", "Product Catalogue", "Same-Day Delivery"],
+      "Technology Rental":      ["Equipment Hire", "Event Tech Rental", "Corporate Technology"],
+      "Logistics & Transport":  ["Freight Services", "Courier Delivery", "Warehousing"],
+      "Home Services":          ["Home Maintenance", "Garden Services", "Electrical & Plumbing"],
+      "General Business":       ["Our Services", "Consulting", "Custom Solutions"],
+    };
+    services = industryDefaults[industry] ?? ["Our Services", "Consulting", "Custom Solutions"];
+  }
+
+  const campaigns = buildCampaigns(services, businessName, location, industry, countryName);
   const negativeKeywords = generateNegativeKeywords(industry);
 
   const cpcData = INDUSTRY_CPC[industry] ?? INDUSTRY_CPC["General Business"];
-  const totalMonthlyBudget = cpcData.budget;
-  const avgCPC = (cpcData.min + cpcData.max) / 2;
+  const cpcMin = Math.round(cpcData.min * countryCfg.cpcFactor * 100) / 100;
+  const cpcMax = Math.round(cpcData.max * countryCfg.cpcFactor * 100) / 100;
+  const totalMonthlyBudget = Math.round(cpcData.budget * countryCfg.budgetFactor);
   const estimatedClicks = {
-    min: Math.round((totalMonthlyBudget / cpcData.max) * 0.8),
-    max: Math.round((totalMonthlyBudget / cpcData.min) * 1.1),
+    min: Math.round((totalMonthlyBudget / cpcMax) * 0.8),
+    max: Math.round((totalMonthlyBudget / cpcMin) * 1.1),
   };
 
   res.json({
@@ -507,11 +643,14 @@ router.post("/ads-audit", async (req, res) => {
     industry,
     location,
     phone,
+    country: countryName,
+    currencySymbol: countryCfg.symbol,
     servicesDetected: services,
+    pagesCrawled: 1 + subpages.length,
     campaigns,
     negativeKeywords,
     totalMonthlyBudget,
-    expectedCPC: { min: cpcData.min, max: cpcData.max },
+    expectedCPC: { min: cpcMin, max: cpcMax },
     expectedMonthlyClicks: estimatedClicks,
     unlockCode,
   });

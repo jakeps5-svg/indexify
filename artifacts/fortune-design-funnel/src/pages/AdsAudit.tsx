@@ -4,7 +4,7 @@ import {
   Lock, Unlock, Download, Target, Zap,
   TrendingUp, DollarSign, Users, MousePointerClick,
   Loader2, Search, Megaphone, RefreshCw, Lightbulb,
-  BarChart3, ChevronDown
+  BarChart3, ChevronDown, Globe
 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -49,7 +49,10 @@ interface ProposalResult {
   industry: string;
   location: string;
   phone: string;
+  country: string;
+  currencySymbol: string;
   servicesDetected: string[];
+  pagesCrawled: number;
   campaigns: Campaign[];
   negativeKeywords: string[];
   totalMonthlyBudget: number;
@@ -58,9 +61,16 @@ interface ProposalResult {
   unlockCode: string;
 }
 
-function formatRand(n: number) {
-  return `R${n.toLocaleString("en-ZA")}`;
+const COUNTRIES = [
+  "South Africa", "United Kingdom", "United States", "Australia",
+  "United Arab Emirates", "Canada", "Germany", "Netherlands",
+  "New Zealand", "Kenya", "Nigeria", "India", "Singapore", "Ireland",
+];
+
+function formatCurrency(n: number, symbol: string) {
+  return `${symbol}${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
 }
+function formatRand(n: number) { return formatCurrency(n, "R"); }
 
 function slugify(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -78,15 +88,15 @@ function getCompetitionColor(comp: string) {
   return "text-emerald-600 bg-emerald-50 border-emerald-200";
 }
 
-function generateMarketData(services: string[], cpc: { min: number; max: number }) {
+function generateMarketData(services: string[], cpc: { min: number; max: number }, currencySymbol = "R") {
   return services.map((svc, i) => {
-    const spread = cpc.max - cpc.min;
-    const svcCpcMin = cpc.min + ((i * 3) % Math.max(spread, 1));
+    const spread = Math.max(cpc.max - cpc.min, 0.01);
+    const svcCpcMin = cpc.min + ((i * 3) % spread);
     const svcCpcMax = Math.min(cpc.max, svcCpcMin + spread * 0.4 + 2);
     const avgCpc = ((svcCpcMin + svcCpcMax) / 2).toFixed(2);
     const baseVol = 400 + (i % 3) * 300 + Math.round(cpc.min * 40);
     const competition = getCompetition(svcCpcMax);
-    return { category: svc, volume: baseVol, competition, cpc: `R${avgCpc}` };
+    return { category: svc, volume: baseVol, competition, cpc: `${currencySymbol}${avgCpc}` };
   });
 }
 
@@ -190,7 +200,7 @@ function CampaignSection({ campaign, index, unlocked, result }: {
           </span>
           <div className="min-w-0">
             <p className="font-black text-white text-sm truncate">{campaign.name}</p>
-            <p className="text-gray-400 text-xs mt-0.5 hidden sm:block">{campaign.objective} · {formatRand(campaign.monthlyBudget)}/mo · {campaign.biddingStrategy}</p>
+            <p className="text-gray-400 text-xs mt-0.5 hidden sm:block">{campaign.objective} · {formatCurrency(campaign.monthlyBudget, result.currencySymbol)}/mo · {campaign.biddingStrategy}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -304,8 +314,8 @@ function generateProposalHTML(result: ProposalResult): string {
 <p class="subtitle">High-conversion Google Ads blueprint for ${result.businessName}. Prepared by Fortune Design · Generated ${now}</p>
 
 <div class="grid-4">
-  <div class="card"><div class="num">${formatRand(result.totalMonthlyBudget)}</div><div class="lbl">Monthly Budget</div></div>
-  <div class="card"><div class="num">R${result.expectedCPC.min}–R${result.expectedCPC.max}</div><div class="lbl">Avg. CPC Range</div></div>
+  <div class="card"><div class="num">${formatCurrency(result.totalMonthlyBudget, result.currencySymbol)}</div><div class="lbl">Monthly Budget</div></div>
+  <div class="card"><div class="num">${result.currencySymbol}${result.expectedCPC.min}–${result.currencySymbol}${result.expectedCPC.max}</div><div class="lbl">Avg. CPC Range</div></div>
   <div class="card"><div class="num">${result.expectedMonthlyClicks.min}–${result.expectedMonthlyClicks.max}</div><div class="lbl">Est. Monthly Clicks</div></div>
   <div class="card"><div class="num">~${Math.round((result.expectedMonthlyClicks.min + result.expectedMonthlyClicks.max) / 2 * 0.062)}</div><div class="lbl">Est. Conversions</div></div>
 </div>
@@ -315,7 +325,7 @@ function generateProposalHTML(result: ProposalResult): string {
   <table class="mktable">
     <thead><tr><th>Category</th><th>Est. Monthly Searches</th><th>Competition</th><th>Avg. CPC</th></tr></thead>
     <tbody>
-      ${generateMarketData(result.servicesDetected, result.expectedCPC).map(row => `
+      ${generateMarketData(result.servicesDetected, result.expectedCPC, result.currencySymbol).map(row => `
       <tr>
         <td>${row.category}</td>
         <td>${row.volume.toLocaleString()}</td>
@@ -351,7 +361,7 @@ function generateProposalHTML(result: ProposalResult): string {
   <div class="campaign">
     <div class="campaign-header">
       <div class="campaign-name">Campaign: ${c.name}</div>
-      <div class="campaign-meta">${c.type} · ${c.objective} · Budget: <span>${formatRand(c.monthlyBudget)}/month</span> · ${c.biddingStrategy}</div>
+      <div class="campaign-meta">${c.type} · ${c.objective} · Budget: <span>${formatCurrency(c.monthlyBudget, result.currencySymbol)}/month</span> · ${c.biddingStrategy}</div>
     </div>
     ${c.adGroups.map((ag, i) => {
       const slug = ag.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -410,6 +420,8 @@ function downloadProposal(result: ProposalResult) {
 
 export default function AdsAuditPage() {
   const [inputUrl, setInputUrl] = useState("");
+  const [inputServices, setInputServices] = useState("");
+  const [inputCountry, setInputCountry] = useState("South Africa");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ProposalResult | null>(null);
@@ -430,7 +442,7 @@ export default function AdsAuditPage() {
       const res = await fetch(`${BASE}/api/ads-audit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: inputUrl }),
+        body: JSON.stringify({ url: inputUrl, services: inputServices, country: inputCountry }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to generate proposal");
@@ -464,7 +476,7 @@ export default function AdsAuditPage() {
   const domain = result ? (() => { try { return new URL(result.finalUrl).hostname.replace(/^www\./, ""); } catch { return result.finalUrl; } })() : "";
   const avgClicks = result ? Math.round((result.expectedMonthlyClicks.min + result.expectedMonthlyClicks.max) / 2) : 0;
   const estConversions = Math.round(avgClicks * 0.062);
-  const marketData = result ? generateMarketData(result.servicesDetected, result.expectedCPC) : [];
+  const marketData = result ? generateMarketData(result.servicesDetected, result.expectedCPC, result.currencySymbol) : [];
 
   return (
     <div className="min-h-screen bg-slate-50 text-gray-900">
@@ -483,11 +495,11 @@ export default function AdsAuditPage() {
             <span style={{ color: PRIMARY }}>In 30 Seconds</span>
           </h1>
           <p className="text-base text-gray-500 max-w-xl mx-auto leading-relaxed">
-            Enter your website URL and we'll scan your services, then generate a full Google Ads campaign strategy tailored to your business — keywords, ad copy and budget included.
+            Tell us about your business and we'll build a complete, country-specific Google Ads campaign strategy — keywords, ad copy, budgets and more.
           </p>
         </motion.div>
 
-        {/* Search Form */}
+        {/* Input Form */}
         <motion.form
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -495,26 +507,76 @@ export default function AdsAuditPage() {
           onSubmit={runProposal}
           className="max-w-2xl mx-auto mb-10"
         >
-          <div className="flex gap-3 flex-col sm:flex-row">
-            <div className="relative flex-1">
-              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                value={inputUrl}
-                onChange={e => setInputUrl(e.target.value)}
-                placeholder="yourwebsite.co.za"
-                className="w-full pl-10 pr-4 py-4 rounded-xl border border-gray-200 bg-white shadow-sm focus:outline-none focus:ring-2 text-gray-900 placeholder-gray-400 text-base"
-                style={{ "--tw-ring-color": PRIMARY } as React.CSSProperties}
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 space-y-5">
+
+            {/* Step 1 — Website URL */}
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
+                Step 1 — Website URL <span className="text-red-400">*</span>
+              </label>
+              <div className="relative">
+                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  value={inputUrl}
+                  onChange={e => setInputUrl(e.target.value)}
+                  placeholder="yourwebsite.co.za"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-slate-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                  required
+                  disabled={loading}
+                />
+              </div>
+              <p className="text-xs text-gray-400 mt-1">We'll crawl your website to detect your services automatically.</p>
+            </div>
+
+            {/* Step 2 — Services / Products */}
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
+                Step 2 — Services or Products to Advertise
+                <span className="ml-2 text-gray-400 normal-case font-normal">(optional but improves accuracy)</span>
+              </label>
+              <textarea
+                value={inputServices}
+                onChange={e => setInputServices(e.target.value)}
+                placeholder={"e.g. Kitchen Renovation, Bathroom Remodel, Garden Landscaping\nor: Running Shoes, Gym Wear, Yoga Mats"}
+                rows={3}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-slate-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all resize-none"
                 disabled={loading}
               />
+              <p className="text-xs text-gray-400 mt-1">Separate multiple services with commas or new lines. The more specific, the better your proposal.</p>
             </div>
+
+            {/* Step 3 — Country */}
+            <div>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1.5">
+                Step 3 — Target Country <span className="text-red-400">*</span>
+              </label>
+              <div className="relative">
+                <Globe size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                <select
+                  value={inputCountry}
+                  onChange={e => setInputCountry(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-slate-50 text-gray-900 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all appearance-none"
+                  disabled={loading}
+                >
+                  {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+                <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Sets the local currency, CPC rates, and location targeting for your proposal.</p>
+            </div>
+
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading || !inputUrl.trim()}
-              className="px-8 py-4 rounded-xl font-bold text-white text-base transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+              className="w-full py-4 rounded-xl font-bold text-white text-base transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               style={{ background: PRIMARY }}
             >
-              {loading ? "Generating…" : "Generate Proposal"}
+              {loading
+                ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Generating Proposal…</>
+                : <><Megaphone size={17} /> Generate My Google Ads Proposal</>
+              }
             </button>
           </div>
           <p className="text-center text-xs text-gray-400 mt-3">
@@ -536,10 +598,10 @@ export default function AdsAuditPage() {
               </p>
               <div className="mt-6 flex flex-col items-center gap-2 text-xs text-gray-400">
                 {[
-                  "Scanning website for services & products…",
-                  "Detecting industry & target audience…",
-                  "Building campaign structure…",
-                  "Generating keywords & ad copy…",
+                  "Crawling website pages for services & products…",
+                  "Detecting industry, audience & country targeting…",
+                  "Building campaign structure with local CPC rates…",
+                  "Generating keywords, ad copy & proposal…",
                 ].map((step, i) => (
                   <motion.p key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.7 }}>
                     {step}
@@ -571,12 +633,15 @@ export default function AdsAuditPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
-                      Strategy Report · Budget: {formatRand(result.totalMonthlyBudget)} / Month
+                      Strategy Report · Budget: {formatCurrency(result.totalMonthlyBudget, result.currencySymbol)} / Month · {result.country}
                     </p>
                     <h2 className="text-2xl font-black text-white">{result.businessName} — Strategy Plan</h2>
                     <p className="text-gray-400 text-sm mt-1 max-w-lg">
                       High-conversion Google Ads blueprint for {result.businessName}. This plan covers{" "}
                       {result.servicesDetected.slice(0, 3).join(", ")}{result.servicesDetected.length > 3 ? ", and more" : ""}.
+                    </p>
+                    <p className="text-gray-500 text-xs mt-1.5">
+                      {result.pagesCrawled} page{result.pagesCrawled !== 1 ? "s" : ""} crawled · {result.location} · {result.industry}
                     </p>
                   </div>
                   <div className="flex gap-2 shrink-0">
@@ -637,8 +702,8 @@ export default function AdsAuditPage() {
               {/* KPI Cards */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { icon: DollarSign, label: "Monthly Budget", value: formatRand(result.totalMonthlyBudget), sub: "Recommended spend" },
-                  { icon: Target, label: "Avg. CPC", value: `R${result.expectedCPC.min}–R${result.expectedCPC.max}`, sub: "Cost per click" },
+                  { icon: DollarSign, label: "Monthly Budget", value: formatCurrency(result.totalMonthlyBudget, result.currencySymbol), sub: "Recommended spend" },
+                  { icon: Target, label: "Avg. CPC", value: `${result.currencySymbol}${result.expectedCPC.min}–${result.currencySymbol}${result.expectedCPC.max}`, sub: "Cost per click" },
                   { icon: MousePointerClick, label: "Est. Clicks", value: `${result.expectedMonthlyClicks.min}–${result.expectedMonthlyClicks.max}`, sub: "Monthly visitors" },
                   { icon: Users, label: "Est. Conversions", value: `~${estConversions}`, sub: "~6.2% conv. rate" },
                 ].map(({ icon: Icon, label, value, sub }) => (
