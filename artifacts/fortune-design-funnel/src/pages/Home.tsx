@@ -206,19 +206,21 @@ export default function Home() {
       </section>
 
       {/* 3. SERVICES SECTION */}
-      <section id="services" className="py-24 relative bg-slate-50">
-        <div className="absolute inset-0 z-0 opacity-30">
+      <section id="services" className="py-24 relative overflow-hidden">
+        {/* Background image */}
+        <div className="absolute inset-0 z-0">
           <img
-            src={`${import.meta.env.BASE_URL}images/pattern.png`}
-            alt="Pattern"
-            className="w-full h-full object-cover mix-blend-multiply"
+            src={`${import.meta.env.BASE_URL}images/results-bg.png`}
+            alt=""
+            className="w-full h-full object-cover"
           />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, hsl(198 69% 18% / 0.93) 0%, hsl(220 40% 10% / 0.95) 100%)" }} />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-4xl md:text-5xl font-black mb-6 text-gray-900">Our Core <span className="text-primary">Services</span></h2>
-            <p className="text-lg text-gray-500">We don't do everything. We focus exclusively on search marketing to deliver unmatched results for our clients.</p>
+            <h2 className="text-4xl md:text-5xl font-black mb-6 text-white">Our Core <span className="text-primary">Services</span></h2>
+            <p className="text-lg text-white/60">We don't do everything. We focus exclusively on search marketing to deliver unmatched results for our clients.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
