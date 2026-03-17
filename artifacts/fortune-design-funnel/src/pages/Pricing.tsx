@@ -272,6 +272,88 @@ export default function PricingPage() {
         </div>
       </section>
 
+      {/* Market Leader Bundle */}
+      <section className="py-24 bg-gray-900">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-4 bg-primary/20 text-primary">
+              <Star size={14} /> Bundle & Save
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-3">The <span className="text-primary">Market Leader</span> Bundle</h2>
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto">SEO + Google Ads combined. Dominate both organic and paid search simultaneously for compounding results.</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl"
+          >
+            <div className="grid lg:grid-cols-2">
+              {/* Left — pricing */}
+              <div className="p-10 flex flex-col justify-between" style={{ background: "linear-gradient(135deg, hsl(198 69% 40%), hsl(198 69% 28%))" }}>
+                <div>
+                  <div className="inline-flex items-center gap-2 bg-white/10 text-white/90 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-6">
+                    Most Popular Bundle
+                  </div>
+                  <p className="text-white/70 text-sm font-semibold uppercase tracking-widest mb-3">SEO + Google Ads</p>
+                  <div className="flex items-baseline gap-1 text-white mb-1">
+                    <span className="text-3xl font-semibold">R</span>
+                    <span className="text-7xl font-black leading-none">12,500</span>
+                  </div>
+                  <p className="text-white/60 text-sm mb-2">per month + your Google Ads spend</p>
+                  <p className="text-white/50 text-xs mb-10">Combines Advanced SEO (R7,900) + Google Ads Management (R7,300) — save R2,700/mo</p>
+                </div>
+                <div className="space-y-3">
+                  <a
+                    href={`${BASE}/checkout?type=seo-advanced`}
+                    className="block w-full py-3.5 rounded-xl bg-white font-bold text-sm text-center hover:-translate-y-0.5 transition-all shadow-lg"
+                    style={{ color: "hsl(198 69% 35%)" }}
+                  >
+                    Get Started — R12,500/mo
+                  </a>
+                  <a
+                    href={`${BASE}/contact`}
+                    className="block w-full py-3 rounded-xl border border-white/20 text-white/80 font-medium text-sm hover:bg-white/10 transition-all text-center"
+                  >
+                    Talk to an Expert First
+                  </a>
+                  <p className="text-white/40 text-xs text-center">No lock-in. 30-day notice to cancel.</p>
+                </div>
+              </div>
+
+              {/* Right — features */}
+              <div className="bg-gray-800 p-10">
+                <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6">Everything you get in the bundle</p>
+                <div className="mb-6">
+                  <p className="text-xs font-bold text-primary uppercase tracking-widest mb-3 flex items-center gap-2"><Search size={11} /> SEO Includes</p>
+                  <ul className="space-y-2.5">
+                    {["Advanced keyword strategy", "Technical SEO & backlinks", "Content optimisation", "Competitor analysis", "Monthly ranking reports"].map((f, i) => (
+                      <li key={i} className="flex items-start gap-2.5">
+                        <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-primary" />
+                        <span className="text-sm text-gray-300">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2" style={{ color: "hsl(29 100% 55%)" }}><MousePointerClick size={11} /> Google Ads Includes</p>
+                  <ul className="space-y-2.5">
+                    {["Full campaign setup & management", "Ad copy & A/B testing", "Conversion tracking", "Bid & budget optimisation", "Remarketing campaigns"].map((f, i) => (
+                      <li key={i} className="flex items-start gap-2.5">
+                        <CheckCircle2 size={14} className="mt-0.5 shrink-0" style={{ color: "hsl(29 100% 55%)" }} />
+                        <span className="text-sm text-gray-300">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Proposal unlock */}
       <section className="py-20 bg-slate-50 border-t border-gray-100">
         <div className="max-w-4xl mx-auto px-4 text-center">

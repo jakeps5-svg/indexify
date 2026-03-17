@@ -495,15 +495,15 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 items-center max-w-5xl mx-auto">
-            {/* Starter */}
+            {/* Basic SEO */}
             <motion.div
               variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
               className="bg-white border border-gray-200 rounded-3xl p-8 shadow-sm"
             >
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Growth Starter</h3>
+              <h3 className="text-xl font-bold mb-2 text-gray-900">Basic SEO</h3>
               <p className="text-gray-500 mb-6 text-sm">Perfect for local businesses</p>
               <div className="mb-8">
-                <span className="text-4xl font-black text-gray-900">From R5,500</span>
+                <span className="text-4xl font-black text-gray-900">From R5,900</span>
                 <span className="text-gray-400">/mo</span>
               </div>
               <ul className="space-y-4 mb-8">
@@ -513,10 +513,12 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <YocoButton type="starter" label="Get Started — R5,500/mo" />
+              <a href={`${BASE}/pricing`} className="block w-full py-3 rounded-xl bg-primary text-white font-bold text-sm text-center hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md shadow-primary/20">
+                View Full Packages →
+              </a>
             </motion.div>
 
-            {/* Premium (Highlighted) — kept dark for visual contrast */}
+            {/* Market Leader (Highlighted) */}
             <motion.div
               variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
               className="bg-gray-900 border-2 border-primary rounded-3xl p-8 relative shadow-xl shadow-primary/10 md:scale-105 z-10"
@@ -525,7 +527,7 @@ export default function Home() {
                 Most Popular
               </div>
               <h3 className="text-xl font-bold mb-2 text-white">Market Leader</h3>
-              <p className="text-gray-400 mb-6 text-sm">Aggressive growth campaigns</p>
+              <p className="text-gray-400 mb-6 text-sm">SEO + Google Ads combined</p>
               <div className="mb-8">
                 <span className="text-4xl font-black text-white">From R12,500</span>
                 <span className="text-gray-400">/mo</span>
@@ -537,7 +539,9 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <YocoButton type="leader" label="Choose Leader — R12,500/mo" dark />
+              <a href={`${BASE}/pricing`} className="block w-full py-3 rounded-xl bg-primary text-white font-bold text-sm text-center hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md">
+                View Full Packages →
+              </a>
             </motion.div>
 
             {/* Enterprise */}
@@ -557,7 +561,9 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <button onClick={() => scrollTo("contact")} className="w-full py-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 font-semibold transition-colors">Get Custom Quote</button>
+              <a href={`${BASE}/pricing`} className="block w-full py-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 font-semibold text-sm text-center transition-colors">
+                View Full Packages →
+              </a>
             </motion.div>
           </div>
         </div>
