@@ -1,18 +1,36 @@
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.BREVO_SENDER_EMAIL ?? "support@indexify.co.za",
-    pass: process.env.BREVO_SMTP_KEY,
-  },
-});
-
-const SENDER_NAME = process.env.BREVO_SENDER_NAME ?? "Indexify";
-const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL ?? "support@indexify.co.za";
+const BREVO_API_KEY = process.env.BREVO_API_KEY ?? "";
+const SENDER_NAME = "Indexify";
+const SENDER_EMAIL = "support@indexify.co.za";
 const CC_EMAIL = "info@fortunedesign.co.za";
+
+async function sendEmail(opts: {
+  to: { email: string; name?: string }[];
+  cc?: { email: string }[];
+  replyTo?: { email: string; name?: string };
+  subject: string;
+  html: string;
+}) {
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "api-key": BREVO_API_KEY,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      sender: { name: SENDER_NAME, email: SENDER_EMAIL },
+      to: opts.to,
+      cc: opts.cc,
+      replyTo: opts.replyTo,
+      subject: opts.subject,
+      htmlContent: opts.html,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Brevo API error ${res.status}: ${body}`);
+  }
+}
 
 export async function sendProposalUnlockEmail(opts: {
   to: string;
@@ -87,10 +105,9 @@ export async function sendProposalUnlockEmail(opts: {
 </body>
 </html>`;
 
-  await transporter.sendMail({
-    from: `"${SENDER_NAME}" <${SENDER_EMAIL}>`,
-    to: `"${opts.name}" <${opts.to}>`,
-    cc: CC_EMAIL,
+  await sendEmail({
+    to: [{ email: opts.to, name: opts.name }],
+    cc: [{ email: CC_EMAIL }],
     subject,
     html,
   });
@@ -124,7 +141,7 @@ export async function sendServicePurchaseEmail(opts: {
 
         <tr>
           <td style="padding:40px 40px 32px;">
-            <h1 style="margin:0 0 8px;font-size:24px;font-weight:800;color:#0f172a;">You're in! 🎉</h1>
+            <h1 style="margin:0 0 8px;font-size:24px;font-weight:800;color:#0f172a;">You're in!</h1>
             <p style="margin:0 0 24px;color:#64748b;font-size:15px;line-height:1.6;">
               Hi ${opts.name}, your payment of <strong>${opts.amountPaid}</strong> for the <strong>${opts.service}</strong> package has been confirmed. Welcome to Indexify!
             </p>
@@ -156,10 +173,9 @@ export async function sendServicePurchaseEmail(opts: {
 </body>
 </html>`;
 
-  await transporter.sendMail({
-    from: `"${SENDER_NAME}" <${SENDER_EMAIL}>`,
-    to: `"${opts.name}" <${opts.to}>`,
-    cc: CC_EMAIL,
+  await sendEmail({
+    to: [{ email: opts.to, name: opts.name }],
+    cc: [{ email: CC_EMAIL }],
     subject,
     html,
   });
@@ -220,16 +236,15 @@ export async function sendContactEmail(opts: {
 </body>
 </html>`;
 
-  await transporter.sendMail({
-    from: `"${SENDER_NAME}" <${SENDER_EMAIL}>`,
-    to: [SENDER_EMAIL, CC_EMAIL],
-    replyTo: `"${opts.name}" <${opts.email}>`,
+  await sendEmail({
+    to: [{ email: SENDER_EMAIL }],
+    cc: [{ email: CC_EMAIL }],
+    replyTo: { email: opts.email, name: opts.name },
     subject,
     html,
   });
 }
 
-// Internal notification to Indexify
 export async function sendInternalNotification(opts: {
   service: string;
   name: string;
@@ -241,23 +256,44 @@ export async function sendInternalNotification(opts: {
   token?: string;
 }) {
   const subject = `New Payment: ${opts.service} — ${opts.name}`;
-  const text = `
-New payment received!
 
-Service: ${opts.service}
-Amount: ${opts.amountPaid}
-Name: ${opts.name}
-Email: ${opts.email}
-Phone: ${opts.phone ?? "—"}
-Company: ${opts.company ?? "—"}
-Domain: ${opts.domain ?? "—"}
-Token: ${opts.token ?? "—"}
-  `.trim();
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:32px 20px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.07);max-width:560px;width:100%;">
+        <tr>
+          <td style="background:#0f172a;padding:24px 32px;">
+            <div style="font-size:13px;font-weight:700;color:#0ea5c8;text-transform:uppercase;letter-spacing:2px;">New Payment Received</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px 32px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr><td style="padding:6px 0;font-size:13px;color:#475569;border-bottom:1px solid #f1f5f9;"><strong style="color:#0f172a;display:inline-block;width:110px;">Service:</strong> ${opts.service}</td></tr>
+              <tr><td style="padding:6px 0;font-size:13px;color:#475569;border-bottom:1px solid #f1f5f9;"><strong style="color:#0f172a;display:inline-block;width:110px;">Amount:</strong> ${opts.amountPaid}</td></tr>
+              <tr><td style="padding:6px 0;font-size:13px;color:#475569;border-bottom:1px solid #f1f5f9;"><strong style="color:#0f172a;display:inline-block;width:110px;">Name:</strong> ${opts.name}</td></tr>
+              <tr><td style="padding:6px 0;font-size:13px;color:#475569;border-bottom:1px solid #f1f5f9;"><strong style="color:#0f172a;display:inline-block;width:110px;">Email:</strong> ${opts.email}</td></tr>
+              <tr><td style="padding:6px 0;font-size:13px;color:#475569;border-bottom:1px solid #f1f5f9;"><strong style="color:#0f172a;display:inline-block;width:110px;">Phone:</strong> ${opts.phone ?? "—"}</td></tr>
+              <tr><td style="padding:6px 0;font-size:13px;color:#475569;border-bottom:1px solid #f1f5f9;"><strong style="color:#0f172a;display:inline-block;width:110px;">Company:</strong> ${opts.company ?? "—"}</td></tr>
+              <tr><td style="padding:6px 0;font-size:13px;color:#475569;border-bottom:1px solid #f1f5f9;"><strong style="color:#0f172a;display:inline-block;width:110px;">Domain:</strong> ${opts.domain ?? "—"}</td></tr>
+              ${opts.token ? `<tr><td style="padding:6px 0;font-size:13px;color:#475569;"><strong style="color:#0f172a;display:inline-block;width:110px;">Token:</strong> <span style="font-family:monospace;font-weight:700;">${opts.token}</span></td></tr>` : ""}
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 
-  await transporter.sendMail({
-    from: `"${SENDER_NAME}" <${SENDER_EMAIL}>`,
-    to: [SENDER_EMAIL, CC_EMAIL],
+  await sendEmail({
+    to: [{ email: SENDER_EMAIL }],
+    cc: [{ email: CC_EMAIL }],
     subject,
-    text,
+    html,
   });
 }
