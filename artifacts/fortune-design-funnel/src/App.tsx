@@ -14,6 +14,8 @@ import PricingPage from "@/pages/Pricing";
 import ContactPage from "@/pages/Contact";
 import PrivacyPolicyPage from "@/pages/PrivacyPolicy";
 import TermsOfUsePage from "@/pages/TermsOfUse";
+import BlogPage from "@/pages/Blog";
+import BlogPostPage from "@/pages/BlogPost";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -33,6 +35,8 @@ function Router() {
       <Route path="/contact" component={ContactPage} />
       <Route path="/privacy-policy" component={PrivacyPolicyPage} />
       <Route path="/terms-of-use" component={TermsOfUsePage} />
+      <Route path="/blog" component={BlogPage} />
+      <Route path="/blog/:slug" component={BlogPostPage} />
       <Route component={NotFound} />
     </Switch>
   );
