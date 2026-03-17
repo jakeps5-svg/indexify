@@ -148,6 +148,51 @@ export default function GoogleAdsPage() {
         </div>
       </section>
 
+      {/* CLIENT LOGOS BANNER */}
+      <section className="py-10 bg-white border-b border-gray-100 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 text-center">
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Trusted by businesses across South Africa &amp; beyond</p>
+        </div>
+        <div className="relative overflow-hidden">
+          <div className="flex marquee-track w-max">
+            {[
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-14.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-10.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-6.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-8.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-18.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-13.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/4.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/8.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-15.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-17.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-11.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-5.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-14.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-10.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-6.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-8.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-18.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-13.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/4.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/8.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-15.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-17.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-11.png",
+              "https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-5.png",
+            ].map((src, i) => (
+              <div key={i} className="flex items-center justify-center mx-8 shrink-0">
+                <img
+                  src={src}
+                  alt="Client logo"
+                  className="h-14 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* RESULTS STRIP */}
       <section className="py-12 border-y border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
