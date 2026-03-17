@@ -241,7 +241,7 @@ export default function Home() {
                 role: "Rapple Products"
               },
               {
-                text: "Fortune Design manages both our SEO and Google Ads and the combined results have been phenomenal. We rank on page 1 organically and our paid campaigns bring in high-quality bookings daily. Our online revenue has grown consistently every month since we started with them.",
+                text: "Fortune Design has provided outstanding service. Our Google ranking skyrocketed from virtually nowhere to one of the top positions, and we began receiving significantly more inquiries almost immediately. Their team identified numerous gaps and errors that our previous SEO provider had missed. We highly recommend Fortune Design for anyone seeking expert Google optimization.",
                 author: "Serenity Villa Daniela",
                 role: "Luxury Villa Rentals"
               },
