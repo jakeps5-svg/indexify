@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useSEO } from "@/hooks/useSEO";
 import {
-  Search, CheckCircle2, XCircle, AlertTriangle, ChevronDown,
+  Search, CheckCircle2, XCircle, AlertTriangle,
   ExternalLink, Zap, Globe, Image, Link2, Share2,
   Clock, FileText, TrendingUp, Award, BarChart3,
-  Monitor, Smartphone, ImageOff, Tag
+  Monitor, Smartphone, ImageOff, Tag, ShieldCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/layout/Navbar";
@@ -122,6 +122,33 @@ function GradeBadge({ score, size = "md" }: { score: number; size?: "sm" | "md" 
   );
 }
 
+function ScoreRing({ score, size = 112 }: { score: number; size?: number }) {
+  const r = 38;
+  const circumference = 2 * Math.PI * r;
+  const offset = circumference - (score / 100) * circumference;
+  const stroke = score >= 80 ? "#10b981" : score >= 60 ? "#f59e0b" : score >= 40 ? "#f97316" : "#ef4444";
+  const g = scoreToGrade(score);
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg className="w-full h-full" style={{ transform: "rotate(-90deg)" }} viewBox="0 0 96 96">
+        <circle cx="48" cy="48" r={r} fill="none" stroke="#f3f4f6" strokeWidth="9" />
+        <motion.circle
+          cx="48" cy="48" r={r} fill="none" stroke={stroke} strokeWidth="9"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className={cn("font-black leading-none", g.color)} style={{ fontSize: size * 0.25 }}>{score}</span>
+        <span className="text-gray-400 leading-none" style={{ fontSize: size * 0.1 }}>/ 100</span>
+      </div>
+    </div>
+  );
+}
+
 function SectionCard({ section, index, backlinkRecs, missingAltImages, topBacklinks }: {
   section: AuditSection;
   index: number;
@@ -129,27 +156,22 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages, topBackli
   missingAltImages?: MissingAltImage[];
   topBacklinks?: BacklinkResult[];
 }) {
-  const [open, setOpen] = useState(false);
   const Icon = sectionIcons[section.title] ?? Globe;
   const g = scoreToGrade(section.score);
   const passes = section.checks.filter(c => c.status === "pass").length;
   const warns  = section.checks.filter(c => c.status === "warn").length;
   const fails  = section.checks.filter(c => c.status === "fail").length;
+  const accentBorder = section.score >= 80 ? "border-l-emerald-400" : section.score >= 60 ? "border-l-amber-400" : "border-l-red-400";
+  const barColor = section.score >= 80 ? "bg-emerald-500" : section.score >= 70 ? "bg-sky-500" : section.score >= 50 ? "bg-amber-500" : section.score >= 40 ? "bg-orange-500" : "bg-red-500";
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.07 }}
-      className={cn(
-        "bg-white rounded-2xl border overflow-hidden transition-shadow",
-        open ? "border-gray-200 shadow-md" : "border-gray-100 shadow-sm hover:shadow-md"
-      )}
+      className={cn("bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden border-l-4", accentBorder)}
     >
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors text-left gap-4"
-      >
+      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 gap-4">
         <div className="flex items-center gap-4 min-w-0">
           <GradeBadge score={section.score} size="md" />
           <div className="min-w-0">
@@ -157,7 +179,7 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages, topBackli
               <Icon size={14} className="text-gray-400 shrink-0" />
               <span className="font-bold text-base text-gray-900 truncate">{section.title}</span>
             </div>
-            <div className="flex items-center gap-3 text-xs text-gray-500">
+            <div className="flex items-center gap-3 text-xs text-gray-500 flex-wrap">
               <span className={g.color + " font-semibold"}>{g.label}</span>
               <span>·</span>
               <span className="text-emerald-600">{passes} passed</span>
@@ -166,40 +188,20 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages, topBackli
             </div>
           </div>
         </div>
-
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="hidden sm:flex items-center gap-2">
-            <div className="h-1.5 rounded-full bg-gray-100 w-24 overflow-hidden">
-              <div
-                className={cn("h-full rounded-full transition-all duration-700", {
-                  "bg-emerald-500": section.score >= 80,
-                  "bg-sky-500":     section.score >= 70 && section.score < 80,
-                  "bg-amber-500":   section.score >= 50 && section.score < 70,
-                  "bg-orange-500":  section.score >= 40 && section.score < 50,
-                  "bg-red-500":     section.score < 40,
-                })}
-                style={{ width: `${section.score}%` }}
-              />
-            </div>
-            <span className="text-xs text-gray-400 w-8 text-right font-medium">{section.score}%</span>
+        <div className="hidden sm:flex items-center gap-2 shrink-0">
+          <div className="h-1.5 rounded-full bg-gray-100 w-28 overflow-hidden">
+            <motion.div
+              className={cn("h-full rounded-full", barColor)}
+              initial={{ width: 0 }}
+              animate={{ width: `${section.score}%` }}
+              transition={{ duration: 0.8, ease: "easeOut", delay: index * 0.07 + 0.1 }}
+            />
           </div>
-          <ChevronDown
-            size={16}
-            className={cn("text-gray-400 transition-transform duration-300 shrink-0", open && "rotate-180")}
-          />
+          <span className="text-xs text-gray-400 w-8 text-right font-mono font-semibold">{section.score}%</span>
         </div>
-      </button>
+      </div>
 
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden"
-          >
-            <div className="px-5 pb-5 pt-2 space-y-2.5 border-t border-gray-100">
+      <div className="px-5 pb-5 pt-3 space-y-2.5">
               {section.checks.map((check, i) => {
                 const StatusIcon = statusIcon[check.status];
                 const isAltCheck = check.name === "Image Alt Text";
@@ -394,10 +396,7 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages, topBackli
                 </div>
               )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+      </motion.div>
   );
 }
 
@@ -510,16 +509,38 @@ export default function AuditPage() {
 
         {/* Loading */}
         {loading && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-24">
-            <div className="inline-flex flex-col items-center gap-5">
-              <div className="relative w-16 h-16">
-                <div className="absolute inset-0 rounded-full border-4 border-primary/15" />
-                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin" />
-                <Globe className="absolute inset-0 m-auto text-primary" size={22} />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-20">
+            <div className="max-w-sm mx-auto text-center">
+              <div className="relative w-20 h-20 mx-auto mb-6">
+                <div className="absolute inset-0 rounded-full border-[5px] border-primary/10" />
+                <div className="absolute inset-0 rounded-full border-[5px] border-transparent border-t-primary animate-spin" />
+                <div className="absolute inset-[10px] rounded-full border-[3px] border-transparent border-t-primary/40 animate-spin" style={{ animationDirection: "reverse", animationDuration: "0.8s" }} />
+                <Globe className="absolute inset-0 m-auto text-primary" size={24} />
               </div>
-              <div>
-                <p className="font-bold mb-1 text-gray-800">Analysing your website...</p>
-                <p className="text-sm text-gray-500">Checking 25+ SEO factors and capturing desktop &amp; mobile screenshots.</p>
+              <p className="font-black text-lg text-gray-900 mb-1">Analysing your website…</p>
+              <p className="text-sm text-gray-400 mb-8">Checking 25+ SEO factors across 6 categories.</p>
+              <div className="space-y-3 text-left">
+                {[
+                  { icon: FileText,   label: "Reading page content & meta tags" },
+                  { icon: Zap,        label: "Checking technical SEO signals" },
+                  { icon: Monitor,    label: "Capturing desktop & mobile screenshots" },
+                  { icon: TrendingUp, label: "Analysing backlink authority data" },
+                  { icon: Share2,     label: "Checking structured data & social tags" },
+                ].map(({ icon: StepIcon, label }, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.4 + 0.3 }}
+                    className="flex items-center gap-3 bg-white rounded-xl border border-gray-100 px-4 py-3 shadow-sm"
+                  >
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <StepIcon size={14} className="text-primary" />
+                    </div>
+                    <span className="text-sm text-gray-600">{label}</span>
+                    <div className="ml-auto w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin shrink-0" />
+                  </motion.div>
+                ))}
               </div>
             </div>
           </motion.div>
@@ -542,11 +563,11 @@ export default function AuditPage() {
               <div className="p-6 md:p-8">
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                   <div className="flex items-center gap-5">
-                    <GradeBadge score={result.overallScore} size="xl" />
+                    <ScoreRing score={result.overallScore} size={112} />
                     <div>
                       <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Overall Grade</p>
                       <p className={cn("text-5xl font-black leading-none mb-1", overall?.color)}>{overall?.grade}</p>
-                      <p className="text-sm text-gray-500 font-medium">{overall?.label} · {result.overallScore}/100</p>
+                      <p className="text-sm text-gray-500 font-medium">{overall?.label}</p>
                     </div>
                   </div>
 
@@ -856,28 +877,73 @@ export default function AuditPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <p className="text-center text-xs text-gray-400 uppercase tracking-widest font-semibold mb-5">What we check</p>
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="h-px bg-gray-200 flex-1" />
+              <p className="text-xs text-gray-400 uppercase tracking-widest font-semibold whitespace-nowrap">25+ checks across 6 categories</p>
+              <div className="h-px bg-gray-200 flex-1" />
+            </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {[
-                { icon: FileText,   title: "On-Page SEO",           desc: "Title tags, meta descriptions, headings, keyword usage, word count" },
-                { icon: Zap,        title: "Technical SEO",         desc: "HTTPS, load speed, mobile viewport, robots.txt, sitemap, canonical" },
-                { icon: Image,      title: "Image Optimisation",    desc: "Alt text coverage, image count and performance checks" },
-                { icon: Link2,      title: "Link Structure",        desc: "Internal and external link quality, anchor text analysis" },
-                { icon: TrendingUp, title: "Backlinks & Authority", desc: "Domain age, crawl activity, outbound diversity, social profile links" },
-                { icon: Share2,     title: "Social & Schema",       desc: "Open Graph, Twitter Cards, structured data (JSON-LD)" },
-              ].map(({ icon: Icon, title, desc }, i) => (
-                <div key={i} className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-gray-200 transition-all">
-                  <div className="p-2.5 rounded-lg bg-primary/10 w-fit mb-3 border border-primary/10">
-                    <Icon size={16} className="text-primary" />
+                { icon: FileText,   title: "On-Page SEO",           desc: "Title tags, meta descriptions, headings, keyword usage, word count", color: "bg-sky-50 border-sky-100", iconColor: "text-sky-600 bg-sky-100" },
+                { icon: Zap,        title: "Technical SEO",         desc: "HTTPS, load speed, mobile viewport, robots.txt, sitemap, canonical", color: "bg-violet-50 border-violet-100", iconColor: "text-violet-600 bg-violet-100" },
+                { icon: Image,      title: "Image Optimisation",    desc: "Alt text coverage, image count, lazy-loading and compression checks", color: "bg-amber-50 border-amber-100", iconColor: "text-amber-600 bg-amber-100" },
+                { icon: Link2,      title: "Link Structure",        desc: "Internal and external link quality, broken links, anchor text analysis", color: "bg-emerald-50 border-emerald-100", iconColor: "text-emerald-600 bg-emerald-100" },
+                { icon: TrendingUp, title: "Backlinks & Authority", desc: "Domain age, crawl activity, outbound diversity, social profile links", color: "bg-orange-50 border-orange-100", iconColor: "text-orange-600 bg-orange-100" },
+                { icon: Share2,     title: "Social & Schema",       desc: "Open Graph, Twitter Cards, JSON-LD structured data markup", color: "bg-pink-50 border-pink-100", iconColor: "text-pink-600 bg-pink-100" },
+              ].map(({ icon: Icon, title, desc, color, iconColor }, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.07 + 0.1 }}
+                  className={cn("border rounded-xl p-5 shadow-sm hover:shadow-md transition-all", color)}
+                >
+                  <div className={cn("p-2.5 rounded-lg w-fit mb-3", iconColor)}>
+                    <Icon size={16} />
                   </div>
                   <h4 className="font-bold text-sm mb-1 text-gray-800">{title}</h4>
                   <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Grade scale preview */}
+            <div className="mt-8 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">How we grade</p>
+              <div className="flex items-center justify-center gap-2 flex-wrap">
+                {[
+                  { grade: "A+", range: "95–100", color: "text-emerald-600 bg-emerald-50 border-emerald-200" },
+                  { grade: "A",  range: "90–94",  color: "text-emerald-600 bg-emerald-50 border-emerald-200" },
+                  { grade: "B+", range: "80–89",  color: "text-sky-600 bg-sky-50 border-sky-200" },
+                  { grade: "B",  range: "70–79",  color: "text-sky-600 bg-sky-50 border-sky-200" },
+                  { grade: "C",  range: "50–69",  color: "text-amber-600 bg-amber-50 border-amber-200" },
+                  { grade: "D",  range: "40–49",  color: "text-orange-600 bg-orange-50 border-orange-200" },
+                  { grade: "F",  range: "0–39",   color: "text-red-600 bg-red-50 border-red-200" },
+                ].map(({ grade, range, color }) => (
+                  <div key={grade} className={cn("flex flex-col items-center border rounded-xl px-3 py-2 min-w-[52px]", color)}>
+                    <span className="font-black text-lg leading-none">{grade}</span>
+                    <span className="text-[10px] opacity-60 mt-0.5">{range}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-center text-xs text-gray-400 mt-4">
+                Each category receives an individual grade. Your overall score is a weighted average across all 6 categories.
+              </p>
+            </div>
+
+            {/* Trust signals */}
+            <div className="mt-5 grid grid-cols-3 gap-3">
+              {[
+                { icon: ShieldCheck, label: "No sign-up required" },
+                { icon: Zap,         label: "Results in ~15 seconds" },
+                { icon: Globe,       label: "Any website, any industry" },
+              ].map(({ icon: Icon, label }, i) => (
+                <div key={i} className="flex flex-col items-center gap-2 text-center bg-white border border-gray-100 rounded-xl py-4 px-3 shadow-sm">
+                  <Icon size={16} className="text-primary" />
+                  <p className="text-xs text-gray-500 font-medium">{label}</p>
                 </div>
               ))}
             </div>
-            <p className="text-center text-xs text-gray-400 mt-6">
-              Each category receives a letter grade from <span className="text-emerald-600 font-bold">A+</span> to <span className="text-red-600 font-bold">F</span> — just like a report card.
-            </p>
           </motion.div>
         )}
       </div>
