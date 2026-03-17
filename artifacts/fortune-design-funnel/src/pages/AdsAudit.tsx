@@ -387,7 +387,7 @@ export default function AdsAuditPage() {
 
   function tryUnlock() {
     if (!result) return;
-    if (codeInput.trim().toUpperCase() === result.unlockCode) {
+    if (codeInput.trim() === result.unlockCode) {
       setUnlocked(true);
       setUnlockOpen(false);
       setCodeError("");
@@ -698,8 +698,8 @@ export default function AdsAuditPage() {
                           <input
                             type="text"
                             value={codeInput}
-                            onChange={e => { setCodeInput(e.target.value.toUpperCase()); setCodeError(""); }}
-                            placeholder="Enter 8-character code"
+                            onChange={e => { setCodeInput(e.target.value); setCodeError(""); }}
+                            placeholder="Enter unlock code"
                             className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-mono text-gray-900 focus:outline-none focus:ring-2"
                             style={{ "--tw-ring-color": ACCENT } as React.CSSProperties}
                             onKeyDown={e => e.key === "Enter" && tryUnlock()}

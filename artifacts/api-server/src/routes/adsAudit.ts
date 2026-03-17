@@ -64,9 +64,8 @@ function normalizeUrl(raw: string): string {
   return url;
 }
 
-function generateUnlockCode(domain: string): string {
-  const secret = `fd-proposal-${domain}-2025`;
-  return crypto.createHash("sha256").update(secret).digest("hex").slice(0, 8).toUpperCase();
+function generateUnlockCode(_domain: string): string {
+  return "FortuneD21!@";
 }
 
 function detectIndustry(text: string, title: string): string {
