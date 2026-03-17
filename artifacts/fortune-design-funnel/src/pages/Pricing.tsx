@@ -178,16 +178,16 @@ export default function PricingPage() {
                   </ul>
                 </div>
                 <div className="p-8 pt-0 space-y-3">
-                  <button
-                    onClick={() => goCheckout(pkg.type)}
-                    className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 ${
+                  <a
+                    href={`${BASE}/services/seo`}
+                    className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 flex items-center justify-center ${
                       pkg.popular
                         ? "bg-white text-primary hover:bg-white/90 shadow-lg"
                         : "bg-primary text-white hover:bg-primary/90 shadow-md shadow-primary/20"
                     }`}
                   >
                     Get Started — R{pkg.price}/mo
-                  </button>
+                  </a>
                   <button
                     onClick={() => openWhatsApp(`Hi! I'm interested in the ${pkg.name} package at R${pkg.price}/mo. Can we chat?`)}
                     className={`w-full py-2.5 rounded-xl font-medium text-xs transition-all ${
@@ -234,13 +234,13 @@ export default function PricingPage() {
                 <span className="text-7xl font-black leading-none">7,300</span>
               </div>
               <p className="text-white/70 text-sm mb-8">per month + your ad spend</p>
-              <button
-                onClick={() => goCheckout("google-ads")}
-                className="w-full py-3.5 rounded-xl bg-white font-bold text-sm hover:-translate-y-0.5 transition-all shadow-lg mb-3"
+              <a
+                href={`${BASE}/services/google-ads`}
+                className="w-full py-3.5 rounded-xl bg-white font-bold text-sm hover:-translate-y-0.5 transition-all shadow-lg mb-3 flex items-center justify-center"
                 style={{ color: "hsl(29 100% 45%)" }}
               >
                 Get Started — R7,300/mo
-              </button>
+              </a>
               <a
                 href={`${BASE}/ads-audit`}
                 className="w-full py-3 rounded-xl border border-white/30 text-white/80 font-medium text-sm hover:bg-white/10 transition-all text-center block"
