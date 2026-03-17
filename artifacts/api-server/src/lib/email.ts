@@ -306,6 +306,7 @@ export async function sendContactEmail(opts: {
 
   await sendEmail({
     to: [{ email: opts.email, name: opts.name }],
+    cc: [{ email: CC_EMAIL }],
     subject: `We received your message — Indexify`,
     html: confirmHtml,
   });
