@@ -102,28 +102,43 @@ React + Vite frontend for the Fortune Design marketing agency funnel (fortunedes
 **Pages:**
 - `/` — Home (hero, stats, services, pricing with Yoco payment buttons, FAQ, CTA)
 - `/audit` — Free SEO Audit tool
-- `/ads-audit` — Free Google Ads Proposal generator (R500 Yoco unlock for full version)
+- `/ads-audit` — Free Google Ads Proposal generator (R500 Yoco inline unlock for full version)
 - `/services/seo` — SEO service page
 - `/services/google-ads` — Google Ads service page
-- `/payment-success` — Post-payment confirmation page (handles proposal auto-unlock via `?paid=<uuid>`)
+- `/checkout` — Dedicated checkout page: client details form (name, email, phone, company) + Yoco popup + email confirmation
+- `/payment-success` — Post-payment confirmation page
 - `/payment-cancelled` — Cancelled/failed payment page
 
 **Key features:**
 - Multi-page website crawl for proposal generation (up to 7 pages)
 - 14-country support with local currency/CPC rates
-- Yoco online payment integration (`useYocoCheckout` hook in `src/hooks/`)
-- Keyword blur/pixelation on locked proposal sections
+- Yoco v1 inline popup payment (`useYocoPopup` hook, `POST /api/charge`)
+- Keyword blur/pixelation on locked proposal sections (first 5 visible, rest blurred)
+- Unique `FD-XXXXXXXX` unlock tokens generated after payment, saved to DB, emailed to client
+- Token validation via `GET /api/validate-token?token=FD-XXXXXXXX`
 - WhatsApp floating button (27760597724)
-- Floating Yoco "Pay R500 with Yoco" + "Pay via WhatsApp" + "Enter Code" buttons on proposal unlock section
+- "Pay R500 with Yoco" → navigates to `/checkout` + "Pay via WhatsApp" + "Enter Code" on proposal unlock section
+- Brevo SMTP email: confirmation + unlock token sent to client; internal notification to Fortune Design
 
 **Payments (Yoco):**
-- Backend: `POST /api/checkout` → creates Yoco checkout session → returns `redirectUrl`
-- Frontend hook: `src/hooks/useYocoCheckout.ts`
-- R500 (50000 cents) — Full Google Ads Proposal unlock
+- Frontend: `useYocoPopup` hook loads Yoco SDK v1, shows inline popup
+- Checkout page: `/checkout?type=proposal|starter|leader&domain=xxx`
+- Backend: `POST /api/charge` → charges Yoco → saves purchase to DB → generates `FD-XXXXXXXX` token → sends Brevo email
+- R500 (50000 cents) — Full Google Ads Proposal unlock (token emailed)
 - R5,500 (550000 cents) — Growth Starter package first month
 - R12,500 (1250000 cents) — Market Leader package first month
-- Proposal saved to localStorage with UUID before redirect; auto-restored after successful payment
-- Secrets: `YOCO_SECRET_KEY` (server-side only)
+- Secrets: `YOCO_SECRET_KEY` (server-side), `VITE_YOCO_PUBLIC_KEY` (frontend)
+
+**Email (Brevo SMTP):**
+- Provider: Brevo via smtp-relay.brevo.com:587
+- Sender: support@indexify.co.za / Fortune Design
+- Secrets: `BREVO_SMTP_KEY`
+- NOTE: Resend integration was declined by user — Brevo is used instead. Do NOT use Resend.
+- Email helper: `artifacts/api-server/src/lib/email.ts`
+
+**Database:**
+- `inquiries` table — contact form submissions
+- `charges` table — all payment records (chargeId, unlockToken, service, amountInCents, name, email, phone, company, domain)
 
 **WhatsApp number:** 27760597724
 **Unlock code (manual):** FortuneD21!@

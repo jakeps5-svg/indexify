@@ -1,45 +1,31 @@
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle2, Target, TrendingUp, Search, MousePointerClick, BarChart3, Users, Star, ChevronDown, MessageCircle, Loader2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Target, TrendingUp, Search, MousePointerClick, BarChart3, Users, Star, ChevronDown, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppModal } from "@/components/WhatsAppModal";
 import { cn } from "@/lib/utils";
-import { useYocoPopup } from "@/hooks/useYocoPopup";
 
-function YocoButton({ service, amountInCents, type, label, dark = false }: {
-  service: string; amountInCents: number; type: string; label: string; dark?: boolean;
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+function YocoButton({ type, label, dark = false }: {
+  type: string; label: string; dark?: boolean;
 }) {
-  const { showPopup, loading } = useYocoPopup();
-  const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-
-  function handlePay() {
-    void showPopup({
-      amountInCents,
-      name: "Fortune Design",
-      description: service,
-      service,
-      onSuccess: () => {
-        window.location.href = `${window.location.origin}${BASE}/payment-success?type=${type}`;
-      },
-    });
+  function handleClick() {
+    window.location.href = `${window.location.origin}${BASE}/checkout?type=${type}`;
   }
 
   return (
     <button
-      onClick={handlePay}
-      disabled={loading}
+      onClick={handleClick}
       className={cn(
-        "w-full py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed",
+        "w-full py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2",
         dark
           ? "bg-primary hover:bg-primary/90 text-white hover:shadow-primary/30"
           : "bg-gray-900 hover:bg-gray-800 text-white hover:shadow-gray-900/20"
       )}
     >
-      {loading
-        ? <><Loader2 size={15} className="animate-spin" /> Opening payment...</>
-        : label
-      }
+      {label}
     </button>
   );
 }
@@ -388,7 +374,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <YocoButton service="Growth Starter SEO Package" amountInCents={550000} type="starter" label="Get Started — R5,500/mo" />
+              <YocoButton type="starter" label="Get Started — R5,500/mo" />
             </motion.div>
 
             {/* Premium (Highlighted) — kept dark for visual contrast */}
@@ -412,7 +398,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <YocoButton service="Market Leader Digital Marketing Package" amountInCents={1250000} type="leader" label="Choose Leader — R12,500/mo" dark />
+              <YocoButton type="leader" label="Choose Leader — R12,500/mo" dark />
             </motion.div>
 
             {/* Enterprise */}

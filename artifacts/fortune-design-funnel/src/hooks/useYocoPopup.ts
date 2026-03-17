@@ -42,7 +42,9 @@ export interface PopupOptions {
   name: string;
   description?: string;
   service: string;
-  onSuccess?: (chargeId: string) => void;
+  /** Extra fields merged into the POST body sent to /api/charge */
+  extraBody?: Record<string, unknown>;
+  onSuccess?: (chargeId: string, unlockToken?: string) => void;
   onError?: (message: string) => void;
 }
 
@@ -81,8 +83,8 @@ export function useYocoPopup() {
           return;
         }
 
-        const token = result.id;
-        if (!token) {
+        const yocoToken = result.id;
+        if (!yocoToken) {
           setError("No payment token received. Please try again.");
           setLoading(false);
           return;
@@ -93,20 +95,26 @@ export function useYocoPopup() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              token,
+              token: yocoToken,
               amountInCents: opts.amountInCents,
               service: opts.service,
+              ...(opts.extraBody ?? {}),
             }),
           });
 
-          const data = await res.json() as { chargeId?: string; error?: string };
+          const data = await res.json() as {
+            chargeId?: string;
+            unlockToken?: string;
+            isProposal?: boolean;
+            error?: string;
+          };
 
           if (!res.ok) {
             throw new Error(data.error ?? `Payment failed (${res.status})`);
           }
 
           setLoading(false);
-          opts.onSuccess?.(data.chargeId ?? "");
+          opts.onSuccess?.(data.chargeId ?? "", data.unlockToken);
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message : "Payment processing failed. Please try again.";
           setError(msg);

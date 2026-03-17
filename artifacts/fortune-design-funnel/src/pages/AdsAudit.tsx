@@ -6,10 +6,10 @@ import {
   Loader2, Search, Megaphone, RefreshCw, Lightbulb,
   BarChart3, ChevronDown, Globe
 } from "lucide-react";
+import { useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
-import { useYocoPopup } from "@/hooks/useYocoPopup";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
 const WA_NUMBER = "27760597724";
@@ -459,8 +459,9 @@ export default function AdsAuditPage() {
   const [codeError, setCodeError] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [unlockOpen, setUnlockOpen] = useState(false);
+  const [tokenValidating, setTokenValidating] = useState(false);
   const codeRef = useRef<HTMLInputElement>(null);
-  const { showPopup: showYocoPopup, loading: yocoLoading, error: yocoError, clearError: clearYocoError } = useYocoPopup();
+  const [, navigate] = useLocation();
 
   async function runProposal(e: React.FormEvent) {
     e.preventDefault();
@@ -485,16 +486,38 @@ export default function AdsAuditPage() {
     }
   }
 
-  function tryUnlock() {
+  async function tryUnlock() {
     if (!result) return;
     const entered = (codeRef.current?.value ?? codeInput).trim();
+
+    // Check built-in code first
     if (entered === result.unlockCode) {
       setUnlocked(true);
       setUnlockOpen(false);
       setCodeError("");
-    } else {
-      setCodeError("Incorrect code. Please check and try again.");
+      return;
     }
+
+    // Check DB token (FD-XXXXXXXX format)
+    if (entered.toUpperCase().startsWith("FD-")) {
+      setTokenValidating(true);
+      try {
+        const res = await fetch(`${BASE}/api/validate-token?token=${encodeURIComponent(entered)}`);
+        const data = await res.json() as { valid: boolean };
+        if (data.valid) {
+          setUnlocked(true);
+          setUnlockOpen(false);
+          setCodeError("");
+          return;
+        }
+      } catch {
+        // fall through to error
+      } finally {
+        setTokenValidating(false);
+      }
+    }
+
+    setCodeError("Incorrect code. Please check and try again.");
   }
 
   function openWhatsApp() {
@@ -506,18 +529,8 @@ export default function AdsAuditPage() {
 
   function startProposalPayment() {
     if (!result) return;
-    clearYocoError();
-    const domain = (() => { try { return new URL(result.finalUrl).hostname; } catch { return result.finalUrl; } })();
-    void showYocoPopup({
-      amountInCents: 50000,
-      name: "Fortune Design",
-      description: `Full Google Ads Proposal — ${domain}`,
-      service: "Google Ads Proposal Full Download",
-      onSuccess: () => {
-        setUnlocked(true);
-        setUnlockOpen(false);
-      },
-    });
+    const domain = (() => { try { return new URL(result.finalUrl).hostname.replace(/^www\./, ""); } catch { return result.finalUrl; } })();
+    navigate(`${BASE}/checkout?type=proposal&domain=${encodeURIComponent(domain)}`);
   }
 
   const domain = result ? (() => { try { return new URL(result.finalUrl).hostname.replace(/^www\./, ""); } catch { return result.finalUrl; } })() : "";
@@ -828,14 +841,10 @@ export default function AdsAuditPage() {
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-3">
                       <button
                         onClick={startProposalPayment}
-                        disabled={yocoLoading}
-                        className="flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm text-white transition-all hover:-translate-y-0.5 shadow-lg"
                         style={{ background: "linear-gradient(135deg, hsl(198 69% 42%), hsl(198 69% 58%))", boxShadow: "0 4px 20px hsl(198 69% 52% / 0.4)" }}
                       >
-                        {yocoLoading
-                          ? <><Loader2 size={16} className="animate-spin" /> Redirecting to Yoco...</>
-                          : <><svg width="16" height="16" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="20" fill="white"/><text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="18" fontWeight="bold" fill="#0099cc">Y</text></svg> Pay R500 with Yoco</>
-                        }
+                        <svg width="16" height="16" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="20" fill="white"/><text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fontSize="18" fontWeight="bold" fill="#0099cc">Y</text></svg> Pay R500 with Yoco
                       </button>
                       <button
                         onClick={openWhatsApp}
@@ -850,10 +859,6 @@ export default function AdsAuditPage() {
                         <Unlock size={13} /> Enter Code
                       </button>
                     </div>
-                    {yocoError && (
-                      <p className="text-red-500 text-xs mb-3">Payment error: {yocoError}</p>
-                    )}
-
                     <AnimatePresence>
                       {unlockOpen && (
                         <motion.div
@@ -869,17 +874,18 @@ export default function AdsAuditPage() {
                                 type="text"
                                 value={codeInput}
                                 onChange={e => { setCodeInput(e.target.value); setCodeError(""); }}
-                                onKeyDown={e => e.key === "Enter" && tryUnlock()}
-                                placeholder="Enter your unlock code"
+                                onKeyDown={e => e.key === "Enter" && void tryUnlock()}
+                                placeholder="Enter your unlock code (e.g. FD-XXXXXXXX)"
                                 className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 text-gray-900 text-sm placeholder-gray-400"
                                 style={{ "--tw-ring-color": PRIMARY } as React.CSSProperties}
                               />
                               <button
-                                onClick={tryUnlock}
-                                className="px-5 py-3 rounded-xl font-bold text-white text-sm transition-all"
+                                onClick={() => void tryUnlock()}
+                                disabled={tokenValidating}
+                                className="px-5 py-3 rounded-xl font-bold text-white text-sm transition-all flex items-center gap-1.5 disabled:opacity-60"
                                 style={{ background: PRIMARY }}
                               >
-                                Unlock
+                                {tokenValidating ? <><Loader2 size={14} className="animate-spin" /> Checking...</> : "Unlock"}
                               </button>
                             </div>
                             {codeError && <p className="text-red-500 text-xs mt-2 text-left">{codeError}</p>}

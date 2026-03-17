@@ -9,6 +9,7 @@ import SEOPage from "@/pages/SEO";
 import GoogleAdsPage from "@/pages/GoogleAds";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentCancelled from "@/pages/PaymentCancelled";
+import CheckoutPage from "@/pages/Checkout";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/services/google-ads" component={GoogleAdsPage} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-cancelled" component={PaymentCancelled} />
+      <Route path="/checkout" component={CheckoutPage} />
       <Route component={NotFound} />
     </Switch>
   );
