@@ -70,15 +70,6 @@ export function Navbar() {
       bg: "bg-accent/10",
       divider: false,
     },
-    {
-      name: "Free Google Ads Proposal",
-      desc: "Get a tailored campaign strategy",
-      href: `${import.meta.env.BASE_URL}ads-audit`,
-      icon: MousePointerClick,
-      color: "text-accent",
-      bg: "bg-accent/10",
-      divider: true,
-    },
   ];
 
   return (
