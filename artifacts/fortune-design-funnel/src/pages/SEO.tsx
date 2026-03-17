@@ -44,7 +44,7 @@ const FAQS = [
   { q: "Will my rankings drop if I stop SEO?", a: "Rankings built on genuine authority tend to be sticky. However, competitors invest in SEO continuously, so pausing can gradually erode your position. We recommend a minimum 6-month commitment to build durable, compounding results." },
   { q: "Do you do SEO for all industries?", a: "We work with any South African business that relies on Google to attract clients — from trades and medical practices to e-commerce stores and professional services. Our process is tailored to your specific market and competition level." },
   { q: "What makes Fortune Design different from other SEO agencies?", a: "We only focus on search marketing — no social media, no graphic design, no distractions. That singular focus means deeper expertise, faster results, and a team that genuinely understands how Google works at a technical level." },
-  { q: "How much does SEO cost?", a: "Our SEO packages start from R3,500/month and scale based on competition level and the number of target keywords. We'll give you a custom quote after a free audit of your website and market." },
+  { q: "How much does SEO cost?", a: "Our SEO packages start from R5,900/month for Local SEO and go up to R11,900/month for our Premium package with DA90+ backlinks and press releases. We'll recommend the right package after a free audit of your website and market." },
 ];
 
 function FAQItem({ q, a }: { q: string; a: string }) {
@@ -368,6 +368,135 @@ export default function SEOPage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* PRICING */}
+      <section className="py-24 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-black mb-4 text-gray-900">SEO <span className="text-gradient">Pricing Packages</span></h2>
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto">Transparent pricing. No hidden fees. Cancel anytime after your first 3 months.</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+            {[
+              {
+                name: "Basic SEO",
+                price: "5,900",
+                popular: false,
+                features: [
+                  "Local SEO (Focused on Ranking Locally)",
+                  "Keyword Research",
+                  "Analytic Setup & Configuration",
+                  "Technical SEO (Robots.txt, Sitemap, etc)",
+                  "Title Tag & Meta Tag Creation",
+                  "Content Editing & Optimization",
+                  "Monthly Custom Report",
+                ],
+              },
+              {
+                name: "Advanced SEO",
+                price: "7,900",
+                popular: false,
+                features: [
+                  "Competitive Keywords / Ranking Nationwide",
+                  "Ecommerce Lead Generation",
+                  "Local SEO (Focused on Ranking Locally)",
+                  "Keyword Research",
+                  "Analytic Setup & Configuration",
+                  "Technical SEO (Robots.txt, Sitemap, etc)",
+                  "Title Tag & Meta Tag Creation",
+                  "Content Editing & Optimization",
+                  "Monthly Custom Report",
+                  "Offsite Link Building",
+                ],
+              },
+              {
+                name: "Premium SEO",
+                price: "11,900",
+                popular: true,
+                features: [
+                  "Competitive Keywords / Ranking Nationwide",
+                  "Backlink Manager",
+                  "DA 90+ Backlinks",
+                  "Ecommerce Lead Generation",
+                  "Local SEO (Focused on Ranking Locally)",
+                  "Keyword Research",
+                  "Keyword Optimization & Implementation",
+                  "Backlink Indexing",
+                  "Analytic Setup & Configuration",
+                  "Technical SEO (Robots.txt, Sitemap, etc)",
+                  "Title Tag & Meta Tag Creation",
+                  "Content Editing & Optimization",
+                  "Monthly Custom Report",
+                  "Offsite Link Building",
+                  "Press Release",
+                ],
+              },
+            ].map((pkg, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.12, duration: 0.6 }}
+                className={`relative rounded-3xl flex flex-col ${
+                  pkg.popular
+                    ? "bg-primary text-white shadow-2xl shadow-primary/30 scale-105"
+                    : "bg-white border border-gray-200 shadow-sm"
+                }`}
+              >
+                {pkg.popular && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-accent text-white text-xs font-bold uppercase tracking-wider shadow-lg">
+                      <Star size={12} fill="currentColor" /> Most Popular
+                    </span>
+                  </div>
+                )}
+                <div className="p-8 pb-0">
+                  <h3 className={`text-xl font-bold mb-6 ${pkg.popular ? "text-white" : "text-gray-900"}`}>{pkg.name}</h3>
+                  <div className="mb-8">
+                    <div className={`flex items-baseline gap-1 ${pkg.popular ? "text-white" : "text-gray-900"}`}>
+                      <span className="text-2xl font-semibold">R</span>
+                      <span className="text-5xl font-black">{pkg.price}</span>
+                    </div>
+                    <p className={`text-sm mt-1 font-medium ${pkg.popular ? "text-white/70" : "text-gray-400"}`}>per month</p>
+                  </div>
+                  <ul className="space-y-3 mb-8">
+                    {pkg.features.map((f, j) => (
+                      <li key={j} className="flex items-start gap-3">
+                        <CheckCircle2 size={16} className={`mt-0.5 shrink-0 ${pkg.popular ? "text-white" : "text-primary"}`} />
+                        <span className={`text-sm leading-relaxed ${pkg.popular ? "text-white/90" : "text-gray-600"}`}>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="p-8 pt-4 mt-auto">
+                  <button
+                    onClick={openWhatsApp}
+                    className={`w-full py-4 rounded-xl font-bold text-base transition-all duration-300 hover:-translate-y-0.5 ${
+                      pkg.popular
+                        ? "bg-white text-primary hover:bg-white/90 shadow-lg"
+                        : "bg-primary text-white hover:bg-primary/90 shadow-md shadow-primary/20"
+                    }`}
+                  >
+                    Choose Package
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.p
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.4 }}
+            className="text-center text-sm text-gray-400 mt-10"
+          >
+            Not sure which package is right for you? <button onClick={openWhatsApp} className="text-primary font-semibold hover:underline">Chat with us — we'll recommend the best fit.</button>
+          </motion.p>
         </div>
       </section>
 
