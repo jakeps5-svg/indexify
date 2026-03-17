@@ -80,20 +80,20 @@ export function WhatsAppModal() {
               className="relative w-full max-w-md bg-card border border-white/10 rounded-2xl shadow-2xl overflow-hidden"
             >
               {/* Header */}
-              <div className="bg-gradient-to-r from-zinc-900 to-zinc-800 p-6 border-b border-white/5 relative">
+              <div className="p-6 border-b border-white/10 relative" style={{ background: "linear-gradient(135deg, #075E54 0%, #128C7E 100%)" }}>
                 <button 
                   onClick={() => setIsOpen(false)}
-                  className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors"
                 >
                   <X size={20} />
                 </button>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#25D366]/20 flex items-center justify-center text-[#25D366]">
+                  <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
                     <WhatsAppIcon size={20} />
                   </div>
                   <div>
-                    <h3 className="font-display font-bold text-lg text-foreground">Chat with our Team</h3>
-                    <p className="text-sm text-muted-foreground">We typically reply within minutes.</p>
+                    <h3 className="font-display font-bold text-lg text-white">Chat with our Team</h3>
+                    <p className="text-sm text-white/80">We typically reply within minutes.</p>
                   </div>
                 </div>
               </div>
