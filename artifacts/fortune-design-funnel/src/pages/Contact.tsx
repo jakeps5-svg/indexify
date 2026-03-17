@@ -4,6 +4,7 @@ import { Send, Phone, Mail, MapPin, MessageSquare, CheckCircle2, Loader2 } from 
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppModal } from "@/components/WhatsAppModal";
+import { PoweredByBadge } from "@/components/PoweredByBadge";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -66,15 +67,18 @@ export default function Contact() {
         <div className="absolute top-20 right-16 w-72 h-72 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-10 w-48 h-48 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-primary/20 shadow-sm mb-6"
-          >
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-sm font-medium text-gray-600">We reply within 1 business hour</span>
-          </motion.div>
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-primary/20 shadow-sm"
+            >
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="text-sm font-medium text-gray-600">We reply within 1 business hour</span>
+            </motion.div>
+            <PoweredByBadge />
+          </div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

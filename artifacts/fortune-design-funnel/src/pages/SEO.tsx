@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppModal } from "@/components/WhatsAppModal";
+import { PoweredByBadge } from "@/components/PoweredByBadge";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -91,13 +92,18 @@ export default function SEOPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-primary/20 shadow-sm mb-8"
-            >
-              <Search size={14} className="text-primary" />
-              <span className="text-sm font-semibold text-primary uppercase tracking-wide">SEO Services</span>
-            </motion.div>
+            <div className="flex flex-wrap items-center gap-3 mb-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-primary/20 shadow-sm"
+              >
+                <Search size={14} className="text-primary" />
+                <span className="text-sm font-semibold text-primary uppercase tracking-wide">SEO Services</span>
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.05 }}>
+                <PoweredByBadge />
+              </motion.div>
+            </div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}

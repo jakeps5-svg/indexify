@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppModal } from "@/components/WhatsAppModal";
+import { PoweredByBadge } from "@/components/PoweredByBadge";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -102,14 +103,19 @@ export default function GoogleAdsPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm mb-8"
-              style={{ border: `1px solid ${ACCENT_BORDER}` }}
-            >
-              <MousePointerClick size={14} style={{ color: ACCENT }} />
-              <span className="text-sm font-semibold uppercase tracking-wide" style={{ color: ACCENT }}>Google Ads Management</span>
-            </motion.div>
+            <div className="flex flex-wrap items-center gap-3 mb-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm"
+                style={{ border: `1px solid ${ACCENT_BORDER}` }}
+              >
+                <MousePointerClick size={14} style={{ color: ACCENT }} />
+                <span className="text-sm font-semibold uppercase tracking-wide" style={{ color: ACCENT }}>Google Ads Management</span>
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.05 }}>
+                <PoweredByBadge />
+              </motion.div>
+            </div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}

@@ -9,6 +9,7 @@ import {
 import { useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { PoweredByBadge } from "@/components/PoweredByBadge";
 import { cn } from "@/lib/utils";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
@@ -546,9 +547,12 @@ export default function AdsAuditPage() {
 
         {/* Hero */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold mb-5 border"
-            style={{ background: "hsl(198 69% 52% / 0.1)", color: PRIMARY, borderColor: "hsl(198 69% 52% / 0.3)" }}>
-            <Megaphone size={14} /> Free Google Ads Proposal Generator
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-5">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold border"
+              style={{ background: "hsl(198 69% 52% / 0.1)", color: PRIMARY, borderColor: "hsl(198 69% 52% / 0.3)" }}>
+              <Megaphone size={14} /> Free Google Ads Proposal Generator
+            </div>
+            <PoweredByBadge />
           </div>
           <h1 className="text-4xl md:text-5xl font-black mb-3 leading-tight text-gray-900">
             Your Custom <span style={{ color: ACCENT }}>Google Ads Proposal</span><br />

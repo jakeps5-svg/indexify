@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { CheckCircle2, Star, ArrowRight, Search, MousePointerClick, FileText, MessageCircle } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { PoweredByBadge } from "@/components/PoweredByBadge";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -81,9 +82,12 @@ export default function PricingPage() {
       <section className="pt-36 pb-16 bg-gradient-to-br from-sky-50 via-white to-blue-50 text-center">
         <div className="max-w-4xl mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-primary/20 shadow-sm text-sm font-medium text-gray-600 mb-6">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" /> Transparent Pricing — No Hidden Fees
-            </span>
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-primary/20 shadow-sm text-sm font-medium text-gray-600">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" /> Transparent Pricing — No Hidden Fees
+              </span>
+              <PoweredByBadge />
+            </div>
             <h1 className="text-5xl md:text-6xl font-black text-gray-900 mb-4">
               Invest in <span className="text-gradient">Predictable Growth</span>
             </h1>

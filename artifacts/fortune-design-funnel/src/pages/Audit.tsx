@@ -9,6 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { PoweredByBadge } from "@/components/PoweredByBadge";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
 
@@ -445,8 +446,11 @@ export default function AuditPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-5 border border-primary/20">
-            <Award size={14} /> Free SEO Audit Tool
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-5">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold border border-primary/20">
+              <Award size={14} /> Free SEO Audit Tool
+            </div>
+            <PoweredByBadge />
           </div>
           <h1 className="text-4xl md:text-5xl font-black mb-3 leading-tight text-gray-900">
             Instant <span className="text-primary">SEO Report Card</span>
