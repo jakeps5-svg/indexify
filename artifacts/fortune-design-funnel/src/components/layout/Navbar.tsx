@@ -45,9 +45,9 @@ export function Navbar() {
   };
 
   const navLinks = [
-    { name: "Results", id: "results" },
-    { name: "Reviews", id: "reviews" },
-    { name: "Pricing", id: "pricing" },
+    { name: "Results", id: "results", href: null },
+    { name: "Reviews", id: "reviews", href: null },
+    { name: "Pricing", id: null, href: `${import.meta.env.BASE_URL}pricing` },
   ];
 
   const services = [
@@ -150,13 +150,9 @@ export function Navbar() {
             </div>
 
             {navLinks.map((link) => (
-              <button
-                key={link.name}
-                onClick={() => scrollTo(link.id)}
-                className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                {link.name}
-              </button>
+              link.href
+                ? <a key={link.name} href={link.href} className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">{link.name}</a>
+                : <button key={link.name} onClick={() => scrollTo(link.id!)} className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">{link.name}</button>
             ))}
             <a
               href={`${import.meta.env.BASE_URL}audit`}
@@ -205,13 +201,9 @@ export function Navbar() {
               <div className="h-px bg-gray-100 mx-4" />
 
               {navLinks.map((link) => (
-                <button
-                  key={link.name}
-                  onClick={() => scrollTo(link.id)}
-                  className="block w-full text-left px-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  {link.name}
-                </button>
+                link.href
+                  ? <a key={link.name} href={link.href} className="block px-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">{link.name}</a>
+                  : <button key={link.name} onClick={() => scrollTo(link.id!)} className="block w-full text-left px-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">{link.name}</button>
               ))}
               <div className="px-4 pt-2">
                 <a

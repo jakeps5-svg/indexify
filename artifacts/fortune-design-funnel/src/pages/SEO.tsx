@@ -9,6 +9,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppModal } from "@/components/WhatsAppModal";
 
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -432,6 +434,7 @@ export default function SEOPage() {
               {
                 name: "Basic SEO",
                 price: "5,900",
+                type: "seo-basic",
                 popular: false,
                 features: [
                   "Local SEO (Focused on Ranking Locally)",
@@ -446,6 +449,7 @@ export default function SEOPage() {
               {
                 name: "Advanced SEO",
                 price: "7,900",
+                type: "seo-advanced",
                 popular: false,
                 features: [
                   "Competitive Keywords / Ranking Nationwide",
@@ -463,6 +467,7 @@ export default function SEOPage() {
               {
                 name: "Premium SEO",
                 price: "11,900",
+                type: "seo-premium",
                 popular: true,
                 features: [
                   "Competitive Keywords / Ranking Nationwide",
@@ -520,16 +525,26 @@ export default function SEOPage() {
                     ))}
                   </ul>
                 </div>
-                <div className="p-8 pt-4 mt-auto">
+                <div className="p-8 pt-4 mt-auto space-y-2">
                   <button
-                    onClick={openWhatsApp}
+                    onClick={() => { window.location.href = `${window.location.origin}${BASE}/checkout?type=${pkg.type}`; }}
                     className={`w-full py-4 rounded-xl font-bold text-base transition-all duration-300 hover:-translate-y-0.5 ${
                       pkg.popular
                         ? "bg-white text-primary hover:bg-white/90 shadow-lg"
                         : "bg-primary text-white hover:bg-primary/90 shadow-md shadow-primary/20"
                     }`}
                   >
-                    Choose Package
+                    Get Started — R{pkg.price}/mo
+                  </button>
+                  <button
+                    onClick={openWhatsApp}
+                    className={`w-full py-2.5 rounded-xl font-medium text-xs transition-all ${
+                      pkg.popular
+                        ? "border border-white/20 text-white/70 hover:bg-white/10"
+                        : "border border-gray-200 text-gray-500 hover:border-gray-300"
+                    }`}
+                  >
+                    Questions? Chat on WhatsApp first
                   </button>
                 </div>
               </motion.div>

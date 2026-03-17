@@ -347,6 +347,120 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SERVICE CTAs SECTION */}
+      <section id="services" className="py-24 bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">Everything You Need to <span className="text-gradient">Dominate Google</span></h2>
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto">From free audits to full-service campaigns — choose what fits your business right now.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* SEO */}
+            <motion.div
+              variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="group relative rounded-3xl border border-gray-200 bg-white p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
+                <Search size={24} className="text-primary" />
+              </div>
+              <h3 className="text-2xl font-black text-gray-900 mb-2">Search Engine Optimisation</h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-6">Rank on Page 1 organically. Build compounding traffic that keeps delivering — without paying per click.</p>
+              <ul className="space-y-2 mb-8">
+                {["Local & Nationwide keyword ranking", "Technical SEO & backlink building", "Monthly performance reports"].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
+                    <CheckCircle2 size={14} className="text-primary shrink-0" /> {f}
+                  </li>
+                ))}
+              </ul>
+              <div className="flex gap-3">
+                <a href={`${BASE}/services/seo`} className="flex-1 py-3 rounded-xl border border-primary text-primary font-bold text-sm text-center hover:bg-primary/5 transition-all">
+                  Learn More
+                </a>
+                <button onClick={() => { window.location.href = `${window.location.origin}${BASE}/checkout?type=seo-basic`; }} className="flex-1 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md shadow-primary/20">
+                  Get Started →
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Google Ads */}
+            <motion.div
+              variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="group relative rounded-3xl border border-gray-200 bg-white p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-48 h-48 bg-accent/5 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+              <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mb-5">
+                <MousePointerClick size={24} className="text-accent" />
+              </div>
+              <h3 className="text-2xl font-black text-gray-900 mb-2">Google Ads Management</h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-6">Get leads from day one. We build, manage, and optimise campaigns that deliver real ROI on your ad spend.</p>
+              <ul className="space-y-2 mb-8">
+                {["Full campaign setup & restructure", "Conversion tracking & A/B testing", "No % of ad spend — flat fee only"].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
+                    <CheckCircle2 size={14} className="text-accent shrink-0" /> {f}
+                  </li>
+                ))}
+              </ul>
+              <div className="flex gap-3">
+                <a href={`${BASE}/services/google-ads`} className="flex-1 py-3 rounded-xl border font-bold text-sm text-center transition-all hover:-translate-y-0.5" style={{ borderColor: "hsl(29 100% 55%)", color: "hsl(29 100% 45%)" }}>
+                  Learn More
+                </a>
+                <button onClick={() => { window.location.href = `${window.location.origin}${BASE}/checkout?type=google-ads`; }} className="flex-1 py-3 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-all shadow-md" style={{ background: "hsl(29 100% 55%)", boxShadow: "0 4px 16px hsl(29 100% 55% / 0.3)" }}>
+                  Get Started →
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Free Google Ads Proposal */}
+            <motion.div
+              variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="group relative rounded-3xl border-2 border-dashed border-primary/30 bg-sky-50/40 p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
+                <BarChart3 size={24} className="text-primary" />
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold mb-3">Free</div>
+              <h3 className="text-2xl font-black text-gray-900 mb-2">Google Ads Proposal</h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-6">Enter your website URL and get an AI-generated Google Ads campaign strategy in under 30 seconds — keywords, ad copy, and budgets included.</p>
+              <ul className="space-y-2 mb-8">
+                {["Campaign structure & keywords", "Ad copy suggestions per group", "Unlock full report for R500"].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
+                    <CheckCircle2 size={14} className="text-primary shrink-0" /> {f}
+                  </li>
+                ))}
+              </ul>
+              <a href={`${BASE}/ads-audit`} className="block w-full py-3.5 rounded-xl bg-primary text-white font-bold text-sm text-center hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md shadow-primary/20">
+                Generate Free Proposal →
+              </a>
+            </motion.div>
+
+            {/* Website Audit */}
+            <motion.div
+              variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="group relative rounded-3xl border-2 border-dashed border-gray-200 bg-gray-50/50 p-8 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-5">
+                <TrendingUp size={24} className="text-gray-600" />
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold mb-3">Free</div>
+              <h3 className="text-2xl font-black text-gray-900 mb-2">Free SEO Audit</h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-6">Discover what's holding your website back. Get an instant SEO health check with actionable fixes you can implement today.</p>
+              <ul className="space-y-2 mb-8">
+                {["Page speed & technical issues", "Keyword & content gaps", "Instant actionable recommendations"].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
+                    <CheckCircle2 size={14} className="text-gray-500 shrink-0" /> {f}
+                  </li>
+                ))}
+              </ul>
+              <a href={`${BASE}/audit`} className="block w-full py-3.5 rounded-xl bg-gray-900 text-white font-bold text-sm text-center hover:bg-gray-800 hover:-translate-y-0.5 transition-all shadow-md">
+                Run Free Audit →
+              </a>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* 5. PRICING SECTION */}
       <section id="pricing" className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

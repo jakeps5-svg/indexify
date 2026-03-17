@@ -27,6 +27,30 @@ const SERVICES: Record<string, { label: string; price: string; amountInCents: nu
     amountInCents: 1250000,
     description: "Full SEO + Google Ads management, conversion optimisation & bi-weekly strategy calls",
   },
+  "seo-basic": {
+    label: "Basic SEO Package",
+    price: "R5,900 / month",
+    amountInCents: 590000,
+    description: "Local SEO, keyword research, technical SEO, meta tags & monthly reporting",
+  },
+  "seo-advanced": {
+    label: "Advanced SEO Package",
+    price: "R7,900 / month",
+    amountInCents: 790000,
+    description: "Nationwide keywords, ecommerce lead generation, link building & advanced reporting",
+  },
+  "seo-premium": {
+    label: "Premium SEO Package",
+    price: "R11,900 / month",
+    amountInCents: 1190000,
+    description: "DA 90+ backlinks, press releases, full technical SEO & comprehensive link building",
+  },
+  "google-ads": {
+    label: "Google Ads Management",
+    price: "R7,300 / month",
+    amountInCents: 730000,
+    description: "Full campaign setup, keyword research, ad copy, conversion tracking & monthly reports",
+  },
 };
 
 export default function CheckoutPage() {
