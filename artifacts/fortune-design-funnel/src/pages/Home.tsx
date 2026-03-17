@@ -234,6 +234,21 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ANALYTICS SHOWCASE IMAGE */}
+      <section className="overflow-hidden">
+        <div className="relative w-full max-h-[420px] overflow-hidden">
+          <img
+            src={`${import.meta.env.BASE_URL}images/homepage-analytics.png`}
+            alt="Digital marketing analytics dashboard showing SEO keyword rankings climbing and Google Ads campaign performance metrics improving month over month for South African businesses"
+            className="w-full h-full object-cover object-top"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/75 via-gray-900/10 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+            <p className="text-white text-lg md:text-xl font-semibold max-w-xl">Real-time performance tracking — so you always know exactly what your investment is delivering.</p>
+          </div>
+        </div>
+      </section>
+
       {/* 3. SERVICES SECTION */}
       <section id="services" className="py-24 relative overflow-hidden">
         {/* Background image */}
@@ -358,6 +373,21 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black mb-6 text-gray-900">Client <span className="text-primary">Success Stories</span></h2>
             <p className="text-lg text-gray-500 max-w-2xl mx-auto">Don't just take our word for it. Here's what South African business owners have to say about working with Indexify.</p>
+          </div>
+
+          {/* Featured client result image */}
+          <div className="mb-12 rounded-3xl overflow-hidden shadow-xl relative max-h-72">
+            <img
+              src={`${import.meta.env.BASE_URL}images/homepage-results.png`}
+              alt="South African business owner smiling at laptop screen showing their business ranking number one on Google Search, celebrating SEO success with Indexify"
+              className="w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-900/70 via-gray-900/30 to-transparent flex items-center">
+              <div className="p-8 md:p-12 max-w-md">
+                <p className="text-white text-xl md:text-2xl font-black leading-snug mb-2">"Page 1 on Google — and the leads keep coming."</p>
+                <p className="text-white/70 text-sm">— Clients across South Africa</p>
+              </div>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -626,6 +656,37 @@ export default function Home() {
             ].map((faq, i) => (
               <FAQItem key={i} question={faq.q} answer={faq.a} />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TEAM IMAGE SECTION */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">A team obsessed with <span className="text-gradient">your growth</span></h2>
+              <p className="text-lg text-gray-500 leading-relaxed mb-6">Every campaign we run is backed by strategy, data, and a relentless focus on the metrics that actually matter — leads, calls, and revenue.</p>
+              <p className="text-lg text-gray-500 leading-relaxed">We don't outsource. We don't automate your account away. You get dedicated experts who know your business and fight for your rankings every single month.</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="rounded-3xl overflow-hidden shadow-2xl"
+            >
+              <img
+                src={`${import.meta.env.BASE_URL}images/homepage-team.png`}
+                alt="Indexify digital marketing team collaborating around a table reviewing Google Ads campaign data and SEO performance charts on multiple screens in a modern South African office"
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
           </div>
         </div>
       </section>
