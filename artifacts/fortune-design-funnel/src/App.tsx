@@ -4,6 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/Home";
 import AuditPage from "@/pages/Audit";
+import SEOPage from "@/pages/SEO";
+import GoogleAdsPage from "@/pages/GoogleAds";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -13,6 +15,8 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/audit" component={AuditPage} />
+      <Route path="/services/seo" component={SEOPage} />
+      <Route path="/services/google-ads" component={GoogleAdsPage} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -180,9 +180,9 @@ export default function Home() {
                 ))}
               </ul>
               
-              <button onClick={() => scrollTo("contact")} className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-white font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 relative z-10">
-                Discuss SEO Strategy
-              </button>
+              <a href={`${import.meta.env.BASE_URL}services/seo`} className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-white font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 relative z-10 flex items-center justify-center gap-2">
+                Learn More About SEO <ArrowRight size={16} />
+              </a>
             </motion.div>
 
             {/* Google Ads Card */}
@@ -218,9 +218,9 @@ export default function Home() {
                 ))}
               </ul>
               
-              <button onClick={() => scrollTo("contact")} className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-white font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 relative z-10">
-                Discuss Ads Strategy
-              </button>
+              <a href={`${import.meta.env.BASE_URL}services/google-ads`} className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-white font-semibold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-300 relative z-10 flex items-center justify-center gap-2">
+                Learn More About Google Ads <ArrowRight size={16} />
+              </a>
             </motion.div>
           </div>
         </div>
