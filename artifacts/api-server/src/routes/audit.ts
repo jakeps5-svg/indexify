@@ -165,6 +165,93 @@ interface AuditSection {
   checks: AuditCheck[];
 }
 
+// ── Common English + SA stop words to exclude from keyword extraction ──────────
+const STOP_WORDS = new Set([
+  "a","an","the","and","or","but","in","on","at","to","for","of","with","by",
+  "from","up","about","into","through","during","is","are","was","were","be",
+  "been","being","have","has","had","do","does","did","will","would","could",
+  "should","may","might","shall","can","need","that","this","these","those",
+  "it","its","i","you","he","she","we","they","them","their","our","your",
+  "my","his","her","us","what","which","who","how","when","where","why",
+  "all","any","both","each","few","more","most","other","some","such",
+  "no","not","only","same","so","than","too","very","just","as","if",
+  "then","there","here","s","re","ve","ll","t","d","www","http","https",
+  "com","co","za","org","net","io","get","use","also","new","one","two",
+  "free","amp","click","home","page","read","see","go","contact","services",
+  "service","our","we","you","your","get","now","today","learn","more",
+]);
+
+interface KeywordEntry {
+  keyword: string;
+  source: string;
+  count: number;
+}
+
+function extractPageKeywords($: ReturnType<typeof import("cheerio").load>): KeywordEntry[] {
+  const entries: { text: string; source: string; weight: number }[] = [];
+
+  const addText = (text: string, source: string, weight: number) => {
+    if (text?.trim()) entries.push({ text: text.trim(), source, weight });
+  };
+
+  addText($("title").first().text(), "Title", 10);
+  addText($('meta[name="description"]').attr("content") ?? "", "Meta Description", 7);
+  addText($('meta[name="keywords"]').attr("content") ?? "", "Meta Keywords", 8);
+  $("h1").each((_, el) => addText($(el).text(), "H1", 9));
+  $("h2").each((_, el) => addText($(el).text(), "H2", 7));
+  $("h3").each((_, el) => addText($(el).text(), "H3", 5));
+
+  // Body text: paragraphs, list items, spans — up to 5 000 chars to keep things fast
+  const bodyParts: string[] = [];
+  $("p, li, td, span[class], div[class]").each((_, el) => {
+    const t = $(el).clone().children().remove().end().text().trim();
+    if (t.length > 10) bodyParts.push(t);
+    if (bodyParts.join(" ").length > 5000) return false;
+  });
+  if (bodyParts.length) addText(bodyParts.join(" "), "Body", 2);
+
+  // Tokenise each source into 1- and 2-gram phrases
+  const scores = new Map<string, { score: number; source: string; count: number }>();
+
+  for (const { text, source, weight } of entries) {
+    const tokens = text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, " ")
+      .split(/\s+/)
+      .filter(t => t.length > 2 && !STOP_WORDS.has(t) && !/^\d+$/.test(t));
+
+    // 1-grams
+    for (const tok of tokens) {
+      const existing = scores.get(tok);
+      if (existing) {
+        existing.score += weight;
+        existing.count += 1;
+      } else {
+        scores.set(tok, { score: weight, source, count: 1 });
+      }
+    }
+
+    // 2-grams
+    for (let i = 0; i < tokens.length - 1; i++) {
+      const bigram = `${tokens[i]} ${tokens[i + 1]}`;
+      if (STOP_WORDS.has(tokens[i]) || STOP_WORDS.has(tokens[i + 1])) continue;
+      const existing = scores.get(bigram);
+      if (existing) {
+        existing.score += weight * 1.5;
+        existing.count += 1;
+      } else {
+        scores.set(bigram, { score: weight * 1.5, source, count: 1 });
+      }
+    }
+  }
+
+  return [...scores.entries()]
+    .map(([keyword, { score, source, count }]) => ({ keyword, source, count, score }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 20)
+    .map(({ keyword, source, count }) => ({ keyword, source, count }));
+}
+
 function normalizeUrl(raw: string): string {
   let url = raw.trim();
   if (!url.startsWith("http://") && !url.startsWith("https://")) {
@@ -271,6 +358,9 @@ router.post("/audit", async (req, res) => {
   }
 
   const $ = cheerio.load(html);
+
+  // ─── KEYWORD EXTRACTION ─────────────────────────────────────────────────────
+  const rankingKeywords = extractPageKeywords($);
 
   // ─── ON-PAGE SEO ────────────────────────────────────────────────────────────
   const onPageChecks: AuditCheck[] = [];
@@ -780,6 +870,7 @@ router.post("/audit", async (req, res) => {
     screenshots,
     missingAltImages,
     topBacklinks,
+    rankingKeywords,
   });
 });
 

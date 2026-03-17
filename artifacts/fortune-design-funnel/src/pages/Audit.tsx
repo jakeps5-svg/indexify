@@ -4,7 +4,7 @@ import {
   Search, CheckCircle2, XCircle, AlertTriangle, ChevronDown,
   ExternalLink, Zap, Globe, Image, Link2, Share2, ArrowLeft,
   Clock, FileText, MessageCircle, TrendingUp, Award, BarChart3,
-  Monitor, Smartphone, ImageOff
+  Monitor, Smartphone, ImageOff, Tag
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +39,12 @@ interface BacklinkResult {
   note?: string;
 }
 
+interface KeywordEntry {
+  keyword: string;
+  source: string;
+  count: number;
+}
+
 interface AuditResult {
   url: string;
   finalUrl: string;
@@ -51,6 +57,7 @@ interface AuditResult {
   screenshots: { desktop: string | null; mobile: string | null };
   missingAltImages: MissingAltImage[];
   topBacklinks: BacklinkResult[];
+  rankingKeywords: KeywordEntry[];
 }
 
 const sectionIcons: Record<string, typeof Search> = {
@@ -672,6 +679,75 @@ export default function AuditPage() {
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* ── Keyword Targets ── */}
+            {result.rankingKeywords?.length > 0 && (
+              <div className="bg-card border border-white/5 rounded-2xl overflow-hidden">
+                <div className="px-6 pt-5 pb-4 border-b border-white/5 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Tag size={15} className="text-primary" />
+                    <h3 className="font-bold text-base">Target Keywords</h3>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    Extracted from page content · {result.rankingKeywords.length} terms
+                  </span>
+                </div>
+                <div className="px-6 py-5">
+                  <p className="text-xs text-muted-foreground mb-4">
+                    These are the keywords your page is currently optimised for, ranked by prominence across your title, headings, meta description, and body text.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {result.rankingKeywords.map((kw, i) => {
+                      const sourceColor: Record<string, string> = {
+                        "Title":            "bg-primary/15 text-primary border-primary/30",
+                        "H1":               "bg-emerald-400/15 text-emerald-400 border-emerald-400/30",
+                        "H2":               "bg-sky-400/15 text-sky-400 border-sky-400/30",
+                        "H3":               "bg-violet-400/15 text-violet-400 border-violet-400/30",
+                        "Meta Description": "bg-amber-400/15 text-amber-400 border-amber-400/30",
+                        "Meta Keywords":    "bg-orange-400/15 text-orange-400 border-orange-400/30",
+                        "Body":             "bg-white/8 text-muted-foreground border-white/10",
+                      };
+                      const chipColor = sourceColor[kw.source] ?? sourceColor["Body"];
+                      const rankBadge = i < 3
+                        ? "ring-1 ring-offset-1 ring-offset-card " + (i === 0 ? "ring-primary/40" : i === 1 ? "ring-emerald-400/30" : "ring-sky-400/30")
+                        : "";
+                      return (
+                        <div
+                          key={i}
+                          className={cn(
+                            "inline-flex items-center gap-1.5 border rounded-full px-3 py-1 text-xs font-medium transition-all",
+                            chipColor,
+                            rankBadge
+                          )}
+                          title={`Found in: ${kw.source} · Appears ${kw.count}× in that source`}
+                        >
+                          {i < 3 && (
+                            <span className="text-[9px] font-black opacity-70">#{i + 1}</span>
+                          )}
+                          {kw.keyword}
+                          <span className="text-[10px] opacity-50 font-normal ml-0.5">{kw.source.replace("Meta ", "")}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-3 text-[11px] text-muted-foreground">
+                    {[
+                      { color: "bg-primary/60",      label: "Title" },
+                      { color: "bg-emerald-400/60",  label: "H1" },
+                      { color: "bg-sky-400/60",      label: "H2" },
+                      { color: "bg-violet-400/60",   label: "H3" },
+                      { color: "bg-amber-400/60",    label: "Meta Desc" },
+                      { color: "bg-white/30",        label: "Body" },
+                    ].map(({ color, label }) => (
+                      <span key={label} className="inline-flex items-center gap-1.5">
+                        <span className={cn("w-2 h-2 rounded-full", color)} />
+                        {label}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
