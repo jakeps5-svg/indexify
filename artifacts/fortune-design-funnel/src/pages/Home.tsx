@@ -64,9 +64,9 @@ export default function Home() {
           <img
             src={`${import.meta.env.BASE_URL}images/hero-bg.png`}
             alt="Abstract background"
-            className="w-full h-full object-cover opacity-10 mix-blend-multiply"
+            className="w-full h-full object-cover opacity-20 mix-blend-multiply"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-sky-50/60 via-white/70 to-white" />
+          <div className="absolute inset-0 bg-gradient-to-b from-sky-50/50 via-white/60 to-white" />
         </div>
 
         {/* Decorative circles */}
@@ -171,8 +171,15 @@ export default function Home() {
       </section>
 
       {/* 2. STATS SECTION */}
-      <section id="results" className="py-12 border-b border-gray-100 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="results" className="py-12 border-b border-gray-100 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img
+            src={`${import.meta.env.BASE_URL}images/results-bg.png`}
+            alt=""
+            className="w-full h-full object-cover opacity-5 mix-blend-multiply"
+          />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -221,36 +228,45 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="bg-white rounded-3xl p-8 md:p-10 group hover:border-primary/40 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-500 relative overflow-hidden"
+              className="bg-white rounded-3xl group hover:border-primary/40 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 relative overflow-hidden flex flex-col"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-primary/10 transition-all duration-500" />
-
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-8 relative z-10">
-                <Search size={32} />
+              {/* Image banner */}
+              <div className="relative h-52 overflow-hidden rounded-t-3xl bg-sky-50">
+                <img
+                  src={`${import.meta.env.BASE_URL}images/seo-illustration.png`}
+                  alt="SEO illustration"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-white/60 to-transparent" />
+                <div className="absolute bottom-4 left-6 w-12 h-12 rounded-xl bg-primary/90 flex items-center justify-center shadow-lg">
+                  <Search size={22} className="text-white" />
+                </div>
               </div>
 
-              <h3 className="text-3xl font-bold mb-4 text-gray-900 relative z-10">Search Engine Optimization</h3>
-              <p className="text-gray-500 mb-8 leading-relaxed relative z-10">
-                Dominate organic search results. We optimize your website to rank on page 1 for the keywords your customers are actively searching for.
-              </p>
+              <div className="p-8 md:p-10 flex-1 flex flex-col">
+                <h3 className="text-3xl font-bold mb-4 text-gray-900">Search Engine Optimization</h3>
+                <p className="text-gray-500 mb-8 leading-relaxed">
+                  Dominate organic search results. We optimize your website to rank on page 1 for the keywords your customers are actively searching for.
+                </p>
 
-              <ul className="space-y-4 mb-10 relative z-10">
-                {[
-                  "In-depth Keyword Strategy & Research",
-                  "Technical Website Optimization",
-                  "Local SEO for SA Businesses",
-                  "High-Authority Backlink Building"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-gray-700">
-                    <CheckCircle2 className="text-primary shrink-0 mt-0.5" size={20} />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+                <ul className="space-y-4 mb-10 flex-1">
+                  {[
+                    "In-depth Keyword Strategy & Research",
+                    "Technical Website Optimization",
+                    "Local SEO for SA Businesses",
+                    "High-Authority Backlink Building"
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 text-gray-700">
+                      <CheckCircle2 className="text-primary shrink-0 mt-0.5" size={20} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
 
-              <a href={`${import.meta.env.BASE_URL}services/seo`} className="w-full py-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 font-semibold hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 relative z-10 flex items-center justify-center gap-2">
-                Learn More About SEO <ArrowRight size={16} />
-              </a>
+                <a href={`${import.meta.env.BASE_URL}services/seo`} className="w-full py-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 font-semibold hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 flex items-center justify-center gap-2">
+                  Learn More About SEO <ArrowRight size={16} />
+                </a>
+              </div>
             </motion.div>
 
             {/* Google Ads Card */}
@@ -259,36 +275,45 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="bg-white rounded-3xl p-8 md:p-10 group hover:border-accent/40 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-500 relative overflow-hidden"
+              className="bg-white rounded-3xl group hover:border-accent/40 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 relative overflow-hidden flex flex-col"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-accent/10 transition-all duration-500" />
-
-              <div className="w-16 h-16 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent mb-8 relative z-10">
-                <MousePointerClick size={32} />
+              {/* Image banner */}
+              <div className="relative h-52 overflow-hidden rounded-t-3xl bg-orange-50">
+                <img
+                  src={`${import.meta.env.BASE_URL}images/ads-illustration.png`}
+                  alt="Google Ads illustration"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-white/60 to-transparent" />
+                <div className="absolute bottom-4 left-6 w-12 h-12 rounded-xl bg-accent flex items-center justify-center shadow-lg">
+                  <MousePointerClick size={22} className="text-white" />
+                </div>
               </div>
 
-              <h3 className="text-3xl font-bold mb-4 text-gray-900 relative z-10">Google Ads Management</h3>
-              <p className="text-gray-500 mb-8 leading-relaxed relative z-10">
-                Instant visibility and predictable leads. We build highly targeted PPC campaigns that maximize your ROI and minimize wasted ad spend.
-              </p>
+              <div className="p-8 md:p-10 flex-1 flex flex-col">
+                <h3 className="text-3xl font-bold mb-4 text-gray-900">Google Ads Management</h3>
+                <p className="text-gray-500 mb-8 leading-relaxed">
+                  Instant visibility and predictable leads. We build highly targeted PPC campaigns that maximize your ROI and minimize wasted ad spend.
+                </p>
 
-              <ul className="space-y-4 mb-10 relative z-10">
-                {[
-                  "Hyper-targeted Search Campaigns",
-                  "Conversion Rate Optimization (CRO)",
-                  "Advanced Retargeting Strategies",
-                  "Detailed ROI & Performance Reporting"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-gray-700">
-                    <CheckCircle2 className="text-primary shrink-0 mt-0.5" size={20} />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+                <ul className="space-y-4 mb-10 flex-1">
+                  {[
+                    "Hyper-targeted Search Campaigns",
+                    "Conversion Rate Optimization (CRO)",
+                    "Advanced Retargeting Strategies",
+                    "Detailed ROI & Performance Reporting"
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 text-gray-700">
+                      <CheckCircle2 className="text-primary shrink-0 mt-0.5" size={20} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
 
-              <a href={`${import.meta.env.BASE_URL}services/google-ads`} className="w-full py-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 font-semibold hover:bg-accent hover:text-white hover:border-accent transition-all duration-300 relative z-10 flex items-center justify-center gap-2">
-                Learn More About Google Ads <ArrowRight size={16} />
-              </a>
+                <a href={`${import.meta.env.BASE_URL}services/google-ads`} className="w-full py-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 font-semibold hover:bg-accent hover:text-white hover:border-accent transition-all duration-300 flex items-center justify-center gap-2">
+                  Learn More About Google Ads <ArrowRight size={16} />
+                </a>
+              </div>
             </motion.div>
           </div>
         </div>
