@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/Home";
 import AuditPage from "@/pages/Audit";
+import AdsAuditPage from "@/pages/AdsAudit";
 import SEOPage from "@/pages/SEO";
 import GoogleAdsPage from "@/pages/GoogleAds";
 import NotFound from "@/pages/not-found";
@@ -15,6 +16,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/audit" component={AuditPage} />
+      <Route path="/ads-audit" component={AdsAuditPage} />
       <Route path="/services/seo" component={SEOPage} />
       <Route path="/services/google-ads" component={GoogleAdsPage} />
       <Route component={NotFound} />

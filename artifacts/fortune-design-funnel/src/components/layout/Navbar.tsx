@@ -58,6 +58,7 @@ export function Navbar() {
       icon: Search,
       color: "text-primary",
       bg: "bg-primary/10",
+      divider: false,
     },
     {
       name: "Google Ads Management",
@@ -66,6 +67,16 @@ export function Navbar() {
       icon: MousePointerClick,
       color: "text-accent",
       bg: "bg-accent/10",
+      divider: false,
+    },
+    {
+      name: "Free Ads Readiness Audit",
+      desc: "See if your site is ready for Ads",
+      href: `${import.meta.env.BASE_URL}ads-audit`,
+      icon: MousePointerClick,
+      color: "text-accent",
+      bg: "bg-accent/10",
+      divider: true,
     },
   ];
 
@@ -111,22 +122,24 @@ export function Navbar() {
                   >
                     <div className="p-2">
                       {services.map((service) => (
-                        <a
-                          key={service.name}
-                          href={service.href}
-                          onClick={() => setIsServicesOpen(false)}
-                          className="flex items-start gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                        >
-                          <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5", service.bg)}>
-                            <service.icon size={16} className={service.color} />
-                          </div>
-                          <div>
-                            <div className="font-semibold text-gray-900 text-sm group-hover:text-primary transition-colors">
-                              {service.name}
+                        <div key={service.name}>
+                          {service.divider && <div className="h-px bg-gray-100 my-1.5 mx-2" />}
+                          <a
+                            href={service.href}
+                            onClick={() => setIsServicesOpen(false)}
+                            className="flex items-start gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                          >
+                            <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5", service.bg)}>
+                              <service.icon size={16} className={service.color} />
                             </div>
-                            <div className="text-xs text-gray-400 mt-0.5">{service.desc}</div>
-                          </div>
-                        </a>
+                            <div>
+                              <div className="font-semibold text-gray-900 text-sm group-hover:text-primary transition-colors">
+                                {service.name}
+                              </div>
+                              <div className="text-xs text-gray-400 mt-0.5">{service.desc}</div>
+                            </div>
+                          </a>
+                        </div>
                       ))}
                     </div>
                   </motion.div>
