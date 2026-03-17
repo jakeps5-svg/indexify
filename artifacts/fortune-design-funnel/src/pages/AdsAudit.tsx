@@ -335,10 +335,25 @@ function generateProposalHTML(result: ProposalResult): string {
   .guide-title { font-size: 12px; font-weight: 800; color: #78350f; margin-bottom: 8px; }
   .guide-item { font-size: 12px; color: #92400e; margin-bottom: 4px; }
   .footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #9ca3af; text-align: center; }
-  @media print { body { padding: 24px; } .campaign { page-break-inside: avoid; } }
+  @media print {
+    body { padding: 24px; margin: 0; }
+    .campaign { page-break-inside: avoid; }
+    .section { page-break-inside: avoid; }
+    .no-print { display: none !important; }
+    @page { margin: 18mm 14mm; size: A4; }
+  }
 </style>
+<script>
+  window.onload = function() {
+    // small delay so fonts/styles render first
+    setTimeout(function() { window.print(); }, 400);
+  };
+</script>
 </head>
 <body>
+<div class="no-print" style="background:#1e1b4b;color:#fff;padding:12px 20px;font-size:13px;font-weight:600;text-align:center;letter-spacing:0.01em;margin-bottom:32px;border-radius:10px;">
+  📄 Use your browser's <strong>Print → Save as PDF</strong> option to download this proposal. Close this tab when done.
+</div>
 <div class="logo">indexify.<span>Lead SEO &amp; Google Ads Expert</span></div>
 <div class="badge">Google Ads Proposal</div>
 <h1>${result.businessName} — Strategy Plan</h1>
@@ -441,12 +456,17 @@ function generateProposalHTML(result: ProposalResult): string {
 function downloadProposal(result: ProposalResult) {
   const html = generateProposalHTML(result);
   const blob = new Blob([html], { type: "text/html" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  const domain = (() => { try { return new URL(result.finalUrl).hostname; } catch { return result.finalUrl; } })();
-  a.download = `google-ads-proposal-${domain}-${new Date().toISOString().slice(0, 10)}.html`;
-  a.click();
-  URL.revokeObjectURL(a.href);
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, "_blank");
+  if (!win) {
+    // fallback: direct download if popup blocked
+    const a = document.createElement("a");
+    a.href = url;
+    const domain = (() => { try { return new URL(result.finalUrl).hostname; } catch { return result.finalUrl; } })();
+    a.download = `google-ads-proposal-${domain}-${new Date().toISOString().slice(0, 10)}.pdf`;
+    a.click();
+  }
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
 export default function AdsAuditPage() {
@@ -721,7 +741,7 @@ export default function AdsAuditPage() {
                         className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-white transition-colors"
                         style={{ background: PRIMARY }}
                       >
-                        <Download size={12} /> Download
+                        <Download size={12} /> Download PDF
                       </button>
                     )}
                   </div>
@@ -919,13 +939,13 @@ export default function AdsAuditPage() {
                     <Unlock size={20} />
                     <h3 className="font-black text-lg">Full Proposal Unlocked!</h3>
                   </div>
-                  <p className="text-white/80 text-sm mb-4">Download your complete Google Ads proposal as an HTML file — print or share as PDF.</p>
+                  <p className="text-white/80 text-sm mb-4">A new tab will open and your proposal will print automatically — choose <strong>Save as PDF</strong> in the print dialog.</p>
                   <button
                     onClick={() => downloadProposal(result)}
                     className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-white font-bold text-sm transition-all hover:-translate-y-0.5 shadow-md"
                     style={{ color: PRIMARY }}
                   >
-                    <Download size={15} /> Download Full Proposal
+                    <Download size={15} /> Download PDF
                   </button>
                 </motion.div>
               )}
