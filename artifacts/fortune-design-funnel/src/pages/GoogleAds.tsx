@@ -52,7 +52,7 @@ const INCLUDED = [
 const FAQS = [
   { q: "How much budget do I need for Google Ads to work?", a: "In South Africa, we recommend a minimum ad spend of R3,000–R5,000/month to gather meaningful data and generate consistent leads. Highly competitive industries (insurance, legal, medical) may require R10,000+/month to compete effectively. We'll advise the right budget for your market during your free consultation." },
   { q: "How quickly will I see results from Google Ads?", a: "Unlike SEO, Google Ads can generate leads within 24–48 hours of launch. However, the first 30 days are a learning phase where we gather conversion data and optimise bids. Most campaigns reach optimal performance by month 2–3." },
-  { q: "What is your management fee on top of ad spend?", a: "Our Google Ads management starts from R2,500/month, separate from your advertising budget. This covers campaign setup, ongoing optimisation, A/B testing, and monthly reporting. Ad spend goes directly to Google — we never take a margin on your budget." },
+  { q: "What is your management fee on top of ad spend?", a: "Our Google Ads management is R7,300/month, separate from your advertising budget. This covers campaign setup, ongoing optimisation, A/B testing, conversion tracking, and monthly reporting. Ad spend goes directly to Google — we never take a margin on your budget." },
   { q: "Can I pause or cancel at any time?", a: "Yes. We work on monthly agreements with 30 days' notice. We recommend a minimum 3-month commitment to see meaningful results, but we don't lock you into long-term contracts." },
   { q: "Will you manage my existing Google Ads account?", a: "Absolutely. We conduct a full audit of your existing account, identify wasted spend and opportunities, and take over management. Many clients come to us after burning through budget with minimal results — we typically cut cost-per-lead significantly within the first 60 days." },
   { q: "Do you manage Google Ads for e-commerce stores?", a: "Yes — we run Shopping campaigns and Performance Max campaigns for e-commerce clients, including full Google Merchant Center setup, product feed optimisation, and ROAS-focused bidding strategies." },
@@ -415,6 +415,87 @@ export default function GoogleAdsPage() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* PRICING */}
+      <section className="py-24 bg-slate-50">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+            className="text-center mb-14"
+          >
+            <h2 className="text-4xl md:text-5xl font-black mb-4 text-gray-900">Google Ads <span style={{ color: ACCENT }}>Management Pricing</span></h2>
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto">One flat monthly fee. No percentage of ad spend. No surprises.</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}
+            className="grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-3xl overflow-hidden shadow-2xl border border-gray-100"
+          >
+            {/* Price panel */}
+            <div className="lg:col-span-2 p-10 flex flex-col justify-center" style={{ background: ACCENT }}>
+              <p className="text-white/80 text-sm font-bold uppercase tracking-widest mb-4">Google Ads Management</p>
+              <div className="flex items-baseline gap-1 text-white mb-2">
+                <span className="text-3xl font-semibold">R</span>
+                <span className="text-7xl font-black leading-none">7,300</span>
+              </div>
+              <p className="text-white/70 text-base font-medium mb-10">per month <span className="text-white/50">+ your ad spend</span></p>
+              <button
+                onClick={openWhatsApp}
+                className="w-full py-4 rounded-xl bg-white font-bold text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                style={{ color: ACCENT }}
+              >
+                Get Started Today
+              </button>
+              <p className="text-white/60 text-xs text-center mt-4">No long-term lock-in. 30-day notice to cancel.</p>
+            </div>
+
+            {/* Features panel */}
+            <div className="lg:col-span-3 bg-white p-10">
+              <p className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-6">Everything included in your management fee</p>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                {[
+                  "Full Campaign Setup & Structure",
+                  "Keyword Research & Match Types",
+                  "Compelling Ad Copy & A/B Testing",
+                  "Conversion Tracking Setup",
+                  "Negative Keyword Management",
+                  "Bid Strategy & Budget Optimisation",
+                  "Audience & Remarketing Campaigns",
+                  "Landing Page Recommendations",
+                  "Search Term Report Analysis",
+                  "Google Analytics Integration",
+                  "Monthly Performance Reports",
+                  "Dedicated Account Manager",
+                ].map((f, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <CheckCircle2 size={16} className="mt-0.5 shrink-0" style={{ color: ACCENT }} />
+                    <span className="text-sm text-gray-700 leading-relaxed">{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-8 pt-8 border-t border-gray-100 flex flex-wrap gap-6">
+                {[
+                  { icon: Shield, label: "Ad spend goes directly to Google" },
+                  { icon: RefreshCw, label: "Monthly optimisation cycles" },
+                  { icon: BarChart3, label: "Transparent reporting every month" },
+                ].map(({ icon: Icon, label }, i) => (
+                  <div key={i} className="flex items-center gap-2 text-gray-500 text-xs font-medium">
+                    <Icon size={14} style={{ color: ACCENT }} />
+                    {label}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.3 }}
+            className="text-center text-sm text-gray-400 mt-8"
+          >
+            Have questions about budget or fit? <button onClick={openWhatsApp} className="font-semibold hover:underline" style={{ color: ACCENT }}>Chat with us on WhatsApp — no hard sell.</button>
+          </motion.p>
         </div>
       </section>
 

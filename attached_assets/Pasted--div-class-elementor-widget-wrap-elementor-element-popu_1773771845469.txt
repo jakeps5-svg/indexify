@@ -1,0 +1,120 @@
+<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-73633c6 elementor-widget elementor-widget-vice-elementor-qt-caption" data-id="73633c6" data-element_type="widget" data-widget_type="vice-elementor-qt-caption.default">
+				<div class="elementor-widget-container">
+					<div class="vice-elementor-caption vice-elementor-caption--center vice-elementor-caption--default">
+			<div class="vice-elementor-caption__c">
+				<h2 class="vice-caption vice-elementor-caption__txt vice-textfx-" data-vice-textfx="">Our Clients</h2>
+				<div class="vice-caption__decor" data-vice-textfx=""><hr></div>
+			</div>
+		</div>
+				</div>
+				</div>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-c80bb7f elementor-section-full_width elementor-section-height-default elementor-section-height-default" data-id="c80bb7f" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-9e45031" data-id="9e45031" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-20db548 elementor-widget elementor-widget-image" data-id="20db548" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container" data-rocket-lazy-bg-79de674a-269d-4aff-b19c-d6528e04b0da="loaded">
+													<img loading="lazy" decoding="async" width="530" height="212" src="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-14.png" class="attachment-large size-large wp-image-3506" alt="" srcset="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-14.png 790w, https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-14-600x240.png 600w" sizes="(max-width: 530px) 100vw, 530px" title="output-onlinepngtools 14 - fortune design">													</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-3b0a826" data-id="3b0a826" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-019af68 elementor-widget elementor-widget-image" data-id="019af68" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container" data-rocket-lazy-bg-495b5039-2037-41a5-bbb0-0eb456f98323="loaded">
+													<img loading="lazy" decoding="async" width="530" height="212" src="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-10.png" class="attachment-large size-large wp-image-3503" alt="" srcset="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-10.png 938w, https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-10-600x240.png 600w" sizes="(max-width: 530px) 100vw, 530px" title="output-onlinepngtools 10 - fortune design">													</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-2c46264" data-id="2c46264" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-488de5d elementor-widget elementor-widget-image" data-id="488de5d" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container" data-rocket-lazy-bg-552f3c95-fcc9-4109-9190-56842818ee6e="loaded">
+													<img loading="lazy" decoding="async" width="530" height="212" src="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-6.png" class="attachment-large size-large wp-image-3498" alt="" srcset="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-6.png 790w, https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-6-600x240.png 600w" sizes="(max-width: 530px) 100vw, 530px" title="output-onlinepngtools 6 - fortune design">													</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-156ade6" data-id="156ade6" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-230908a elementor-widget elementor-widget-image" data-id="230908a" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container" data-rocket-lazy-bg-f9bc156d-6d37-436d-98cb-610e647e1bfe="loaded">
+													<img loading="lazy" decoding="async" width="530" height="212" src="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-8.png" class="attachment-large size-large wp-image-3500" alt="" srcset="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-8.png 938w, https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-8-600x240.png 600w" sizes="(max-width: 530px) 100vw, 530px" title="output-onlinepngtools 8 - fortune design">													</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-dd5e8c1 elementor-section-full_width elementor-section-height-default elementor-section-height-default" data-id="dd5e8c1" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-a81a12a" data-id="a81a12a" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-314f06e elementor-widget elementor-widget-image" data-id="314f06e" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container" data-rocket-lazy-bg-dbb0fc16-b229-41f6-b977-55d38044f92f="loaded">
+													<img loading="lazy" decoding="async" width="530" height="212" src="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-18.png" class="attachment-large size-large wp-image-3509" alt="" srcset="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-18.png 938w, https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-18-600x240.png 600w" sizes="(max-width: 530px) 100vw, 530px" title="output-onlinepngtools 18 - fortune design">													</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-8d451e2" data-id="8d451e2" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-e7ccbab elementor-widget elementor-widget-image" data-id="e7ccbab" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container" data-rocket-lazy-bg-6877bb2c-053c-41ee-b845-dbe702942d97="loaded">
+													<img loading="lazy" decoding="async" width="530" height="212" src="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-13.png" class="attachment-large size-large wp-image-3505" alt="" srcset="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-13.png 938w, https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-13-600x240.png 600w" sizes="(max-width: 530px) 100vw, 530px" title="output-onlinepngtools 13 - fortune design">													</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-747fe8e" data-id="747fe8e" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-7f8cb00 elementor-widget elementor-widget-image" data-id="7f8cb00" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container" data-rocket-lazy-bg-6aed897f-38ba-488a-ba23-1d0674a53960="loaded">
+													<img loading="lazy" decoding="async" width="530" height="212" src="https://fortunedesign.co.za/wp-content/uploads/2025/08/4.png" class="attachment-large size-large wp-image-3502" alt="" srcset="https://fortunedesign.co.za/wp-content/uploads/2025/08/4.png 938w, https://fortunedesign.co.za/wp-content/uploads/2025/08/4-600x240.png 600w" sizes="(max-width: 530px) 100vw, 530px" title="4 - fortune design">													</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-0aef451" data-id="0aef451" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-086085b elementor-widget elementor-widget-image" data-id="086085b" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container" data-rocket-lazy-bg-d6349722-40ce-4730-a3e8-696f72e0a6fd="loaded">
+													<img loading="lazy" decoding="async" width="530" height="212" src="https://fortunedesign.co.za/wp-content/uploads/2025/08/8.png" class="attachment-large size-large wp-image-3501" alt="" srcset="https://fortunedesign.co.za/wp-content/uploads/2025/08/8.png 938w, https://fortunedesign.co.za/wp-content/uploads/2025/08/8-600x240.png 600w" sizes="(max-width: 530px) 100vw, 530px" title="8 - fortune design">													</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+				<section class="elementor-section elementor-inner-section elementor-element elementor-element-e9d9560 elementor-section-full_width elementor-section-height-default elementor-section-height-default" data-id="e9d9560" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+					<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-a6d391b" data-id="a6d391b" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-4b71548 elementor-widget elementor-widget-image" data-id="4b71548" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container" data-rocket-lazy-bg-8667aa12-0609-4061-baec-f46e4eb38dda="loaded">
+													<img loading="lazy" decoding="async" width="530" height="212" src="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-15.png" class="attachment-large size-large wp-image-3507" alt="" srcset="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-15.png 790w, https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-15-600x240.png 600w" sizes="(max-width: 530px) 100vw, 530px" title="output-onlinepngtools 15 - fortune design">													</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-2e35448" data-id="2e35448" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-4aaca90 elementor-widget elementor-widget-image" data-id="4aaca90" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container" data-rocket-lazy-bg-2486da8a-c060-4501-bce6-982a35531fd8="loaded">
+													<img loading="lazy" decoding="async" width="530" height="212" src="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-17.png" class="attachment-large size-large wp-image-3508" alt="" srcset="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-17.png 790w, https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-17-600x240.png 600w" sizes="(max-width: 530px) 100vw, 530px" title="output-onlinepngtools 17 - fortune design">													</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-ee2e020" data-id="ee2e020" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-f95d8ab elementor-widget elementor-widget-image" data-id="f95d8ab" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container" data-rocket-lazy-bg-cec34b2b-5bd9-4729-9f4d-507990f7e68c="loaded">
+													<img loading="lazy" decoding="async" width="530" height="212" src="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-11.png" class="attachment-large size-large wp-image-3504" alt="" srcset="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-11.png 938w, https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-11-600x240.png 600w" sizes="(max-width: 530px) 100vw, 530px" title="output-onlinepngtools 11 - fortune design">													</div>
+				</div>
+					</div>
+		</div>
+				<div class="elementor-column elementor-col-25 elementor-inner-column elementor-element elementor-element-2c66caa" data-id="2c66caa" data-element_type="column">
+			<div class="elementor-widget-wrap elementor-element-populated">
+						<div class="elementor-element elementor-element-4a6fcec elementor-widget elementor-widget-image" data-id="4a6fcec" data-element_type="widget" data-widget_type="image.default">
+				<div class="elementor-widget-container" data-rocket-lazy-bg-fdfc94c0-539d-4bab-9546-428c28dbe657="loaded">
+													<img loading="lazy" decoding="async" width="530" height="212" src="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-5.png" class="attachment-large size-large wp-image-3496" alt="" srcset="https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-5.png 938w, https://fortunedesign.co.za/wp-content/uploads/2025/08/output-onlinepngtools-5-600x240.png 600w" sizes="(max-width: 530px) 100vw, 530px" title="output-onlinepngtools 5 - fortune design">													</div>
+				</div>
+					</div>
+		</div>
+					</div>
+		</section>
+					</div>
