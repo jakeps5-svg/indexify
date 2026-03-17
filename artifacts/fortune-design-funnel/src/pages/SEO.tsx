@@ -313,9 +313,9 @@ export default function SEOPage() {
           </div>
           <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid md:grid-cols-3 gap-6">
             {[
-              { text: "Thanks to Fortune Design's SEO, Rapple is now ranking on Page 1 of Google — a major milestone for our brand visibility and online growth. Highly recommend!", author: "Leon De Wet", role: "Rapple Products", stars: 5 },
-              { text: "Our website traffic tripled in 4 months. Fortune Design know exactly what they're doing with SEO. The results speak for themselves.", author: "Megan van Niekerk", role: "Precision Gates", stars: 5 },
-              { text: "We were invisible on Google before Fortune Design. Now we get 3–5 qualified leads a week directly from organic search. Life-changing for our business.", author: "Bettina Williams", role: "DesignAfrique", stars: 5 },
+              { text: "Thanks to Fortune Design's SEO strategy, Rapple is now ranking on Page 1 of Google for all our main keywords. Organic traffic has more than doubled and the quality of leads coming through search has been exceptional. Highly recommend.", author: "Leon De Wet", role: "Rapple Products", stars: 5 },
+              { text: "Fortune Design's SEO work has been incredible for our business. We went from page 4 to page 1 within five months and our online inquiries increased by over 180%. The team is professional, transparent, and genuinely delivers results.", author: "Alltech Rental L.L.C", role: "Equipment Rental", stars: 5 },
+              { text: "Since Fortune Design took over our SEO, villa bookings from organic Google search have grown every single month. We now rank on page 1 for all our target keywords and the steady stream of organic inquiries has transformed our business.", author: "Serenity Villa Daniela", role: "Luxury Villa Rentals", stars: 5 },
             ].map((review, i) => (
               <motion.div key={i} variants={fadeInUp} className="bg-white border border-gray-200 rounded-2xl p-7 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300">
                 <div className="flex gap-1 mb-5">

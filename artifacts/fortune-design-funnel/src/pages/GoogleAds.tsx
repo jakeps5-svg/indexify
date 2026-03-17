@@ -365,9 +365,9 @@ export default function GoogleAdsPage() {
           </div>
           <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid md:grid-cols-3 gap-6">
             {[
-              { text: "Since Fortune Design took over our Google Ads, our cost per lead dropped from R480 to R120. We're now getting double the enquiries at a quarter of the cost.", author: "Michael", role: "Captuna Charters", stars: 5 },
-              { text: "We were spending R15,000/month on Google Ads with barely any leads. Fortune Design restructured everything and we now spend R8,000 and get 3x the leads.", author: "Leon De Wet", role: "Rapple Products", stars: 5 },
-              { text: "Professional, responsive, and the results are undeniable. Our Google Ads ROAS went from 1.2x to 4.8x in 3 months. Highly recommend Fortune Design.", author: "Bettina Williams", role: "DesignAfrique", stars: 5 },
+              { text: "Fortune Design took over our Google Ads and the difference was immediate. Our enquiry rate more than doubled while our monthly spend actually went down. They cut out all the wasted clicks and now every rand delivers real results. Exceptional service from start to finish.", author: "Michael", role: "Captuna Charters", stars: 5 },
+              { text: "We were burning through budget on Google Ads with very little to show for it before Fortune Design stepped in. They restructured everything, set up proper conversion tracking, and within 60 days our cost-per-lead dropped by more than half. Outstanding results.", author: "Alltech Rental L.L.C", role: "Equipment Rental", stars: 5 },
+              { text: "Fortune Design's Google Ads management has been a game-changer for our villa bookings. We now appear at the top of search results for all our key terms and the quality of leads coming through is far better than anything we experienced before. Highly professional team.", author: "Serenity Villa Daniela", role: "Luxury Villa Rentals", stars: 5 },
             ].map((review, i) => (
               <motion.div key={i} variants={fadeInUp} className="bg-white border border-gray-200 rounded-2xl p-7 shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="flex gap-1 mb-5">

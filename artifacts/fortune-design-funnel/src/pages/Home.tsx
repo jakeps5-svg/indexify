@@ -241,19 +241,19 @@ export default function Home() {
                 role: "Rapple Products"
               },
               {
-                text: "Captuna Charters would like to thank Fortune Designs for our stunning website. We can personally recommend your service and will most definitely make use of your services in the future. You rock!",
+                text: "Fortune Design took over our Google Ads and the difference was immediate. Our enquiry rate more than doubled while our monthly ad spend actually went down. They cut out all the wasted clicks and now every rand works. Exceptional service.",
                 author: "Michael",
                 role: "Captuna Charters"
               },
               {
-                text: "Fortune Design created a great looking website at an affordable rate with fast delivery. Very happy with my new website, thank you guys!",
-                author: "Megan van Niekerk",
-                role: "Precision Gates"
+                text: "We approached Fortune Design to handle our SEO and Google Ads and the results have been outstanding. Our online leads increased by over 180% in four months and we are now consistently appearing at the top of Google for our key search terms. Highly professional team.",
+                author: "Alltech Rental L.L.C",
+                role: "Equipment Rental"
               },
               {
-                text: "Our new website is ready and we are absolutely stunned about the outcome. It was such a pleasure working with Fortune Design — they immediately visualised what we wanted and their turnaround time was excellent.",
-                author: "Bettina Williams",
-                role: "DesignAfrique"
+                text: "Since Fortune Design started managing our SEO, our villa inquiries from organic search have grown month on month. We rank on page 1 for all our target keywords and we are now getting bookings directly from Google that we never had before. Brilliant work.",
+                author: "Serenity Villa Daniela",
+                role: "Luxury Villa Rentals"
               }
             ].map((review, i) => (
               <motion.div
