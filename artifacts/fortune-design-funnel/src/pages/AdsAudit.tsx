@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MousePointerClick, ArrowLeft, Lock, Unlock, Download, Building2,
+  MousePointerClick, Lock, Unlock, Download, Building2,
   MapPin, Phone, Tag, Target, Zap, BarChart3, ChevronDown, ChevronRight,
   TrendingUp, DollarSign, Users, Eye, FileText, CheckCircle2, XCircle,
   Loader2, Search, Megaphone, RefreshCw
 } from "lucide-react";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
@@ -407,25 +409,9 @@ export default function AdsAuditPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-gray-900">
+      <Navbar />
 
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
-          <a href={BASE + "/"} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 transition-colors font-medium">
-            <ArrowLeft size={15} /> Back to Home
-          </a>
-          <a href={BASE + "/"} className="font-display font-black text-lg tracking-tight">
-            <span className="text-gray-900">FORTUNE</span>
-            <span style={{ color: PRIMARY }}>DESIGN</span>
-          </a>
-          <a href={`https://wa.me/${WA_NUMBER}`} target="_blank" rel="noopener noreferrer"
-            className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-[#25d366] text-white text-sm font-bold hover:bg-[#20bc5a] transition-colors">
-            <WhatsAppIcon size={14} /> WhatsApp Us
-          </a>
-        </div>
-      </nav>
-
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-28 pb-10">
 
         {/* Hero */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
@@ -740,6 +726,7 @@ export default function AdsAuditPage() {
         </AnimatePresence>
 
       </div>
+      <Footer />
     </div>
   );
 }
