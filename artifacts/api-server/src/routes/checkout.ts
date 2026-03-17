@@ -45,7 +45,7 @@ async function createYocoCheckout(body: YocoCheckoutRequest): Promise<YocoChecko
   return res.json() as Promise<YocoCheckoutResponse>;
 }
 
-router.post("/api/checkout", async (req, res) => {
+router.post("/checkout", async (req, res) => {
   try {
     const { service, amountInCents, successUrl, cancelUrl, failureUrl, metadata } = req.body as {
       service: string;
@@ -81,7 +81,7 @@ router.post("/api/checkout", async (req, res) => {
   }
 });
 
-router.get("/api/checkout/:id/verify", async (req, res) => {
+router.get("/checkout/:id/verify", async (req, res) => {
   try {
     const secretKey = process.env.YOCO_SECRET_KEY;
     if (!secretKey) throw new Error("YOCO_SECRET_KEY is not configured");

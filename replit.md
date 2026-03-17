@@ -94,3 +94,36 @@ Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHea
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
+
+### `artifacts/fortune-design-funnel` (`@workspace/fortune-design-funnel`)
+
+React + Vite frontend for the Fortune Design marketing agency funnel (fortunedesign.co.za). White/light theme.
+
+**Pages:**
+- `/` — Home (hero, stats, services, pricing with Yoco payment buttons, FAQ, CTA)
+- `/audit` — Free SEO Audit tool
+- `/ads-audit` — Free Google Ads Proposal generator (R500 Yoco unlock for full version)
+- `/services/seo` — SEO service page
+- `/services/google-ads` — Google Ads service page
+- `/payment-success` — Post-payment confirmation page (handles proposal auto-unlock via `?paid=<uuid>`)
+- `/payment-cancelled` — Cancelled/failed payment page
+
+**Key features:**
+- Multi-page website crawl for proposal generation (up to 7 pages)
+- 14-country support with local currency/CPC rates
+- Yoco online payment integration (`useYocoCheckout` hook in `src/hooks/`)
+- Keyword blur/pixelation on locked proposal sections
+- WhatsApp floating button (27760597724)
+- Floating Yoco "Pay R500 with Yoco" + "Pay via WhatsApp" + "Enter Code" buttons on proposal unlock section
+
+**Payments (Yoco):**
+- Backend: `POST /api/checkout` → creates Yoco checkout session → returns `redirectUrl`
+- Frontend hook: `src/hooks/useYocoCheckout.ts`
+- R500 (50000 cents) — Full Google Ads Proposal unlock
+- R5,500 (550000 cents) — Growth Starter package first month
+- R12,500 (1250000 cents) — Market Leader package first month
+- Proposal saved to localStorage with UUID before redirect; auto-restored after successful payment
+- Secrets: `YOCO_SECRET_KEY` (server-side only)
+
+**WhatsApp number:** 27760597724
+**Unlock code (manual):** FortuneD21!@

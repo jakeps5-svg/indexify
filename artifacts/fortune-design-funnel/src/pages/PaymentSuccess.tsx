@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { CheckCircle2, ArrowRight, Home, FileText } from "lucide-react";
 import { motion } from "framer-motion";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 export default function PaymentSuccess() {
-  const [location] = useLocation();
   const params = new URLSearchParams(window.location.search);
   const type = params.get("type") ?? "service";
   const ref = params.get("ref");
