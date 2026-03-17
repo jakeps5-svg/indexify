@@ -2,6 +2,61 @@ import { Router } from "express";
 
 const router = Router();
 
+router.post("/charge", async (req, res) => {
+  try {
+    const secretKey = process.env.YOCO_SECRET_KEY;
+    if (!secretKey) throw new Error("YOCO_SECRET_KEY is not configured");
+
+    const { token, amountInCents, service } = req.body as {
+      token: string;
+      amountInCents: number;
+      service: string;
+    };
+
+    if (!token || !amountInCents) {
+      return res.status(400).json({ error: "Missing token or amountInCents" });
+    }
+
+    const chargeRes = await fetch("https://online.yoco.com/v1/charges/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Auth-Secret-Key": secretKey,
+      },
+      body: JSON.stringify({
+        token,
+        amountInCents,
+        currency: "ZAR",
+        metadata: { service },
+      }),
+    });
+
+    const chargeData = await chargeRes.json() as {
+      id?: string;
+      status?: string;
+      errorCode?: string;
+      errorMessage?: string;
+      displayMessage?: string;
+    };
+
+    if (!chargeRes.ok || chargeData.status !== "successful") {
+      const msg =
+        chargeData.displayMessage ??
+        chargeData.errorMessage ??
+        `Charge failed (${chargeRes.status})`;
+      console.error("[charge] Yoco error:", chargeData);
+      return res.status(402).json({ error: msg });
+    }
+
+    console.log(`[charge] success id=${chargeData.id} service="${service}" amount=${amountInCents}`);
+    return res.json({ chargeId: chargeData.id, status: "successful" });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("[charge] error:", message);
+    return res.status(500).json({ error: message });
+  }
+});
+
 interface YocoCheckoutRequest {
   amountInCents: number;
   currency?: string;

@@ -9,7 +9,7 @@ import {
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
-import { useYocoCheckout } from "@/hooks/useYocoCheckout";
+import { useYocoPopup } from "@/hooks/useYocoPopup";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
 const WA_NUMBER = "27760597724";
@@ -460,26 +460,7 @@ export default function AdsAuditPage() {
   const [unlocked, setUnlocked] = useState(false);
   const [unlockOpen, setUnlockOpen] = useState(false);
   const codeRef = useRef<HTMLInputElement>(null);
-  const { startCheckout: startYoco, loading: yocoLoading, error: yocoError } = useYocoCheckout();
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const paidRef = params.get("paid");
-    if (paidRef) {
-      const saved = localStorage.getItem(`fortune_proposal_${paidRef}`);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved) as ProposalResult;
-          setResult(parsed);
-          setUnlocked(true);
-          const url = new URL(window.location.href);
-          url.searchParams.delete("paid");
-          window.history.replaceState({}, "", url.toString());
-        } catch {
-        }
-      }
-    }
-  }, []);
+  const { showPopup: showYocoPopup, loading: yocoLoading, error: yocoError, clearError: clearYocoError } = useYocoPopup();
 
   async function runProposal(e: React.FormEvent) {
     e.preventDefault();
@@ -525,15 +506,17 @@ export default function AdsAuditPage() {
 
   function startProposalPayment() {
     if (!result) return;
-    const ref = crypto.randomUUID();
-    localStorage.setItem(`fortune_proposal_${ref}`, JSON.stringify(result));
+    clearYocoError();
     const domain = (() => { try { return new URL(result.finalUrl).hostname; } catch { return result.finalUrl; } })();
-    void startYoco({
-      service: "Google Ads Proposal Full Download",
+    void showYocoPopup({
       amountInCents: 50000,
-      type: "proposal",
-      ref,
-      metadata: { domain, businessName: result.businessName },
+      name: "Fortune Design",
+      description: `Full Google Ads Proposal — ${domain}`,
+      service: "Google Ads Proposal Full Download",
+      onSuccess: () => {
+        setUnlocked(true);
+        setUnlockOpen(false);
+      },
     });
   }
 

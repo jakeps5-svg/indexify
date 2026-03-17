@@ -5,15 +5,29 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppModal } from "@/components/WhatsAppModal";
 import { cn } from "@/lib/utils";
-import { useYocoCheckout } from "@/hooks/useYocoCheckout";
+import { useYocoPopup } from "@/hooks/useYocoPopup";
 
 function YocoButton({ service, amountInCents, type, label, dark = false }: {
   service: string; amountInCents: number; type: string; label: string; dark?: boolean;
 }) {
-  const { startCheckout, loading } = useYocoCheckout();
+  const { showPopup, loading } = useYocoPopup();
+  const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+  function handlePay() {
+    void showPopup({
+      amountInCents,
+      name: "Fortune Design",
+      description: service,
+      service,
+      onSuccess: () => {
+        window.location.href = `${window.location.origin}${BASE}/payment-success?type=${type}`;
+      },
+    });
+  }
+
   return (
     <button
-      onClick={() => void startCheckout({ service, amountInCents, type })}
+      onClick={handlePay}
       disabled={loading}
       className={cn(
         "w-full py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed",
@@ -23,7 +37,7 @@ function YocoButton({ service, amountInCents, type, label, dark = false }: {
       )}
     >
       {loading
-        ? <><Loader2 size={15} className="animate-spin" /> Redirecting...</>
+        ? <><Loader2 size={15} className="animate-spin" /> Opening payment...</>
         : label
       }
     </button>
