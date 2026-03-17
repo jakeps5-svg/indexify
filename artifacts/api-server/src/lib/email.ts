@@ -201,8 +201,18 @@ export async function sendContactEmail(opts: {
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);max-width:600px;width:100%;">
         <tr>
           <td style="background:linear-gradient(135deg,#0ea5c8,#0284a7);padding:28px 40px;text-align:center;">
-            <div style="font-size:24px;font-weight:900;background:linear-gradient(90deg,#e040fb,#7c4dff,#00b8d9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">indexify.</div>
-            <div style="color:rgba(255,255,255,0.8);font-size:12px;margin-top:2px;">New Contact Form Submission</div>
+            <table cellpadding="0" cellspacing="0" style="margin:0 auto 10px;">
+              <tr>
+                <td style="padding-right:16px;vertical-align:middle;">
+                  <img src="https://indexify.co.za/indexify-logo.png" alt="Indexify" width="110" style="display:block;height:auto;filter:brightness(0) invert(1);" />
+                </td>
+                <td style="padding-right:16px;vertical-align:middle;color:rgba(255,255,255,0.4);font-size:20px;">·</td>
+                <td style="vertical-align:middle;">
+                  <img src="https://indexify.co.za/images/fortune-design-logo.png" alt="Fortune Design" width="36" height="36" style="display:block;border-radius:50%;" />
+                </td>
+              </tr>
+            </table>
+            <div style="color:rgba(255,255,255,0.8);font-size:12px;">New Contact Form Submission</div>
           </td>
         </tr>
         <tr>
@@ -256,9 +266,19 @@ export async function sendContactEmail(opts: {
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);max-width:600px;width:100%;">
 
         <tr>
-          <td style="background:linear-gradient(135deg,#0ea5c8,#0284a7);padding:36px 40px;text-align:center;">
-            <div style="font-size:26px;font-weight:900;letter-spacing:-0.5px;background:linear-gradient(90deg,#e040fb,#7c4dff,#00b8d9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">indexify.</div>
-            <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px;">indexify.co.za</div>
+          <td style="background:linear-gradient(135deg,#0ea5c8,#0284a7);padding:28px 40px;text-align:center;">
+            <table cellpadding="0" cellspacing="0" style="margin:0 auto 10px;">
+              <tr>
+                <td style="padding-right:16px;vertical-align:middle;">
+                  <img src="https://indexify.co.za/indexify-logo.png" alt="Indexify" width="110" style="display:block;height:auto;filter:brightness(0) invert(1);" />
+                </td>
+                <td style="padding-right:16px;vertical-align:middle;color:rgba(255,255,255,0.4);font-size:20px;">·</td>
+                <td style="vertical-align:middle;">
+                  <img src="https://indexify.co.za/images/fortune-design-logo.png" alt="Fortune Design" width="36" height="36" style="display:block;border-radius:50%;" />
+                </td>
+              </tr>
+            </table>
+            <div style="color:rgba(255,255,255,0.8);font-size:12px;">indexify.co.za · Powered by Fortune Design</div>
           </td>
         </tr>
 
