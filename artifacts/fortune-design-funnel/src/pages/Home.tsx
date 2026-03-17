@@ -280,7 +280,7 @@ export default function Home() {
               className="bg-white rounded-3xl group hover:border-accent/40 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 relative overflow-hidden flex flex-col"
             >
               {/* Image banner */}
-              <div className="relative h-52 overflow-hidden rounded-t-3xl bg-orange-50">
+              <div className="relative h-52 overflow-hidden rounded-t-3xl bg-violet-50">
                 <img
                   src={`${import.meta.env.BASE_URL}images/ads-illustration.png`}
                   alt="Google Ads illustration"
@@ -430,10 +430,10 @@ export default function Home() {
                 ))}
               </ul>
               <div className="flex gap-3">
-                <a href={`${BASE}/services/google-ads`} className="flex-1 py-3 rounded-xl border font-bold text-sm text-center transition-all hover:-translate-y-0.5" style={{ borderColor: "hsl(29 100% 55%)", color: "hsl(29 100% 45%)" }}>
+                <a href={`${BASE}/services/google-ads`} className="flex-1 py-3 rounded-xl border font-bold text-sm text-center transition-all hover:-translate-y-0.5" style={{ borderColor: "hsl(259 100% 65%)", color: "hsl(259 100% 50%)" }}>
                   Learn More
                 </a>
-                <a href={`${BASE}/pricing`} className="flex-1 py-3 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-all shadow-md text-center" style={{ background: "hsl(29 100% 55%)", boxShadow: "0 4px 16px hsl(29 100% 55% / 0.3)" }}>
+                <a href={`${BASE}/pricing`} className="flex-1 py-3 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-all shadow-md text-center" style={{ background: "hsl(259 100% 65%)", boxShadow: "0 4px 16px hsl(259 100% 65% / 0.3)" }}>
                   Get Started →
                 </a>
               </div>

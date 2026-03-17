@@ -19,9 +19,9 @@ const stagger = {
   visible: { opacity: 1, transition: { staggerChildren: 0.12 } }
 };
 
-const ACCENT = "hsl(29 100% 65%)";
-const ACCENT_BG = "hsl(29 100% 65% / 0.08)";
-const ACCENT_BORDER = "hsl(29 100% 65% / 0.25)";
+const ACCENT = "hsl(259 100% 65%)";
+const ACCENT_BG = "hsl(259 100% 65% / 0.08)";
+const ACCENT_BORDER = "hsl(259 100% 65% / 0.25)";
 
 const PROCESS = [
   { step: "01", title: "Account Audit & Strategy", desc: "We audit your current account (or start fresh), analyse competitors, and build a strategy around your specific goals and budget.", icon: Eye },

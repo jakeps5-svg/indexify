@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
 const WA_NUMBER = "27760597724";
 const PRIMARY = "hsl(198 69% 52%)";
-const ACCENT  = "hsl(29 100% 65%)";
+const ACCENT  = "hsl(259 100% 65%)";
 
 function WhatsAppIcon({ size = 16 }: { size?: number }) {
   return (
@@ -286,7 +286,7 @@ function generateProposalHTML(result: ProposalResult): string {
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111827; background: #fff; padding: 40px; max-width: 960px; margin: 0 auto; }
   .logo { font-size: 28px; font-weight: 900; margin-bottom: 8px; background: linear-gradient(90deg, #e040fb 0%, #7c4dff 40%, #00b8d9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -1px; }
   .logo span { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; display: block; background: linear-gradient(90deg, #7c4dff, #00b8d9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-top: 2px; }
-  .badge { display: inline-block; background: hsl(29 100% 65%); color: white; font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 20px; }
+  .badge { display: inline-block; background: hsl(259 100% 65%); color: white; font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 20px; }
   h1 { font-size: 28px; font-weight: 900; color: #111827; margin-bottom: 4px; }
   .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 36px; }
   .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 32px; }

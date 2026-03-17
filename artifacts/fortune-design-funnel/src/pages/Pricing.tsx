@@ -216,10 +216,10 @@ export default function PricingPage() {
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-center mb-14"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-4" style={{ background: "hsl(29 100% 65% / 0.12)", color: "hsl(29 100% 45%)" }}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-4" style={{ background: "hsl(259 100% 65% / 0.12)", color: "hsl(259 100% 50%)" }}>
               <MousePointerClick size={14} /> Google Ads Management
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-3">Instant Leads via <span style={{ color: "hsl(29 100% 55%)" }}>Paid Search</span></h2>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-3">Instant Leads via <span style={{ color: "hsl(259 100% 65%)" }}>Paid Search</span></h2>
             <p className="text-lg text-gray-500 max-w-2xl mx-auto">One flat monthly fee. No percentage of ad spend. Your budget goes 100% to Google.</p>
           </motion.div>
 
@@ -227,7 +227,7 @@ export default function PricingPage() {
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="grid lg:grid-cols-5 rounded-3xl overflow-hidden shadow-2xl border border-gray-100 max-w-5xl mx-auto"
           >
-            <div className="lg:col-span-2 p-10 flex flex-col justify-center" style={{ background: "hsl(29 100% 60%)" }}>
+            <div className="lg:col-span-2 p-10 flex flex-col justify-center" style={{ background: "hsl(259 85% 60%)" }}>
               <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-4">Google Ads Management</p>
               <div className="flex items-baseline gap-1 text-white mb-2">
                 <span className="text-3xl font-semibold">R</span>
@@ -237,7 +237,7 @@ export default function PricingPage() {
               <a
                 href={`${BASE}/services/google-ads`}
                 className="w-full py-3.5 rounded-xl bg-white font-bold text-sm hover:-translate-y-0.5 transition-all shadow-lg mb-3 flex items-center justify-center"
-                style={{ color: "hsl(29 100% 45%)" }}
+                style={{ color: "hsl(259 100% 50%)" }}
               >
                 Get Started — R7,300/mo
               </a>
@@ -262,7 +262,7 @@ export default function PricingPage() {
                   "Monthly Performance Reports", "Dedicated Account Manager",
                 ].map((f, i) => (
                   <li key={i} className="flex items-start gap-2.5">
-                    <CheckCircle2 size={14} className="mt-0.5 shrink-0" style={{ color: "hsl(29 100% 55%)" }} />
+                    <CheckCircle2 size={14} className="mt-0.5 shrink-0" style={{ color: "hsl(259 100% 65%)" }} />
                     <span className="text-sm text-gray-700">{f}</span>
                   </li>
                 ))}
@@ -338,11 +338,11 @@ export default function PricingPage() {
                   </ul>
                 </div>
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2" style={{ color: "hsl(29 100% 55%)" }}><MousePointerClick size={11} /> Google Ads Includes</p>
+                  <p className="text-xs font-bold uppercase tracking-widest mb-3 flex items-center gap-2" style={{ color: "hsl(259 100% 65%)" }}><MousePointerClick size={11} /> Google Ads Includes</p>
                   <ul className="space-y-2.5">
                     {["Full campaign setup & management", "Ad copy & A/B testing", "Conversion tracking", "Bid & budget optimisation", "Remarketing campaigns"].map((f, i) => (
                       <li key={i} className="flex items-start gap-2.5">
-                        <CheckCircle2 size={14} className="mt-0.5 shrink-0" style={{ color: "hsl(29 100% 55%)" }} />
+                        <CheckCircle2 size={14} className="mt-0.5 shrink-0" style={{ color: "hsl(259 100% 65%)" }} />
                         <span className="text-sm text-gray-300">{f}</span>
                       </li>
                     ))}

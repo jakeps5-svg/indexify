@@ -54,8 +54,8 @@
   --muted: 220 14% 96%;
   --muted-foreground: 215 14% 45%;
 
-  /* Accent: warm orange #FFBC7D */
-  --accent: 29 100% 65%;
+  /* Accent: Indexify purple #7c4dff */
+  --accent: 259 100% 65%;
   --accent-foreground: 0 0% 100%;
 
   --destructive: 0 84% 60%;
@@ -82,7 +82,18 @@
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-sky-400 to-accent;
+    background: linear-gradient(90deg, #e040fb, #7c4dff, #0ea5c8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-gradient-brand {
+    background: linear-gradient(135deg, #e040fb, #7c4dff, #0ea5c8);
+  }
+
+  .border-gradient-brand {
+    border-image: linear-gradient(90deg, #e040fb, #7c4dff, #0ea5c8) 1;
   }
 
   .glass-card {
