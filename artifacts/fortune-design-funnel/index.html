@@ -38,5 +38,122 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Structured Data — visible to all crawlers regardless of JS execution -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Indexify",
+      "alternateName": "Fortune Design",
+      "url": "https://indexify.co.za",
+      "logo": "https://indexify.co.za/indexify-logo.png",
+      "description": "South Africa's leading SEO and Google Ads agency. We help businesses rank on Google Page 1 and generate consistent leads.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "ZA"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+27760597724",
+        "contactType": "customer service",
+        "availableLanguage": "English"
+      },
+      "sameAs": [
+        "https://www.facebook.com/FortunedesignSA",
+        "https://www.instagram.com/fortunedesign_sa/",
+        "https://www.linkedin.com/in/fortune-design-168270213/"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "SEO & Google Ads Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Search Engine Optimisation (SEO)",
+              "description": "Rank organically on Google Page 1. Data-driven SEO strategies from R5,900/month."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Google Ads Management",
+              "description": "Instant leads via targeted PPC campaigns. Fixed monthly fee from R7,300/month."
+            }
+          }
+        ]
+      }
+    }
+    </script>
+
+    <!-- Noscript fallback — shown to crawlers that do not execute JavaScript -->
+    <noscript>
+      <header>
+        <a href="https://indexify.co.za">Indexify – South Africa's SEO &amp; Google Ads Agency</a>
+        <nav>
+          <a href="https://indexify.co.za/services/seo">SEO Services</a> |
+          <a href="https://indexify.co.za/services/google-ads">Google Ads</a> |
+          <a href="https://indexify.co.za/pricing">Pricing</a> |
+          <a href="https://indexify.co.za/blog">Blog</a> |
+          <a href="https://indexify.co.za/contact">Contact</a> |
+          <a href="https://indexify.co.za/audit">Free SEO Audit</a>
+        </nav>
+      </header>
+      <main>
+        <h1>South Africa's Leading SEO &amp; Google Ads Agency</h1>
+        <p>Indexify, powered by Fortune Design, is South Africa's top-rated digital marketing agency specialising in SEO and Google Ads. We help businesses across Johannesburg, Cape Town, Durban, and Pretoria rank on Google Page 1 and generate consistent leads — without paying for every click.</p>
+
+        <h2>Our Services</h2>
+        <ul>
+          <li><a href="https://indexify.co.za/services/seo">Search Engine Optimisation (SEO)</a> — Rank organically on Google Page 1. Packages from R5,900/month.</li>
+          <li><a href="https://indexify.co.za/services/google-ads">Google Ads Management</a> — Instant leads via targeted PPC. Fixed monthly fee from R7,300/month.</li>
+        </ul>
+
+        <h2>Why Choose Indexify?</h2>
+        <ul>
+          <li>Data-driven SEO with measurable, compounding results</li>
+          <li>Fixed monthly retainer — no percentage of ad spend</li>
+          <li>Transparent monthly reporting and dedicated account managers</li>
+          <li>South Africa-focused — we understand your market</li>
+          <li>Free SEO audit to identify quick wins immediately</li>
+        </ul>
+
+        <h2>Pricing</h2>
+        <p>See full details at <a href="https://indexify.co.za/pricing">indexify.co.za/pricing</a>.</p>
+        <ul>
+          <li>Basic SEO — R5,900/month</li>
+          <li>Advanced SEO — R7,900/month</li>
+          <li>Google Ads Management — R7,300/month</li>
+          <li>Market Leader (SEO + Ads) — R12,500/month</li>
+        </ul>
+
+        <h2>Contact Us</h2>
+        <p>WhatsApp: <a href="https://wa.me/27760597724">+27 76 059 7724</a></p>
+        <p>Email: <a href="mailto:info@fortunedesign.co.za">info@fortunedesign.co.za</a></p>
+        <p><a href="https://indexify.co.za/contact">Contact form and office details</a></p>
+
+        <h2>Read Our SEO Blog</h2>
+        <p>Free SEO tips and Google Ads guides for South African businesses: <a href="https://indexify.co.za/blog">indexify.co.za/blog</a></p>
+
+        <h2>External Resources</h2>
+        <ul>
+          <li><a href="https://search.google.com/search-console" rel="noopener noreferrer">Google Search Console</a> — Monitor your rankings</li>
+          <li><a href="https://ads.google.com" rel="noopener noreferrer">Google Ads</a> — Run paid search campaigns</li>
+          <li><a href="https://fortunedesign.co.za" rel="noopener noreferrer">Fortune Design</a> — Our parent agency</li>
+        </ul>
+
+        <h2>Follow Us on Social Media</h2>
+        <ul>
+          <li><a href="https://www.facebook.com/FortunedesignSA" rel="noopener noreferrer">Facebook — FortunedesignSA</a></li>
+          <li><a href="https://www.instagram.com/fortunedesign_sa/" rel="noopener noreferrer">Instagram — @fortunedesign_sa</a></li>
+          <li><a href="https://www.linkedin.com/in/fortune-design-168270213/" rel="noopener noreferrer">LinkedIn — Fortune Design</a></li>
+        </ul>
+
+        <p>Powered by <a href="https://fortunedesign.co.za">Fortune Design</a> — South Africa's trusted digital marketing partner.</p>
+      </main>
+    </noscript>
   </body>
 </html>

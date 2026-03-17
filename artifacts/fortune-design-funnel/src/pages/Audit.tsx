@@ -62,6 +62,7 @@ interface AuditResult {
   missingAltImages: MissingAltImage[];
   topBacklinks: BacklinkResult[];
   rankingKeywords: KeywordEntry[];
+  isSPA?: boolean;
 }
 
 const sectionIcons: Record<string, typeof Search> = {

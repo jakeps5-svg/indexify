@@ -360,6 +360,50 @@ router.post("/audit", async (req, res) => {
 
   const $ = cheerio.load(html);
 
+  // ─── SPA / CSR DETECTION ────────────────────────────────────────────────────
+  // Detect client-side rendered apps (React, Vue, Angular, etc.)
+  // These return a nearly empty HTML shell — all content is injected by JavaScript.
+  const rawBodyText = $("body").clone()
+    .find("script,style,noscript").remove().end()
+    .text().trim();
+  const rawBodyWords = rawBodyText.split(/\s+/).filter(Boolean).length;
+  const isSPA = rawBodyWords < 60 && (
+    html.includes('id="root"') ||
+    html.includes("id='root'") ||
+    html.includes("data-reactroot") ||
+    html.includes("ng-version") ||
+    html.includes("__nuxt") ||
+    html.includes("data-vue-app") ||
+    html.includes("data-server-rendered") ||
+    html.includes('id="app"') && rawBodyWords < 20
+  );
+
+  // When SPA detected, fetch rendered metadata from microlink (headless render)
+  // This covers title, description, and OG tags that may be set via JS
+  interface MicrolinkMeta {
+    title?: string;
+    description?: string;
+    image?: { url?: string };
+    publisher?: string;
+    url?: string;
+  }
+  let microlinkMeta: MicrolinkMeta | null = null;
+
+  if (isSPA) {
+    try {
+      const mlParams = new URLSearchParams({ url, meta: "true", screenshot: "false" });
+      const mlRes = await fetch(`https://api.microlink.io/?${mlParams}`, {
+        signal: AbortSignal.timeout(15000),
+      });
+      if (mlRes.ok) {
+        const mlData = await mlRes.json() as { status: string; data: MicrolinkMeta };
+        if (mlData.status === "success" && mlData.data) {
+          microlinkMeta = mlData.data;
+        }
+      }
+    } catch { /* fallback to raw HTML */ }
+  }
+
   // ─── KEYWORD EXTRACTION ─────────────────────────────────────────────────────
   const rankingKeywords = extractPageKeywords($);
 
@@ -378,8 +422,9 @@ router.post("/audit", async (req, res) => {
     onPageChecks.push({ name: "Title Tag", status: "pass", value: `"${title.slice(0, 60)}" (${title.length} chars)`, description: "Title tag is present and within the recommended 50–60 character range." });
   }
 
-  // Meta description
-  const metaDesc = $('meta[name="description"]').attr("content")?.trim() ?? "";
+  // Meta description — fall back to microlink rendered value for SPA sites
+  const metaDesc = ($('meta[name="description"]').attr("content")?.trim() ?? "")
+    || (isSPA ? microlinkMeta?.description?.trim() ?? "" : "");
   if (!metaDesc) {
     onPageChecks.push({ name: "Meta Description", status: "fail", value: "Missing", description: "No meta description found. While not a direct ranking factor, it influences click-through rate from search results." });
   } else if (metaDesc.length < 70) {
@@ -850,10 +895,13 @@ router.post("/audit", async (req, res) => {
   // ─── SOCIAL & STRUCTURED DATA ───────────────────────────────────────────────
   const socialChecks: AuditCheck[] = [];
 
-  // Open Graph
-  const ogTitle = $('meta[property="og:title"]').attr("content");
-  const ogDesc = $('meta[property="og:description"]').attr("content");
-  const ogImage = $('meta[property="og:image"]').attr("content");
+  // Open Graph — fall back to microlink rendered data for SPA sites
+  const ogTitle = $('meta[property="og:title"]').attr("content")
+    || (isSPA ? microlinkMeta?.title : undefined);
+  const ogDesc = $('meta[property="og:description"]').attr("content")
+    || (isSPA ? microlinkMeta?.description : undefined);
+  const ogImage = $('meta[property="og:image"]').attr("content")
+    || (isSPA ? microlinkMeta?.image?.url : undefined);
   const ogCount = [ogTitle, ogDesc, ogImage].filter(Boolean).length;
 
   if (ogCount === 3) {
@@ -893,6 +941,31 @@ router.post("/audit", async (req, res) => {
     });
   } else {
     socialChecks.push({ name: "Structured Data (Schema)", status: "warn", value: "None found", description: "No Schema.org structured data found. Adding schema markup can unlock rich snippets in Google search results." });
+  }
+
+  // ─── SPA POST-PROCESSING ─────────────────────────────────────────────────────
+  // For JavaScript-rendered sites, many checks fail on the raw HTML shell.
+  // Downgrade "fail" → "warn" for content checks that require a rendered DOM,
+  // and append a note explaining the JS rendering context.
+  const JS_DEPENDENT_CHECKS = new Set([
+    "H1 Heading", "H2 Headings", "Content Length", "Keyword in Title",
+    "Internal Links", "External Links", "Image Alt Text", "Image Count",
+    "Social Profile Links", "Link-Worthy Content", "Anchor Text Quality",
+    "NoFollow Link Ratio", "Outbound Link Diversity",
+  ]);
+
+  if (isSPA) {
+    const spaNote =
+      " (Note: JavaScript rendering detected — this check is based on the pre-rendered HTML shell. " +
+      "Google renders JavaScript and will see the full content; basic crawlers may not.)";
+    for (const list of [onPageChecks, imageChecks, linkChecks, backlinkChecks]) {
+      for (const check of list) {
+        if (JS_DEPENDENT_CHECKS.has(check.name)) {
+          if (check.status === "fail") check.status = "warn";
+          check.description += spaNote;
+        }
+      }
+    }
   }
 
   // ─── SCORE SECTIONS ─────────────────────────────────────────────────────────
@@ -946,6 +1019,7 @@ router.post("/audit", async (req, res) => {
     missingAltImages,
     topBacklinks,
     rankingKeywords,
+    isSPA,
   });
 });
 
