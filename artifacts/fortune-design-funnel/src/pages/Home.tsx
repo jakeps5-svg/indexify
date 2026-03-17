@@ -241,9 +241,9 @@ export default function Home() {
                 role: "Rapple Products"
               },
               {
-                text: "Fortune Design took over our Google Ads and the difference was immediate. Our enquiry rate more than doubled while our monthly ad spend actually went down. They cut out all the wasted clicks and now every rand works. Exceptional service.",
-                author: "Michael",
-                role: "Captuna Charters"
+                text: "Fortune Design manages both our SEO and Google Ads and the combined results have been phenomenal. We rank on page 1 organically and our paid campaigns bring in high-quality bookings daily. Our online revenue has grown consistently every month since we started with them.",
+                author: "Serenity Villa Daniela",
+                role: "Luxury Villa Rentals"
               },
               {
                 text: "We approached Fortune Design to handle our SEO and Google Ads and the results have been outstanding. Our online leads increased by over 180% in four months and we are now consistently appearing at the top of Google for our key search terms. Highly professional team.",
@@ -251,9 +251,9 @@ export default function Home() {
                 role: "Equipment Rental"
               },
               {
-                text: "Since Fortune Design started managing our SEO, our villa inquiries from organic search have grown month on month. We rank on page 1 for all our target keywords and we are now getting bookings directly from Google that we never had before. Brilliant work.",
-                author: "Serenity Villa Daniela",
-                role: "Luxury Villa Rentals"
+                text: "Fortune Design ran our Google Ads campaign and the ROI was exceptional. From the very first month we started receiving high-quality leads. They handled everything professionally and the reporting was always clear and transparent. Highly recommend.",
+                author: "Jashmir Jungbahadur",
+                role: "JJS Leather"
               }
             ].map((review, i) => (
               <motion.div

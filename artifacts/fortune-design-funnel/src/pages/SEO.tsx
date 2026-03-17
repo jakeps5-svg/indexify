@@ -315,7 +315,7 @@ export default function SEOPage() {
             {[
               { text: "Thanks to Fortune Design's SEO strategy, Rapple is now ranking on Page 1 of Google for all our main keywords. Organic traffic has more than doubled and the quality of leads coming through search has been exceptional. Highly recommend.", author: "Leon De Wet", role: "Rapple Products", stars: 5 },
               { text: "Fortune Design's SEO work has been incredible for our business. We went from page 4 to page 1 within five months and our online inquiries increased by over 180%. The team is professional, transparent, and genuinely delivers results.", author: "Alltech Rental L.L.C", role: "Equipment Rental", stars: 5 },
-              { text: "Since Fortune Design took over our SEO, villa bookings from organic Google search have grown every single month. We now rank on page 1 for all our target keywords and the steady stream of organic inquiries has transformed our business.", author: "Serenity Villa Daniela", role: "Luxury Villa Rentals", stars: 5 },
+              { text: "Fortune Design handles both our SEO and Google Ads and the results across both have been outstanding. Our organic rankings have climbed to page 1 and we get a constant flow of new inquiries. The team is responsive, knowledgeable, and genuinely invested in our success.", author: "Serenity Villa Daniela", role: "Luxury Villa Rentals", stars: 5 },
             ].map((review, i) => (
               <motion.div key={i} variants={fadeInUp} className="bg-white border border-gray-200 rounded-2xl p-7 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300">
                 <div className="flex gap-1 mb-5">
