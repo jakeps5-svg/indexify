@@ -117,7 +117,7 @@ function GradeBadge({ score, size = "md" }: { score: number; size?: "sm" | "md" 
   );
 }
 
-function SectionCard({ section, index, backlinkRecs, missingAltImages }: { section: AuditSection; index: number; backlinkRecs?: string[]; missingAltImages?: MissingAltImage[] }) {
+function SectionCard({ section, index, backlinkRecs, missingAltImages, topBacklinks }: { section: AuditSection; index: number; backlinkRecs?: string[]; missingAltImages?: MissingAltImage[]; topBacklinks?: BacklinkResult[] }) {
   const [open, setOpen] = useState(false);
   const Icon = sectionIcons[section.title] ?? Globe;
   const g = scoreToGrade(section.score);
@@ -268,6 +268,91 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages }: { secti
                   </div>
                 );
               })}
+
+              {/* Top Backlinks table */}
+              {topBacklinks && topBacklinks.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-white/5">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                      <TrendingUp size={12} /> Top Backlinks Found
+                    </p>
+                    <span className="text-[10px] text-muted-foreground">
+                      {topBacklinks.filter(b => b.verified).length} verified
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-white/8 overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-white/5 bg-white/[0.02]">
+                            <th className="text-left px-4 py-2.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Source</th>
+                            <th className="text-center px-3 py-2.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">DR</th>
+                            <th className="text-center px-3 py-2.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                            <th className="text-right px-4 py-2.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">View</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/[0.04]">
+                          {topBacklinks.map((bl, i) => {
+                            const dc = drColor(bl.dr);
+                            return (
+                              <tr key={i} className="hover:bg-white/[0.02] transition-colors">
+                                <td className="px-4 py-3">
+                                  <div className="flex items-center gap-2.5">
+                                    <img
+                                      src={`https://www.google.com/s2/favicons?domain=${bl.domain}&sz=32`}
+                                      alt=""
+                                      className="w-4 h-4 rounded-sm shrink-0 bg-white/5"
+                                      onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                                    />
+                                    <div>
+                                      <p className="font-semibold text-xs text-foreground">{bl.label}</p>
+                                      <p className="text-[10px] text-muted-foreground">{bl.domain}</p>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-3 py-3 text-center">
+                                  <span className={cn(
+                                    "inline-flex items-center justify-center min-w-[38px] px-2 py-0.5 rounded-md text-[11px] font-black border",
+                                    dc.bg, dc.border, dc.text
+                                  )}>
+                                    {bl.dr}
+                                  </span>
+                                </td>
+                                <td className="px-3 py-3 text-center">
+                                  {bl.verified ? (
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
+                                      <CheckCircle2 size={10} /> Verified
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2 py-0.5 rounded-full">
+                                      <AlertTriangle size={10} /> {bl.note ?? "Not listed"}
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-4 py-3 text-right">
+                                  <a
+                                    href={bl.checkUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 text-[10px] text-muted-foreground hover:text-primary transition-colors"
+                                  >
+                                    View <ExternalLink size={10} />
+                                  </a>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="px-4 py-2.5 border-t border-white/5 bg-white/[0.01]">
+                      <p className="text-[10px] text-muted-foreground">
+                        <span className="text-emerald-400 font-semibold">Verified</span> = live <code className="text-[9px] bg-white/5 px-1 rounded">href</code> pointing directly to your domain. DR = domain authority (0–100).
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {backlinkRecs && backlinkRecs.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-white/5">
@@ -514,96 +599,6 @@ export default function AuditPage() {
               </div>
             </div>
 
-            {/* ── Top Backlinks ── */}
-            {result.topBacklinks?.length > 0 && (
-              <div className="bg-card border border-white/5 rounded-2xl overflow-hidden">
-                <div className="px-5 pt-4 pb-3 border-b border-white/5 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp size={14} className="text-primary" />
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                      Top Backlinks Found
-                    </h3>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-muted-foreground">
-                      {result.topBacklinks.filter(b => b.verified).length} verified listings found
-                    </span>
-                  </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-white/5">
-                        <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Source</th>
-                        <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">DR</th>
-                        <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
-                        <th className="text-right px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">View</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/[0.04]">
-                      {result.topBacklinks.map((bl, i) => {
-                        const dc = drColor(bl.dr);
-                        return (
-                          <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
-                            <td className="px-5 py-3.5">
-                              <div className="flex items-center gap-3">
-                                <img
-                                  src={`https://www.google.com/s2/favicons?domain=${bl.domain}&sz=32`}
-                                  alt=""
-                                  className="w-5 h-5 rounded-sm shrink-0 bg-white/5"
-                                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                                />
-                                <div>
-                                  <p className="font-semibold text-sm text-foreground">{bl.label}</p>
-                                  <p className="text-[11px] text-muted-foreground">{bl.domain}</p>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3.5 text-center">
-                              <span className={cn(
-                                "inline-flex items-center justify-center min-w-[42px] px-2 py-1 rounded-lg text-xs font-black border",
-                                dc.bg, dc.border, dc.text
-                              )}>
-                                {bl.dr}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3.5 text-center">
-                              {bl.verified ? (
-                                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-full">
-                                  <CheckCircle2 size={11} /> Verified
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-1 rounded-full">
-                                  <AlertTriangle size={11} /> {bl.note ?? "Not listed"}
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-5 py-3.5 text-right">
-                              <a
-                                href={bl.checkUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary transition-colors"
-                              >
-                                View <ExternalLink size={11} />
-                              </a>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="px-5 py-3 border-t border-white/5">
-                  <p className="text-[11px] text-muted-foreground">
-                    <span className="text-emerald-400 font-semibold">Verified</span> = page contains a live link (<code className="text-[10px] bg-white/5 px-1 rounded">href</code>) pointing directly to your domain — a confirmed real backlink. DR scores are industry-standard domain authority ratings (0–100).
-                  </p>
-                </div>
-              </div>
-            )}
-
             {/* ── Site Preview Screenshots ── */}
             {(result.screenshots?.desktop || result.screenshots?.mobile) && (
               <div className="bg-card border border-white/5 rounded-2xl overflow-hidden">
@@ -823,6 +818,7 @@ export default function AuditPage() {
                     index={i}
                     backlinkRecs={section.title === "Backlinks & Authority" ? backlinkRecs : undefined}
                     missingAltImages={section.title === "Images" ? result.missingAltImages : undefined}
+                    topBacklinks={section.title === "Backlinks & Authority" ? result.topBacklinks : undefined}
                   />
                 ))}
               </div>
