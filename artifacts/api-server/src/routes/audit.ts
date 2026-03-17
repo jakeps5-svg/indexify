@@ -3,23 +3,51 @@ import * as cheerio from "cheerio";
 
 const router: IRouter = Router();
 
-// ── Known high-authority candidate sources to check for backlinks ─────────────
-// DR values are industry-standard approximations (publicly available from Ahrefs/Moz studies)
-const CANDIDATE_SOURCES: { domain: string; dr: number; checkUrl: (target: string) => string; label: string }[] = [
-  { domain: "trustpilot.com",         dr: 91,  label: "Trustpilot",         checkUrl: t => `https://www.trustpilot.com/search?query=${encodeURIComponent(t)}` },
-  { domain: "google.com",             dr: 100, label: "Google Business",    checkUrl: t => `https://www.google.com/search?q=${encodeURIComponent(t)}+site:business.google.com` },
-  { domain: "clutch.co",              dr: 79,  label: "Clutch",             checkUrl: t => `https://clutch.co/agencies/digital-marketing?query=${encodeURIComponent(t)}` },
-  { domain: "kompass.com",            dr: 68,  label: "Kompass",            checkUrl: t => `https://za.kompass.com/en/s/?q=${encodeURIComponent(t)}` },
-  { domain: "bizcommunity.com",       dr: 55,  label: "Bizcommunity",       checkUrl: t => `https://www.bizcommunity.com/Search.aspx?q=${encodeURIComponent(t)}` },
-  { domain: "brownbook.net",          dr: 47,  label: "Brownbook",          checkUrl: t => `https://www.brownbook.net/businesses/?search=${encodeURIComponent(t)}&near=South+Africa` },
-  { domain: "storeboard.com",         dr: 44,  label: "Storeboard",         checkUrl: t => `https://www.storeboard.com/search?q=${encodeURIComponent(t)}` },
-  { domain: "yellowpages.co.za",      dr: 42,  label: "Yellow Pages SA",    checkUrl: t => `https://www.yellowpages.co.za/search?q=${encodeURIComponent(t)}` },
-  { domain: "hotfrog.co.za",          dr: 38,  label: "Hotfrog SA",         checkUrl: t => `https://www.hotfrog.co.za/search/page/1/${encodeURIComponent(t)}` },
-  { domain: "brabys.com",             dr: 36,  label: "Brabys",             checkUrl: t => `https://www.brabys.com/search.asp?Search=${encodeURIComponent(t)}` },
-  { domain: "yalwa.co.za",            dr: 33,  label: "Yalwa SA",           checkUrl: t => `https://yalwa.co.za/Search/Results/?q=${encodeURIComponent(t)}` },
-  { domain: "cylex-sa.co.za",         dr: 30,  label: "Cylex SA",           checkUrl: t => `https://www.cylex-sa.co.za/${encodeURIComponent(t)}.html` },
-  { domain: "businessdirectory.co.za",dr: 28,  label: "SA Business Dir",    checkUrl: t => `https://businessdirectory.co.za/search/?search=${encodeURIComponent(t)}` },
-];
+// ── Static DR lookup for well-known domains ───────────────────────────────────
+// Values are industry-standard approximations based on publicly available Ahrefs/Moz data
+const KNOWN_DR: Record<string, { dr: number; label: string }> = {
+  // Global high-authority
+  "google.com":             { dr: 100, label: "Google" },
+  "maps.google.com":        { dr: 100, label: "Google Maps" },
+  "business.google.com":    { dr: 100, label: "Google Business" },
+  "wikipedia.org":          { dr: 100, label: "Wikipedia" },
+  "trustpilot.com":         { dr: 91,  label: "Trustpilot" },
+  "g2.com":                 { dr: 89,  label: "G2" },
+  "capterra.com":           { dr: 87,  label: "Capterra" },
+  "builtwith.com":          { dr: 74,  label: "BuiltWith" },
+  "clutch.co":              { dr: 79,  label: "Clutch" },
+  "domaintools.com":        { dr: 73,  label: "DomainTools" },
+  "whois.domaintools.com":  { dr: 73,  label: "DomainTools WHOIS" },
+  "goodfirms.co":           { dr: 72,  label: "GoodFirms" },
+  "kompass.com":            { dr: 68,  label: "Kompass" },
+  "web.archive.org":        { dr: 95,  label: "Wayback Machine" },
+  "similarweb.com":         { dr: 82,  label: "SimilarWeb" },
+  "semrush.com":            { dr: 84,  label: "SEMrush" },
+  "designrush.com":         { dr: 61,  label: "DesignRush" },
+  "upcity.com":             { dr: 56,  label: "UpCity" },
+  "expertise.com":          { dr: 60,  label: "Expertise" },
+  "sortlist.co.za":         { dr: 58,  label: "Sortlist SA" },
+  "gumtree.co.za":          { dr: 62,  label: "Gumtree SA" },
+  "itweb.co.za":            { dr: 54,  label: "ITWeb SA" },
+  "memeburn.com":           { dr: 51,  label: "Memeburn" },
+  "techcentral.co.za":      { dr: 50,  label: "TechCentral SA" },
+  "brownbook.net":          { dr: 47,  label: "Brownbook" },
+  "sacompanies.co.za":      { dr: 44,  label: "SA Companies" },
+  "hotfrog.co.za":          { dr: 38,  label: "Hotfrog SA" },
+  "brabys.com":             { dr: 36,  label: "Brabys" },
+  "infoisinfo.co.za":       { dr: 32,  label: "InfoIsInfo SA" },
+  "businessdirectory.co.za":{ dr: 28,  label: "SA Business Dir" },
+};
+
+// Estimate DR for unknown domains based on TLD and structure
+function estimateDR(domain: string): number {
+  if (domain.endsWith(".gov.za") || domain.endsWith(".edu.za") || domain.endsWith(".ac.za")) return 55;
+  if (domain.endsWith(".co.za") || domain.endsWith(".org.za")) return 22;
+  if (domain.endsWith(".io") || domain.endsWith(".co")) return 35;
+  if (domain.endsWith(".org")) return 40;
+  if (domain.endsWith(".com")) return 30;
+  return 18;
+}
 
 interface BacklinkResult {
   domain: string;
@@ -30,37 +58,94 @@ interface BacklinkResult {
   note?: string;
 }
 
+// ── Candidate reference pages — each URL is a real page that may mention the target
+// These span review platforms, agency listing sites, press archives & directories
+type CandidatePage = {
+  domain: string;
+  pageUrl: (t: string) => string;
+};
+
+const REFERENCE_CANDIDATES: CandidatePage[] = [
+  // Review & rating platforms
+  { domain: "trustpilot.com",        pageUrl: t => `https://www.trustpilot.com/search?query=${encodeURIComponent(t)}` },
+  { domain: "g2.com",                pageUrl: t => `https://www.g2.com/search?query=${encodeURIComponent(t)}` },
+  { domain: "capterra.com",          pageUrl: t => `https://www.capterra.com/search/#q=${encodeURIComponent(t)}` },
+  // Agency listing / award sites
+  { domain: "clutch.co",             pageUrl: t => `https://clutch.co/agencies/digital-marketing/south-africa` },
+  { domain: "goodfirms.co",          pageUrl: t => `https://www.goodfirms.co/seo-agencies/south-africa` },
+  { domain: "sortlist.co.za",        pageUrl: t => `https://www.sortlist.co.za/seo-agencies` },
+  { domain: "designrush.com",        pageUrl: t => `https://www.designrush.com/agency/list/seo/south-africa` },
+  { domain: "upcity.com",            pageUrl: t => `https://upcity.com/profiles/${encodeURIComponent(t)}` },
+  // Business data & tech registries
+  { domain: "builtwith.com",         pageUrl: t => `https://builtwith.com/${encodeURIComponent(t)}` },
+  { domain: "similarweb.com",        pageUrl: t => `https://www.similarweb.com/website/${encodeURIComponent(t)}/` },
+  { domain: "semrush.com",           pageUrl: t => `https://www.semrush.com/website/${encodeURIComponent(t)}/overview/` },
+  { domain: "whois.domaintools.com", pageUrl: t => `https://whois.domaintools.com/${encodeURIComponent(t)}` },
+  { domain: "dnsdumpster.com",       pageUrl: t => `https://dnsdumpster.com` },
+  // SA-focused directories & business databases
+  { domain: "brownbook.net",         pageUrl: t => `https://www.brownbook.net/businesses/?search=${encodeURIComponent(t)}&near=South+Africa` },
+  { domain: "hotfrog.co.za",         pageUrl: t => `https://www.hotfrog.co.za/search/page/1/${encodeURIComponent(t)}` },
+  { domain: "brabys.com",            pageUrl: t => `https://www.brabys.com/search.asp?Search=${encodeURIComponent(t)}` },
+  { domain: "kompass.com",           pageUrl: t => `https://za.kompass.com/en/s/?q=${encodeURIComponent(t)}` },
+  { domain: "infoisinfo.co.za",      pageUrl: t => `https://za.infoisinfo.com/search/${encodeURIComponent(t)}` },
+  // Press / news archives
+  { domain: "sacompanies.co.za",     pageUrl: t => `https://www.sacompanies.co.za/search/?q=${encodeURIComponent(t)}` },
+  { domain: "techcentral.co.za",     pageUrl: t => `https://techcentral.co.za/?s=${encodeURIComponent(t)}` },
+  { domain: "memeburn.com",          pageUrl: t => `https://memeburn.com/?s=${encodeURIComponent(t)}` },
+  { domain: "itweb.co.za",           pageUrl: t => `https://www.itweb.co.za/search?query=${encodeURIComponent(t)}` },
+  // Web archive
+  { domain: "web.archive.org",       pageUrl: t => `https://web.archive.org/web/*/${encodeURIComponent(t)}` },
+];
+
 async function discoverBacklinks(targetDomain: string, targetUrl: string): Promise<BacklinkResult[]> {
   const hostname = new URL(targetUrl).hostname.replace(/^www\./, "");
-  const domainVariants = [hostname, `www.${hostname}`, targetDomain.replace(/^www\./, "")];
+  const variants = [hostname, `www.${hostname}`];
+  const ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 
-  const results = await Promise.allSettled(
-    CANDIDATE_SOURCES.map(async (source): Promise<BacklinkResult> => {
-      const checkUrl = source.checkUrl(hostname);
+  const checks = await Promise.allSettled(
+    REFERENCE_CANDIDATES.map(async (cand) => {
+      const url = cand.pageUrl(hostname);
       try {
-        const res = await fetch(checkUrl, {
-          signal: AbortSignal.timeout(7000),
+        const res = await fetch(url, {
+          signal: AbortSignal.timeout(8000),
           headers: {
-            "User-Agent": "Mozilla/5.0 (compatible; SEOBot/1.0)",
-            "Accept": "text/html",
+            "User-Agent": ua,
+            "Accept": "text/html,application/xhtml+xml",
+            "Accept-Language": "en-US,en;q=0.9",
           },
         });
-        if (!res.ok) {
-          return { domain: source.domain, dr: source.dr, label: source.label, checkUrl, verified: false };
-        }
+        if (!res.ok) return null;
         const html = await res.text();
-        const found = domainVariants.some(v => html.toLowerCase().includes(v.toLowerCase()));
-        return { domain: source.domain, dr: source.dr, label: source.label, checkUrl, verified: found };
+        const $ = cheerio.load(html);
+
+        // A real backlink means the page contains an <a href> pointing to the target domain.
+        // This rejects search-result pages that merely echo the query string.
+        const linkedDirectly =
+          $(`a[href*="${hostname}"]`).length > 0 ||
+          variants.some(v =>
+            html.includes(`href="https://${v}`) ||
+            html.includes(`href='https://${v}`) ||
+            html.includes(`href="http://${v}`) ||
+            html.includes(`href='http://${v}`)
+          );
+
+        if (!linkedDirectly) return null;
+
+        const known = KNOWN_DR[cand.domain];
+        const dr    = known ? known.dr : estimateDR(cand.domain);
+        const label = known
+          ? known.label
+          : cand.domain.replace(/\.(co\.za|com|org|net|io|co|za)$/, "").replace(/[-_.]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+        return { domain: cand.domain, dr, label, checkUrl: url, verified: true } as BacklinkResult;
       } catch {
-        return { domain: source.domain, dr: source.dr, label: source.label, checkUrl, verified: false };
+        return null;
       }
     })
   );
 
-  return results
-    .filter(r => r.status === "fulfilled")
+  return checks
+    .filter(r => r.status === "fulfilled" && r.value !== null)
     .map(r => (r as PromiseFulfilledResult<BacklinkResult>).value)
-    .filter(r => r.verified)
     .sort((a, b) => b.dr - a.dr)
     .slice(0, 10);
 }

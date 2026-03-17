@@ -529,7 +529,7 @@ export default function AuditPage() {
 
                 <div className="px-5 py-3 border-t border-white/5">
                   <p className="text-[11px] text-muted-foreground">
-                    <span className="text-emerald-400 font-semibold">Verified</span> = domain found mentioning your site. <span className="text-amber-400 font-semibold">Profile recommended</span> = high-authority platform where you should have a profile. DR scores are industry-standard domain authority ratings (0–100).
+                    <span className="text-emerald-400 font-semibold">Verified</span> = page contains a live link (<code className="text-[10px] bg-white/5 px-1 rounded">href</code>) pointing directly to your domain — a confirmed real backlink. DR scores are industry-standard domain authority ratings (0–100).
                   </p>
                 </div>
               </div>
