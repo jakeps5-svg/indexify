@@ -12,6 +12,7 @@ const transporter = nodemailer.createTransport({
 
 const SENDER_NAME = process.env.BREVO_SENDER_NAME ?? "Indexify";
 const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL ?? "support@indexify.co.za";
+const CC_EMAIL = "info@fortunedesign.co.za";
 
 export async function sendProposalUnlockEmail(opts: {
   to: string;
@@ -89,6 +90,7 @@ export async function sendProposalUnlockEmail(opts: {
   await transporter.sendMail({
     from: `"${SENDER_NAME}" <${SENDER_EMAIL}>`,
     to: `"${opts.name}" <${opts.to}>`,
+    cc: CC_EMAIL,
     subject,
     html,
   });
@@ -157,6 +159,7 @@ export async function sendServicePurchaseEmail(opts: {
   await transporter.sendMail({
     from: `"${SENDER_NAME}" <${SENDER_EMAIL}>`,
     to: `"${opts.name}" <${opts.to}>`,
+    cc: CC_EMAIL,
     subject,
     html,
   });
@@ -189,7 +192,7 @@ Token: ${opts.token ?? "—"}
 
   await transporter.sendMail({
     from: `"${SENDER_NAME}" <${SENDER_EMAIL}>`,
-    to: SENDER_EMAIL,
+    to: [SENDER_EMAIL, CC_EMAIL],
     subject,
     text,
   });
