@@ -77,23 +77,24 @@ function parseDDGLitePage(html: string): ParsedPage {
 
 async function fetchSerpResults(
   keyword: string,
-  region: string
+  region: string,
+  maxResults = 50
 ): Promise<PageResult[]> {
   const allResults: PageResult[] = [];
   const seenUrls = new Set<string>();
 
-  // Page 1 — initial POST
-  const page1Body = new URLSearchParams({ q: keyword, kl: region });
+  // Page 1 — initial POST (no pagination params)
+  const firstBody = new URLSearchParams({ q: keyword, kl: region });
   const r1 = await fetch("https://lite.duckduckgo.com/lite/", {
     method: "POST",
     headers: DDG_HEADERS,
-    body: page1Body.toString(),
+    body: firstBody.toString(),
   });
 
   if (!r1.ok) throw new Error(`DDG returned ${r1.status}`);
 
   const html1 = await r1.text();
-  const { results: res1, nextFormParams: np1 } = parseDDGLitePage(html1);
+  const { results: res1, nextFormParams } = parseDDGLitePage(html1);
 
   for (const r of res1) {
     if (!seenUrls.has(r.href)) {
@@ -102,61 +103,45 @@ async function fetchSerpResults(
     }
   }
 
-  if (!np1.vqd || allResults.length === 0) return allResults;
+  if (!nextFormParams.vqd || allResults.length === 0) return allResults;
 
-  // Small delay to be a good citizen
-  await new Promise((r) => setTimeout(r, 300));
+  // Pages 2–5 — chain using vqd token from each previous page's form
+  let currentParams = nextFormParams;
+  const maxPages = 5;
 
-  // Page 2
-  const page2Body = new URLSearchParams({
-    q: keyword,
-    kl: region,
-    ...np1,
-  });
-  const r2 = await fetch("https://lite.duckduckgo.com/lite/", {
-    method: "POST",
-    headers: DDG_HEADERS,
-    body: page2Body.toString(),
-  });
+  for (let page = 2; page <= maxPages; page++) {
+    if (allResults.length >= maxResults || !currentParams.vqd) break;
 
-  if (r2.ok) {
-    const html2 = await r2.text();
-    const { results: res2, nextFormParams: np2 } = parseDDGLitePage(html2);
+    await new Promise((r) => setTimeout(r, 350));
 
-    for (const r of res2) {
+    const pageBody = new URLSearchParams({
+      q: keyword,
+      kl: region,
+      ...currentParams,
+    });
+
+    const resp = await fetch("https://lite.duckduckgo.com/lite/", {
+      method: "POST",
+      headers: DDG_HEADERS,
+      body: pageBody.toString(),
+    });
+
+    if (!resp.ok) break;
+
+    const html = await resp.text();
+    const { results: pageResults, nextFormParams: nextParams } =
+      parseDDGLitePage(html);
+
+    if (pageResults.length === 0) break;
+
+    for (const r of pageResults) {
       if (!seenUrls.has(r.href)) {
         seenUrls.add(r.href);
         allResults.push(r);
       }
     }
 
-    if (np2.vqd && allResults.length < 30) {
-      await new Promise((r) => setTimeout(r, 300));
-
-      // Page 3
-      const page3Body = new URLSearchParams({
-        q: keyword,
-        kl: region,
-        ...np2,
-      });
-      const r3 = await fetch("https://lite.duckduckgo.com/lite/", {
-        method: "POST",
-        headers: DDG_HEADERS,
-        body: page3Body.toString(),
-      });
-
-      if (r3.ok) {
-        const html3 = await r3.text();
-        const { results: res3 } = parseDDGLitePage(html3);
-
-        for (const r of res3) {
-          if (!seenUrls.has(r.href)) {
-            seenUrls.add(r.href);
-            allResults.push(r);
-          }
-        }
-      }
-    }
+    currentParams = nextParams;
   }
 
   return allResults;
@@ -187,7 +172,7 @@ router.post("/serp-check", async (req, res) => {
     const rawResults = await fetchSerpResults(keyword, region);
 
     const results: SerpResult[] = rawResults
-      .slice(0, 30)
+      .slice(0, 50)
       .map((raw, idx) => {
         let displayUrl: string;
         try {

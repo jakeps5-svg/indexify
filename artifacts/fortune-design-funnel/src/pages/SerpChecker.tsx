@@ -46,7 +46,7 @@ const COUNTRIES = [
 function positionInfo(pos: number | null) {
   if (pos === null) return {
     label: "Not Ranking",
-    sublabel: "Not found in top 100",
+    sublabel: "Not found in top 50",
     color: "text-gray-500",
     bg: "bg-gray-100",
     border: "border-gray-200",
@@ -54,7 +54,7 @@ function positionInfo(pos: number | null) {
     barColor: "bg-gray-400",
     icon: XCircle,
     emoji: "😔",
-    tip: "Your site isn't appearing in Google's top 100 for this keyword. Consider optimising your content.",
+    tip: "Your site isn't appearing in the top 50 results for this keyword. Consider optimising your content and building more backlinks.",
   };
   if (pos === 1) return {
     label: "#1 — Top Spot!",
@@ -140,7 +140,7 @@ const LOADING_STEPS = [
 export default function SerpCheckerPage() {
   useSEO({
     title: "Free Google SERP Rank Checker South Africa | Indexify",
-    description: "Check where your website ranks on Google for any keyword — free, instant results. See your SERP position, top 30 results, and actionable tips to move up.",
+    description: "Check where your website ranks on Google for any keyword — free, instant results. See your SERP position, top 50 results, and actionable tips to move up.",
     keywords: ["SERP rank checker South Africa", "Google ranking checker", "keyword rank checker free", "check website Google position", "SEO rank checker"],
     canonical: "https://indexify.co.za/serp-checker",
   });
@@ -383,84 +383,121 @@ export default function SerpCheckerPage() {
             {/* SERP Results list */}
             {result.results.length > 0 && (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap">
                   <div className="flex items-center gap-2">
-                    <Search size={14} className="text-gray-400" />
-                    <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">
-                      Google SERP Results
+                    <BarChart3 size={15} className="text-primary" />
+                    <h3 className="text-sm font-bold text-gray-800">
+                      Top Ranking Websites &amp; Competitors
                     </h3>
                   </div>
-                  <span className="text-xs text-gray-400 font-medium">Top {result.results.length} results</span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[11px] text-gray-400 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-full font-medium">
+                      keyword: <span className="text-gray-600 font-semibold">{result.keyword}</span>
+                    </span>
+                    <span className="text-[11px] bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-full font-semibold">
+                      {result.results.length} results found
+                    </span>
+                  </div>
                 </div>
 
-                <div className="divide-y divide-gray-50">
-                  {result.results.map((r) => (
-                    <motion.div
-                      key={r.position}
-                      initial={{ opacity: 0, x: -6 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: r.position * 0.025 }}
-                      className={cn(
-                        "flex items-start gap-4 px-5 py-4 transition-colors",
-                        r.isTarget
-                          ? "bg-primary/5 border-l-4 border-primary"
-                          : "hover:bg-gray-50/70"
-                      )}
-                    >
-                      {/* Position number */}
-                      <div className={cn(
-                        "shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm border",
-                        r.isTarget
-                          ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
-                          : r.position <= 3
-                            ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-                            : r.position <= 10
-                              ? "bg-sky-50 text-sky-700 border-sky-100"
-                              : "bg-gray-100 text-gray-500 border-gray-200"
-                      )}>
-                        {r.position <= 3 && !r.isTarget ? ["🥇","🥈","🥉"][r.position - 1] : r.position}
-                      </div>
-
-                      {/* Favicon */}
-                      <img
-                        src={`https://www.google.com/s2/favicons?domain=${r.displayUrl}&sz=32`}
-                        alt={`${r.displayUrl} favicon`}
-                        className="w-5 h-5 rounded-sm shrink-0 mt-2 bg-gray-100"
-                        onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                      />
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                          {r.isTarget && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-black text-white bg-primary px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
-                              <CheckCircle2 size={9} /> Your Site
-                            </span>
-                          )}
-                          <p className={cn(
-                            "font-semibold text-sm truncate",
-                            r.isTarget ? "text-primary" : "text-blue-700"
+                {/* Page dividers */}
+                {(() => {
+                  const items: React.ReactNode[] = [];
+                  let lastPage = 0;
+                  result.results.forEach((r) => {
+                    const page = Math.ceil(r.position / 10);
+                    if (page !== lastPage) {
+                      lastPage = page;
+                      items.push(
+                        <div key={`page-${page}`} className="flex items-center gap-3 px-5 py-2 bg-gray-50/80 border-y border-gray-100">
+                          <span className={cn(
+                            "text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full",
+                            page === 1 ? "bg-sky-100 text-sky-700" : page === 2 ? "bg-amber-100 text-amber-700" : "bg-gray-200 text-gray-500"
                           )}>
-                            {r.title || r.displayUrl}
-                          </p>
-                          <a
-                            href={r.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={`Open ${r.displayUrl}`}
-                            className="text-gray-300 hover:text-primary transition-colors shrink-0"
-                          >
-                            <ExternalLink size={11} aria-hidden="true" />
-                          </a>
+                            {page === 1 ? "🏆 Page 1" : page === 2 ? "📈 Page 2" : `📄 Page ${page}`}
+                          </span>
+                          <span className="text-[10px] text-gray-400">positions {(page - 1) * 10 + 1}–{page * 10}</span>
                         </div>
-                        <p className="text-[11px] text-green-700 truncate mb-1">{r.displayUrl}</p>
-                        {r.snippet && (
-                          <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{r.snippet}</p>
+                      );
+                    }
+                    items.push(
+                      <motion.div
+                        key={r.position}
+                        initial={{ opacity: 0, x: -6 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: Math.min(r.position * 0.02, 0.8) }}
+                        className={cn(
+                          "flex items-start gap-4 px-5 py-3.5 transition-colors border-b border-gray-50 last:border-0",
+                          r.isTarget
+                            ? "bg-primary/5 border-l-4 !border-l-primary"
+                            : "hover:bg-gray-50/70"
                         )}
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+                      >
+                        {/* Position badge */}
+                        <div className={cn(
+                          "shrink-0 w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm border",
+                          r.isTarget
+                            ? "bg-primary text-white border-primary shadow-md shadow-primary/20"
+                            : r.position <= 3
+                              ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                              : r.position <= 10
+                                ? "bg-sky-50 text-sky-700 border-sky-100"
+                                : "bg-gray-100 text-gray-500 border-gray-200"
+                        )}>
+                          {r.position <= 3 && !r.isTarget ? ["🥇","🥈","🥉"][r.position - 1] : r.position}
+                        </div>
+
+                        {/* Favicon */}
+                        <img
+                          src={`https://www.google.com/s2/favicons?domain=${r.displayUrl}&sz=32`}
+                          alt=""
+                          role="presentation"
+                          aria-hidden="true"
+                          className="w-5 h-5 rounded-sm shrink-0 mt-2 bg-gray-100"
+                          onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                        />
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                            {r.isTarget && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-black text-white bg-primary px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
+                                <CheckCircle2 size={9} /> Your Site
+                              </span>
+                            )}
+                            <p className={cn(
+                              "font-semibold text-sm truncate",
+                              r.isTarget ? "text-primary" : "text-blue-700"
+                            )}>
+                              {r.title || r.displayUrl}
+                            </p>
+                            <a
+                              href={r.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`Visit ${r.displayUrl}`}
+                              className="text-gray-300 hover:text-primary transition-colors shrink-0"
+                            >
+                              <ExternalLink size={11} aria-hidden="true" />
+                            </a>
+                          </div>
+                          <p className="text-[11px] text-green-700 truncate mb-1">{r.displayUrl}</p>
+                          {r.snippet && (
+                            <p className="text-xs text-gray-500 leading-relaxed line-clamp-2">{r.snippet}</p>
+                          )}
+                        </div>
+
+                        {/* Competitor tag for non-target sites on page 1 */}
+                        {!r.isTarget && r.position <= 10 && (
+                          <span className="shrink-0 text-[9px] font-bold text-orange-600 bg-orange-50 border border-orange-100 px-1.5 py-0.5 rounded-md uppercase tracking-wide mt-1">
+                            Competitor
+                          </span>
+                        )}
+                      </motion.div>
+                    );
+                  });
+                  return items;
+                })()}
               </div>
             )}
 
@@ -516,7 +553,7 @@ export default function SerpCheckerPage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
               {[
                 { icon: Trophy,      title: "Your Exact Position",    desc: "See your precise rank for any keyword — updated in real time from Google's live results.", color: "bg-yellow-50 border-yellow-100", iconColor: "text-yellow-600 bg-yellow-100" },
-                { icon: BarChart3,   title: "Top 30 SERP Results",   desc: "Browse the full search results page to see exactly who you're competing against.", color: "bg-sky-50 border-sky-100", iconColor: "text-sky-600 bg-sky-100" },
+                { icon: BarChart3,   title: "Top 50 SERP Results",   desc: "Browse the full search results page to see exactly who you're competing against.", color: "bg-sky-50 border-sky-100", iconColor: "text-sky-600 bg-sky-100" },
                 { icon: TrendingUp,  title: "Competitor Visibility", desc: "Spot the domains dominating page 1 so you can benchmark and outrank them.", color: "bg-emerald-50 border-emerald-100", iconColor: "text-emerald-600 bg-emerald-100" },
                 { icon: Globe,       title: "Country-Specific SERPs", desc: "Check rankings for South Africa, US, UK, Australia, Canada, or Nigeria.", color: "bg-violet-50 border-violet-100", iconColor: "text-violet-600 bg-violet-100" },
                 { icon: Zap,         title: "Instant Results",        desc: "No sign-up, no limits. Get your ranking in seconds with a single click.", color: "bg-orange-50 border-orange-100", iconColor: "text-orange-600 bg-orange-100" },
