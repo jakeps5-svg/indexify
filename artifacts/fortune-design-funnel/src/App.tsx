@@ -12,6 +12,8 @@ import PaymentCancelled from "@/pages/PaymentCancelled";
 import CheckoutPage from "@/pages/Checkout";
 import PricingPage from "@/pages/Pricing";
 import ContactPage from "@/pages/Contact";
+import PrivacyPolicyPage from "@/pages/PrivacyPolicy";
+import TermsOfUsePage from "@/pages/TermsOfUse";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -29,6 +31,8 @@ function Router() {
       <Route path="/checkout" component={CheckoutPage} />
       <Route path="/pricing" component={PricingPage} />
       <Route path="/contact" component={ContactPage} />
+      <Route path="/privacy-policy" component={PrivacyPolicyPage} />
+      <Route path="/terms-of-use" component={TermsOfUsePage} />
       <Route component={NotFound} />
     </Switch>
   );

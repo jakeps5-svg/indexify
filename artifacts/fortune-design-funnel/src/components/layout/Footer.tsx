@@ -63,9 +63,12 @@ export function Footer() {
           <p className="text-sm text-gray-500">
             © {new Date().getFullYear()} Indexify · A Fortune Design product. All rights reserved.
           </p>
-          <div className="flex items-center gap-6">
-            <a href="https://indexify.co.za" target="_blank" rel="noreferrer" className="text-sm text-gray-500 hover:text-primary transition-colors">
-              indexify.co.za
+          <div className="flex items-center gap-6 flex-wrap justify-center">
+            <a href={`${BASE}privacy-policy`} className="text-sm text-gray-500 hover:text-primary transition-colors">
+              Privacy Policy
+            </a>
+            <a href={`${BASE}terms-of-use`} className="text-sm text-gray-500 hover:text-primary transition-colors">
+              Terms of Use
             </a>
             <a href="https://fortunedesign.co.za" target="_blank" rel="noreferrer" className="text-sm text-gray-500 hover:text-primary transition-colors">
               fortunedesign.co.za
