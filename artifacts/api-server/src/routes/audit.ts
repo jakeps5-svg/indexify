@@ -281,27 +281,38 @@ router.post("/audit", async (req, res) => {
 
   const images = $("img");
   const totalImages = images.length;
-  let imagesWithoutAlt = 0;
-  let imagesWithEmptyAlt = 0;
+  let missingAltCount = 0;
+  const missingAltImages: { src: string; filename: string }[] = [];
 
   images.each((_, el) => {
     const alt = $(el).attr("alt");
-    if (alt === undefined || alt === null) imagesWithoutAlt++;
-    else if (alt.trim() === "") imagesWithEmptyAlt++;
+    const rawSrc = $(el).attr("src") ?? $(el).attr("data-src") ?? $(el).attr("data-lazy-src") ?? "";
+    const isMissingAlt = alt === undefined || alt === null || alt.trim() === "";
+    if (isMissingAlt) {
+      missingAltCount++;
+      if (rawSrc) {
+        try {
+          const absoluteSrc = rawSrc.startsWith("http") ? rawSrc : new URL(rawSrc, finalUrl).href;
+          const filename = absoluteSrc.split("/").pop()?.split("?")[0] ?? absoluteSrc;
+          if (missingAltImages.length < 30) {
+            missingAltImages.push({ src: absoluteSrc, filename });
+          }
+        } catch { /* skip malformed */ }
+      }
+    }
   });
 
   if (totalImages === 0) {
     imageChecks.push({ name: "Image Alt Text", status: "warn", value: "No images found", description: "No images detected on this page. Images with descriptive alt text can improve visibility in Google Image Search." });
-  } else if (imagesWithoutAlt === 0 && imagesWithEmptyAlt === 0) {
+  } else if (missingAltCount === 0) {
     imageChecks.push({ name: "Image Alt Text", status: "pass", value: `${totalImages} images, all have alt text`, description: "All images have alt attributes. This is great for accessibility and image SEO." });
   } else {
-    const missingCount = imagesWithoutAlt + imagesWithEmptyAlt;
-    const pct = Math.round((missingCount / totalImages) * 100);
+    const pct = Math.round((missingAltCount / totalImages) * 100);
     imageChecks.push({
       name: "Image Alt Text",
       status: pct > 50 ? "fail" : "warn",
-      value: `${missingCount} of ${totalImages} images missing alt text (${pct}%)`,
-      description: `${missingCount} image(s) are missing alt text or have empty alt attributes. Alt text helps Google understand what images contain and improves SEO.`,
+      value: `${missingAltCount} of ${totalImages} images missing alt text (${pct}%)`,
+      description: `${missingAltCount} image(s) are missing alt text or have empty alt attributes. Alt text helps Google understand what images contain and improves SEO.`,
     });
   }
 
@@ -616,6 +627,7 @@ router.post("/audit", async (req, res) => {
     sections,
     recommendations,
     screenshots,
+    missingAltImages,
   });
 });
 

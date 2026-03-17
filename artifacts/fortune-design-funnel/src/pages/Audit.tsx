@@ -4,7 +4,7 @@ import {
   Search, CheckCircle2, XCircle, AlertTriangle, ChevronDown,
   ExternalLink, Zap, Globe, Image, Link2, Share2, ArrowLeft,
   Clock, FileText, MessageCircle, TrendingUp, Award, BarChart3,
-  Monitor, Smartphone
+  Monitor, Smartphone, ImageOff
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +25,11 @@ interface AuditSection {
   checks: AuditCheck[];
 }
 
+interface MissingAltImage {
+  src: string;
+  filename: string;
+}
+
 interface AuditResult {
   url: string;
   finalUrl: string;
@@ -35,6 +40,7 @@ interface AuditResult {
   sections: AuditSection[];
   recommendations: string[];
   screenshots: { desktop: string | null; mobile: string | null };
+  missingAltImages: MissingAltImage[];
 }
 
 const sectionIcons: Record<string, typeof Search> = {
@@ -469,6 +475,74 @@ export default function AuditPage() {
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* ── Images Missing Alt Text ── */}
+            {result.missingAltImages?.length > 0 && (
+              <div className="bg-card border border-amber-400/20 rounded-2xl overflow-hidden">
+                <div className="px-5 pt-4 pb-3 border-b border-white/5 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ImageOff size={14} className="text-amber-400" />
+                    <h3 className="text-sm font-semibold uppercase tracking-wider text-amber-400">
+                      Images Missing Alt Text
+                    </h3>
+                  </div>
+                  <span className="text-xs font-bold bg-amber-400/15 text-amber-400 border border-amber-400/30 px-2.5 py-0.5 rounded-full">
+                    {result.missingAltImages.length} image{result.missingAltImages.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
+                <div className="p-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {result.missingAltImages.map((img, i) => (
+                    <div key={i} className="group bg-white/[0.03] border border-white/8 rounded-xl overflow-hidden hover:border-amber-400/30 transition-colors">
+                      {/* Thumbnail */}
+                      <div className="aspect-video bg-white/5 relative overflow-hidden">
+                        <img
+                          src={img.src}
+                          alt=""
+                          className="w-full h-full object-cover object-top transition-transform group-hover:scale-105"
+                          loading="lazy"
+                          onError={e => {
+                            (e.currentTarget as HTMLImageElement).style.display = "none";
+                            (e.currentTarget.nextSibling as HTMLElement).style.display = "flex";
+                          }}
+                        />
+                        {/* Broken image fallback */}
+                        <div
+                          className="absolute inset-0 hidden items-center justify-center flex-col gap-1 bg-white/[0.03]"
+                        >
+                          <ImageOff size={18} className="text-muted-foreground/40" />
+                          <span className="text-[10px] text-muted-foreground/40">No preview</span>
+                        </div>
+                        {/* Overlay badge */}
+                        <div className="absolute top-1.5 left-1.5 bg-amber-400/90 text-[9px] font-black text-black px-1.5 py-0.5 rounded uppercase tracking-wider">
+                          No Alt
+                        </div>
+                      </div>
+                      {/* URL */}
+                      <div className="p-2.5">
+                        <p className="text-[10px] text-muted-foreground truncate mb-1.5" title={img.filename}>
+                          {img.filename || "Unnamed image"}
+                        </p>
+                        <a
+                          href={img.src}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[10px] text-primary hover:text-primary/80 transition-colors font-medium truncate max-w-full"
+                          title={img.src}
+                        >
+                          <ExternalLink size={9} className="shrink-0" />
+                          <span className="truncate">{img.src.replace(/^https?:\/\//, "")}</span>
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-5 pb-4">
+                  <p className="text-xs text-muted-foreground">
+                    Add descriptive <code className="bg-white/8 px-1 py-0.5 rounded text-primary text-[10px]">alt="..."</code> attributes to each image above. Describe what the image shows — this helps Google index your images and improves accessibility.
+                  </p>
                 </div>
               </div>
             )}
