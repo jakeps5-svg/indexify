@@ -105,6 +105,18 @@
   background: hsl(var(--muted-foreground));
 }
 
+/* Client Logo Marquee */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee 30s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
 /* WhatsApp Pulse Animation */
 @keyframes pulse-whatsapp {
   0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
