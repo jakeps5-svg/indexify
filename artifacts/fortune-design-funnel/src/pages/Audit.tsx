@@ -871,6 +871,81 @@ export default function AuditPage() {
           </motion.div>
         )}
       </div>
+
+      {/* Pricing nudge */}
+      <section className="py-20 bg-gradient-to-br from-slate-50 to-sky-50/40 border-t border-gray-100">
+        <div className="max-w-5xl mx-auto px-4">
+          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
+            <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">Want us to handle this for you?</p>
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-3">
+              We Fix Every Issue — <span className="text-gradient">For a Flat Monthly Fee</span>
+            </h2>
+            <p className="text-gray-500 max-w-xl mx-auto">No hourly surprises. Pick a plan and we'll handle everything from technical fixes to content and backlinks.</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {/* Basic SEO */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+              className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all p-7 flex flex-col"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold uppercase tracking-widest text-primary">Basic SEO</span>
+                <span className="text-xs bg-primary/10 text-primary font-bold px-3 py-1 rounded-full">Most Popular</span>
+              </div>
+              <div className="mb-4">
+                <span className="text-4xl font-black text-gray-900">R5,900</span>
+                <span className="text-gray-400 text-sm">/mo</span>
+              </div>
+              <ul className="space-y-2 mb-6 flex-1">
+                {["Keyword Research & Strategy", "On-Page Optimisation", "Technical SEO Fixes", "Monthly Ranking Reports", "Dedicated Account Manager"].map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                    <CheckCircle2 size={14} className="text-primary mt-0.5 shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <a href={BASE + "/services/seo"} className="block w-full text-center py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md shadow-primary/20">
+                Get Started →
+              </a>
+            </motion.div>
+
+            {/* Advanced SEO */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
+              className="bg-gray-900 rounded-2xl border border-gray-800 shadow-xl hover:shadow-2xl transition-all p-7 flex flex-col relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-40 h-40 rounded-full opacity-10 -translate-y-1/2 translate-x-1/2" style={{ background: "radial-gradient(circle, #7c4dff, transparent)" }} />
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold uppercase tracking-widest text-violet-400">Advanced SEO</span>
+                <span className="text-xs bg-violet-500/20 text-violet-300 font-bold px-3 py-1 rounded-full">Best Results</span>
+              </div>
+              <div className="mb-4">
+                <span className="text-4xl font-black text-white">R7,900</span>
+                <span className="text-gray-400 text-sm">/mo</span>
+              </div>
+              <ul className="space-y-2 mb-6 flex-1">
+                {["Everything in Basic", "Backlink Building Campaign", "Competitor Content Strategy", "Core Web Vitals Optimisation", "Advanced Schema Markup", "Priority Support"].map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                    <CheckCircle2 size={14} className="text-violet-400 mt-0.5 shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <a href={BASE + "/services/seo"} className="block w-full text-center py-3 rounded-xl text-gray-900 font-black text-sm hover:-translate-y-0.5 transition-all shadow-md" style={{ background: "linear-gradient(90deg,#e040fb,#7c4dff,#0ea5c8)" }}>
+                Get Started →
+              </a>
+            </motion.div>
+          </div>
+
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className="text-center mt-8">
+            <a href={BASE + "/pricing"} className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-primary transition-colors font-medium">
+              View full pricing & compare all packages →
+            </a>
+          </motion.div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );

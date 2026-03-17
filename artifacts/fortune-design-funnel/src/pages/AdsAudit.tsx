@@ -4,7 +4,7 @@ import {
   Lock, Unlock, Download, Target, Zap,
   TrendingUp, DollarSign, Users, MousePointerClick,
   Loader2, Search, Megaphone, RefreshCw, Lightbulb,
-  BarChart3, ChevronDown, Globe
+  BarChart3, ChevronDown, Globe, CheckCircle2
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
@@ -935,6 +935,105 @@ export default function AdsAuditPage() {
         </AnimatePresence>
 
       </div>
+
+      {/* Pricing nudge */}
+      <section className="py-20 border-t border-gray-100" style={{ background: "linear-gradient(135deg, #faf5ff 0%, #f0f9ff 100%)" }}>
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-10">
+            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "hsl(259 100% 65%)" }}>Want us to handle this for you?</p>
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-3">
+              We Run Your Ads — <span style={{ background: "linear-gradient(90deg,#e040fb,#7c4dff,#0ea5c8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>You Get the Leads</span>
+            </h2>
+            <p className="text-gray-500 max-w-xl mx-auto">One flat monthly fee. No percentage of ad spend taken. Every rand of your budget goes directly to Google.</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+            {/* Google Ads Management */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+              className="bg-gray-900 rounded-2xl shadow-xl p-8 flex flex-col relative overflow-hidden"
+            >
+              <div className="absolute inset-0 opacity-5" style={{ background: "linear-gradient(135deg,#e040fb,#7c4dff)" }} />
+              <div className="relative">
+                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "hsl(259 100% 75%)" }}>Google Ads Management</span>
+                <div className="my-4">
+                  <span className="text-4xl font-black text-white">R7,300</span>
+                  <span className="text-gray-400 text-sm">/mo</span>
+                </div>
+                <ul className="space-y-2.5 mb-7">
+                  {[
+                    "Full Campaign Setup & Structure",
+                    "Keyword Research & Match Types",
+                    "Ad Copy & A/B Testing",
+                    "Conversion Tracking Setup",
+                    "Bid Strategy & Budget Optimisation",
+                    "Monthly Performance Reports",
+                    "Dedicated Account Manager",
+                  ].map((f, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                      <CheckCircle2 size={14} className="mt-0.5 shrink-0" style={{ color: "hsl(259 100% 75%)" }} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href={`${BASE}/services/google-ads`}
+                  className="block w-full text-center py-3 rounded-xl text-gray-900 font-black text-sm hover:-translate-y-0.5 transition-all shadow-md"
+                  style={{ background: "linear-gradient(90deg,#e040fb,#7c4dff,#0ea5c8)" }}
+                >
+                  Get Started — R7,300/mo
+                </a>
+                <p className="text-center text-gray-500 text-xs mt-3">No lock-in. 30-day notice to cancel.</p>
+              </div>
+            </motion.div>
+
+            {/* Market Leader Bundle */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
+              className="bg-white rounded-2xl border-2 border-dashed shadow-sm hover:shadow-lg transition-all p-8 flex flex-col"
+              style={{ borderColor: "hsl(259 100% 65% / 0.3)" }}
+            >
+              <div className="flex items-start justify-between mb-1">
+                <span className="text-xs font-bold uppercase tracking-widest text-primary">Market Leader Bundle</span>
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: "hsl(259 100% 65% / 0.1)", color: "hsl(259 100% 50%)" }}>SEO + Ads</span>
+              </div>
+              <div className="my-4">
+                <span className="text-4xl font-black text-gray-900">R12,500</span>
+                <span className="text-gray-400 text-sm">/mo</span>
+                <span className="ml-3 text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">Save R700/mo</span>
+              </div>
+              <p className="text-sm text-gray-500 mb-5">Dominate both organic and paid search simultaneously. The fastest way to own Google's first page.</p>
+              <ul className="space-y-2.5 mb-7 flex-1">
+                {[
+                  "Everything in Google Ads Management",
+                  "Advanced SEO included",
+                  "Unified keyword strategy",
+                  "Competitor market domination",
+                  "Priority support & reporting",
+                ].map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                    <CheckCircle2 size={14} className="text-primary mt-0.5 shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href={`${BASE}/pricing`}
+                className="block w-full text-center py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md shadow-primary/20"
+              >
+                View Full Bundle Details →
+              </a>
+            </motion.div>
+          </div>
+
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className="text-center mt-8">
+            <a href={`${BASE}/pricing`} className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-primary transition-colors font-medium">
+              View full pricing & compare all packages →
+            </a>
+          </motion.div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
