@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSEO } from "@/hooks/useSEO";
 import {
   Lock, Unlock, Download, Target, Zap,
   TrendingUp, DollarSign, Users, MousePointerClick,
@@ -470,6 +471,13 @@ function downloadProposal(result: ProposalResult) {
 }
 
 export default function AdsAuditPage() {
+  useSEO({
+    title: "Free Google Ads Proposal South Africa – Instant PPC Strategy | Indexify",
+    description: "Get a free, customised Google Ads proposal for your business in 30 seconds. See recommended budgets, keywords and expected results before you spend a cent.",
+    keywords: ["free Google Ads proposal South Africa", "Google Ads audit South Africa", "PPC proposal South Africa", "Google Ads strategy South Africa", "free PPC audit"],
+    canonical: "https://indexify.co.za/ads-audit",
+  });
+
   const [inputUrl, setInputUrl] = useState("");
   const [inputServices, setInputServices] = useState("");
   const [inputCountry, setInputCountry] = useState("South Africa");

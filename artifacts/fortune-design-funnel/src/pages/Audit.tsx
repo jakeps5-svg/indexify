@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSEO } from "@/hooks/useSEO";
 import {
   Search, CheckCircle2, XCircle, AlertTriangle, ChevronDown,
   ExternalLink, Zap, Globe, Image, Link2, Share2,
@@ -399,6 +400,13 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages, topBackli
 }
 
 export default function AuditPage() {
+  useSEO({
+    title: "Free SEO Audit South Africa – Instant Website Analysis | Indexify",
+    description: "Get your free SEO audit in seconds. Discover why your website isn't ranking on Google and what's holding back your organic traffic. No sign-up required.",
+    keywords: ["free SEO audit South Africa", "website SEO analysis", "Google ranking check South Africa", "SEO health check", "website audit tool South Africa"],
+    canonical: "https://indexify.co.za/audit",
+  });
+
   const [inputUrl, setInputUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

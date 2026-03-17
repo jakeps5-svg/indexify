@@ -3,6 +3,7 @@ import { CheckCircle2, Star, ArrowRight, Search, MousePointerClick, FileText, Me
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
+import { useSEO } from "@/hooks/useSEO";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -69,6 +70,13 @@ const SEO_PACKAGES = [
 ];
 
 export default function PricingPage() {
+  useSEO({
+    title: "SEO & Google Ads Pricing South Africa – Transparent Packages | Indexify",
+    description: "Clear, fixed-price SEO and Google Ads packages for South African businesses. From R5,900/month. No hidden fees. Cancel after 3 months if we don't deliver results.",
+    keywords: ["SEO pricing South Africa", "Google Ads pricing South Africa", "digital marketing packages South Africa", "SEO cost South Africa", "affordable Google Ads management"],
+    canonical: "https://indexify.co.za/pricing",
+  });
+
   function openWhatsApp(msg?: string) {
     const text = msg ?? "Hi Indexify! I'd like to find out more about your packages.";
     window.open(`https://wa.me/27760597724?text=${encodeURIComponent(text)}`, "_blank");

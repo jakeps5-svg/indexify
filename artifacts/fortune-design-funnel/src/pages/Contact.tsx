@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Send, Phone, Mail, MapPin, MessageSquare, CheckCircle2, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { useSEO } from "@/hooks/useSEO";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -21,6 +22,13 @@ const REASONS = [
 ];
 
 export default function Contact() {
+  useSEO({
+    title: "Contact Indexify – SEO & Google Ads Agency South Africa",
+    description: "Get in touch with Indexify for a free strategy consultation. We serve businesses across South Africa — Johannesburg, Cape Town, Durban and nationwide.",
+    keywords: ["contact SEO agency South Africa", "hire Google Ads agency South Africa", "digital marketing consultation South Africa", "SEO quote South Africa"],
+    canonical: "https://indexify.co.za/contact",
+  });
+
   const [form, setForm] = useState({
     name: "",
     email: "",

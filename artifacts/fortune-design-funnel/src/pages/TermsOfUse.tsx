@@ -2,8 +2,16 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { motion } from "framer-motion";
 import { FileText } from "lucide-react";
+import { useSEO } from "@/hooks/useSEO";
 
 export default function TermsOfUse() {
+  useSEO({
+    title: "Terms of Use | Indexify – SEO & Google Ads Agency South Africa",
+    description: "Indexify's terms of use — the conditions governing use of our website and digital marketing services provided by Fortune Design (Pty) Ltd.",
+    keywords: ["Indexify terms of use", "terms and conditions South Africa", "digital marketing agency terms"],
+    canonical: "https://indexify.co.za/terms-of-use",
+  });
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />

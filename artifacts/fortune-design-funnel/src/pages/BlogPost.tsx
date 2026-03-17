@@ -104,12 +104,26 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         }
       };
 
-      setMeta('meta[name="description"]',         "content", post.metaDescription);
-      setMeta('meta[name="keywords"]',             "content", post.keywords.join(", "));
-      setMeta('meta[property="og:title"]',         "content", post.metaTitle);
-      setMeta('meta[property="og:description"]',   "content", post.metaDescription);
-      setMeta('meta[property="og:image"]',         "content", getBlogImage(post.slug, post.category, "hero"));
-      setMeta('meta[property="og:type"]',          "content", "article");
+      setMeta('meta[name="description"]',            "content", post.metaDescription);
+      setMeta('meta[name="keywords"]',               "content", post.keywords.join(", "));
+      setMeta('meta[name="robots"]',                 "content", "index, follow");
+      setMeta('meta[property="og:title"]',           "content", post.metaTitle);
+      setMeta('meta[property="og:description"]',     "content", post.metaDescription);
+      setMeta('meta[property="og:image"]',           "content", getBlogImage(post.slug, post.category, "hero"));
+      setMeta('meta[property="og:type"]',            "content", "article");
+      setMeta('meta[property="og:site_name"]',       "content", "Indexify");
+      setMeta('meta[name="twitter:card"]',           "content", "summary_large_image");
+      setMeta('meta[name="twitter:title"]',          "content", post.metaTitle);
+      setMeta('meta[name="twitter:description"]',    "content", post.metaDescription);
+      setMeta('meta[name="twitter:image"]',          "content", getBlogImage(post.slug, post.category, "hero"));
+
+      let canonical = document.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement("link");
+        canonical.setAttribute("rel", "canonical");
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute("href", `https://indexify.co.za/blog/${post.slug}`);
     }
     return () => { document.title = "Indexify – Lead SEO & Google Ads Expert"; };
   }, [post]);

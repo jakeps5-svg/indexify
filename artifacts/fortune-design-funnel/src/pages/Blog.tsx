@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Clock, ArrowRight, Search, BookOpen } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { useSEO } from "@/hooks/useSEO";
 import { BLOG_POSTS, type BlogPost } from "@/data/blogs";
 import { getBlogImage } from "@/data/blogImages";
 
@@ -77,6 +78,13 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
 }
 
 export default function BlogPage() {
+  useSEO({
+    title: "SEO & Google Ads Blog – Expert Guides for South African Businesses | Indexify",
+    description: "Expert articles on SEO, Google Ads and digital marketing for South African businesses. Practical guides with no fluff — strategies that actually move the needle.",
+    keywords: ["SEO blog South Africa", "Google Ads tips South Africa", "digital marketing South Africa", "SEO guides for businesses", "online marketing South Africa"],
+    canonical: "https://indexify.co.za/blog",
+  });
+
   const [filter, setFilter] = useState<Filter>("All");
   const [searchQuery, setSearchQuery] = useState("");
 

@@ -163,6 +163,12 @@ export function Footer() {
             <a href={`${BASE}terms-of-use`} className="text-sm text-gray-500 hover:text-primary transition-colors">
               Terms of Use
             </a>
+            <a href="https://indexify.co.za/sitemap.xml" target="_blank" rel="noreferrer" className="text-sm text-gray-500 hover:text-primary transition-colors">
+              Sitemap
+            </a>
+            <a href="https://indexify.co.za/rss.xml" target="_blank" rel="noreferrer" className="text-sm text-gray-500 hover:text-primary transition-colors">
+              RSS Feed
+            </a>
             <a href="https://fortunedesign.co.za" target="_blank" rel="noreferrer" className="text-sm text-gray-500 hover:text-primary transition-colors">
               fortunedesign.co.za
             </a>

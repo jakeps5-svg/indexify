@@ -1,3 +1,4 @@
+import { useSEO } from "@/hooks/useSEO";
 import { motion } from "framer-motion";
 import {
   MousePointerClick, CheckCircle2, ArrowRight, TrendingUp, Target,
@@ -78,6 +79,13 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 }
 
 export default function GoogleAdsPage() {
+  useSEO({
+    title: "Google Ads Management South Africa – Pay Per Click Experts | Indexify",
+    description: "Expert Google Ads management for South African businesses. Fixed monthly fee, no % of spend. Get more leads with targeted PPC campaigns from R7,300/month.",
+    keywords: ["Google Ads South Africa", "PPC management South Africa", "Google advertising South Africa", "pay per click South Africa", "Google Ads agency Johannesburg", "Google Ads Cape Town"],
+    canonical: "https://indexify.co.za/services/google-ads",
+  });
+
   const openWhatsApp = () => {
     window.open("https://wa.me/27832555270?text=Hi%20Fortune%20Design%2C%20I%27m%20interested%20in%20Google%20Ads%20management.%20Can%20we%20chat%3F", "_blank");
   };

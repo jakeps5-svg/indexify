@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
+import { useSEO } from "@/hooks/useSEO";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -67,6 +68,13 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 }
 
 export default function SEOPage() {
+  useSEO({
+    title: "SEO Services South Africa – Page 1 Google Rankings | Indexify",
+    description: "Professional SEO services for South African businesses. Get on Google page 1 and attract more customers. Transparent pricing from R5,900/month. Free audit included.",
+    keywords: ["SEO services South Africa", "search engine optimisation South Africa", "SEO agency South Africa", "Google rankings South Africa", "SEO packages South Africa", "affordable SEO South Africa"],
+    canonical: "https://indexify.co.za/services/seo",
+  });
+
   const openWhatsApp = () => {
     window.open("https://wa.me/27832555270?text=Hi%20Fortune%20Design%2C%20I%27m%20interested%20in%20your%20SEO%20services.%20Can%20we%20chat%3F", "_blank");
   };

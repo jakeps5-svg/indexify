@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
+import { useSEO } from "@/hooks/useSEO";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -40,6 +41,13 @@ const staggerContainer = {
 };
 
 export default function Home() {
+  useSEO({
+    title: "Indexify – SEO & Google Ads Agency South Africa | Rank Higher, Get More Clients",
+    description: "South Africa's leading SEO and Google Ads agency. We help businesses rank on Google page 1 and grow revenue with data-driven campaigns. Transparent pricing, real results.",
+    keywords: ["SEO South Africa", "Google Ads South Africa", "digital marketing South Africa", "SEO agency Johannesburg", "Cape Town SEO", "SEO agency South Africa", "search engine optimisation South Africa"],
+    canonical: "https://indexify.co.za/",
+  });
+
   const scrollTo = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
