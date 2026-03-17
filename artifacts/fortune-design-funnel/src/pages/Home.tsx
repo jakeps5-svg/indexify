@@ -101,34 +101,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. STATS SECTION */}
-      <section id="results" className="py-12 border-y border-gray-100 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-gray-100"
-          >
-            {[
-              { value: "R500K+", label: "Ad Spend Managed", icon: BarChart3 },
-              { value: "200%", label: "Avg. Traffic Increase", icon: TrendingUp },
-              { value: "50+", label: "Active Clients", icon: Users },
-              { value: "1st", label: "Page Rankings", icon: Target }
-            ].map((stat, i) => (
-              <motion.div key={i} variants={fadeInUp} className="text-center px-4">
-                <div className="flex justify-center mb-4 text-primary">
-                  <stat.icon size={32} />
-                </div>
-                <h3 className="text-3xl md:text-4xl font-black text-gray-900 mb-1">{stat.value}</h3>
-                <p className="text-sm text-gray-500 font-medium uppercase tracking-wider">{stat.label}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
       {/* CLIENT LOGOS BANNER */}
       <section className="py-10 bg-white border-b border-gray-100 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 text-center">
@@ -171,6 +143,34 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* 2. STATS SECTION */}
+      <section id="results" className="py-12 border-b border-gray-100 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-gray-100"
+          >
+            {[
+              { value: "R500K+", label: "Ad Spend Managed", icon: BarChart3 },
+              { value: "200%", label: "Avg. Traffic Increase", icon: TrendingUp },
+              { value: "50+", label: "Active Clients", icon: Users },
+              { value: "1st", label: "Page Rankings", icon: Target }
+            ].map((stat, i) => (
+              <motion.div key={i} variants={fadeInUp} className="text-center px-4">
+                <div className="flex justify-center mb-4 text-primary">
+                  <stat.icon size={32} />
+                </div>
+                <h3 className="text-3xl md:text-4xl font-black text-gray-900 mb-1">{stat.value}</h3>
+                <p className="text-sm text-gray-500 font-medium uppercase tracking-wider">{stat.label}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
