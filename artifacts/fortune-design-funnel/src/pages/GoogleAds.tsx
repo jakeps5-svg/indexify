@@ -130,19 +130,19 @@ export default function GoogleAdsPage() {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4"
             >
-              <button
-                onClick={openWhatsApp}
+              <a
+                href={`${import.meta.env.BASE_URL}ads-audit`}
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-lg hover:-translate-y-1 transition-all duration-300 shadow-lg text-white"
                 style={{ background: ACCENT, boxShadow: `0 10px 30px ${ACCENT_BG}` }}
               >
-                Get a Free Ads Audit <ArrowRight size={20} />
-              </button>
-              <a
-                href={`${import.meta.env.BASE_URL}audit`}
+                Request a Free Proposal <ArrowRight size={20} />
+              </a>
+              <button
+                onClick={openWhatsApp}
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white text-gray-700 font-bold text-lg border border-gray-200 hover:border-primary hover:text-primary hover:-translate-y-1 transition-all duration-300 shadow-sm"
               >
-                Free Website Audit
-              </a>
+                Chat on WhatsApp
+              </button>
             </motion.div>
           </div>
         </div>
@@ -486,14 +486,20 @@ export default function GoogleAdsPage() {
                 <span className="text-7xl font-black leading-none">7,300</span>
               </div>
               <p className="text-white/70 text-base font-medium mb-10">per month <span className="text-white/50">+ your ad spend</span></p>
-              <button
-                onClick={openWhatsApp}
-                className="w-full py-4 rounded-xl bg-white font-bold text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+              <a
+                href={`${import.meta.env.BASE_URL}ads-audit`}
+                className="w-full py-4 rounded-xl bg-white font-bold text-base transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center gap-2"
                 style={{ color: ACCENT }}
               >
-                Get Started Today
+                Request a Free Proposal <ArrowRight size={16} />
+              </a>
+              <button
+                onClick={openWhatsApp}
+                className="w-full py-3 rounded-xl border border-white/30 text-white/80 font-medium text-sm hover:bg-white/10 transition-all duration-200"
+              >
+                Chat on WhatsApp first
               </button>
-              <p className="text-white/60 text-xs text-center mt-4">No long-term lock-in. 30-day notice to cancel.</p>
+              <p className="text-white/60 text-xs text-center mt-2">No long-term lock-in. 30-day notice to cancel.</p>
             </div>
 
             {/* Features panel */}
@@ -565,29 +571,29 @@ export default function GoogleAdsPage() {
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm mb-8" style={{ border: `1px solid ${ACCENT_BORDER}` }}>
               <Award size={14} style={{ color: ACCENT }} />
-              <span className="text-sm font-semibold" style={{ color: ACCENT }}>Free Account Audit — No Commitment</span>
+              <span className="text-sm font-semibold" style={{ color: ACCENT }}>Free Proposal — No Commitment</span>
             </div>
             <h2 className="text-4xl md:text-6xl font-black mb-6 text-gray-900">
               Stop Wasting Budget.<br />
               <span style={{ color: ACCENT }}>Start Generating Leads.</span>
             </h2>
             <p className="text-xl text-gray-500 mb-10 leading-relaxed">
-              Get a free audit of your Google Ads account — we'll show you exactly where your budget is being wasted and how we'd fix it.
+              Get a free, custom Google Ads proposal for your business — tailored to your services, country, and budget. No commitment required.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={openWhatsApp}
+              <a
+                href={`${import.meta.env.BASE_URL}ads-audit`}
                 className="inline-flex items-center justify-center gap-2 px-10 py-5 rounded-xl font-bold text-xl hover:-translate-y-1 transition-all duration-300 text-white shadow-xl"
                 style={{ background: ACCENT, boxShadow: `0 20px 40px ${ACCENT_BG}` }}
               >
-                Get My Free Ads Audit <ArrowRight size={22} />
-              </button>
-              <a
-                href={`${import.meta.env.BASE_URL}audit`}
+                Request a Free Proposal <ArrowRight size={22} />
+              </a>
+              <button
+                onClick={openWhatsApp}
                 className="inline-flex items-center justify-center gap-2 px-10 py-5 rounded-xl bg-white text-gray-700 font-bold text-xl border border-gray-200 hover:border-primary hover:text-primary hover:-translate-y-1 transition-all duration-300 shadow-sm"
               >
-                Free Website Audit
-              </a>
+                Chat on WhatsApp
+              </button>
             </div>
           </motion.div>
         </div>
