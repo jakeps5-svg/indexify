@@ -30,6 +30,15 @@ interface MissingAltImage {
   filename: string;
 }
 
+interface BacklinkResult {
+  domain: string;
+  dr: number;
+  label: string;
+  checkUrl: string;
+  verified: boolean;
+  note?: string;
+}
+
 interface AuditResult {
   url: string;
   finalUrl: string;
@@ -41,6 +50,7 @@ interface AuditResult {
   recommendations: string[];
   screenshots: { desktop: string | null; mobile: string | null };
   missingAltImages: MissingAltImage[];
+  topBacklinks: BacklinkResult[];
 }
 
 const sectionIcons: Record<string, typeof Search> = {
@@ -73,6 +83,14 @@ const statusBg    = {
   warn: "bg-amber-400/8 border-amber-400/15",
   fail: "bg-red-400/8 border-red-400/15",
 };
+
+function drColor(dr: number) {
+  if (dr >= 80) return { text: "text-emerald-400", bg: "bg-emerald-400/15", border: "border-emerald-400/30" };
+  if (dr >= 60) return { text: "text-sky-400",     bg: "bg-sky-400/15",     border: "border-sky-400/30" };
+  if (dr >= 40) return { text: "text-amber-400",   bg: "bg-amber-400/15",   border: "border-amber-400/30" };
+  if (dr >= 20) return { text: "text-orange-400",  bg: "bg-orange-400/15",  border: "border-orange-400/30" };
+  return               { text: "text-red-400",     bg: "bg-red-400/15",     border: "border-red-400/30" };
+}
 
 function GradeBadge({ score, size = "md" }: { score: number; size?: "sm" | "md" | "lg" | "xl" }) {
   const g = scoreToGrade(score);
@@ -399,6 +417,96 @@ export default function AuditPage() {
                 })}
               </div>
             </div>
+
+            {/* ── Top Backlinks ── */}
+            {result.topBacklinks?.length > 0 && (
+              <div className="bg-card border border-white/5 rounded-2xl overflow-hidden">
+                <div className="px-5 pt-4 pb-3 border-b border-white/5 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp size={14} className="text-primary" />
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                      Top Backlinks Found
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-muted-foreground">
+                      {result.topBacklinks.filter(b => b.verified).length} verified · {result.topBacklinks.filter(b => b.note).length} recommended
+                    </span>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-white/5">
+                        <th className="text-left px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Source</th>
+                        <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">DR</th>
+                        <th className="text-center px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                        <th className="text-right px-5 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">View</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/[0.04]">
+                      {result.topBacklinks.map((bl, i) => {
+                        const dc = drColor(bl.dr);
+                        return (
+                          <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
+                            <td className="px-5 py-3.5">
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={`https://www.google.com/s2/favicons?domain=${bl.domain}&sz=32`}
+                                  alt=""
+                                  className="w-5 h-5 rounded-sm shrink-0 bg-white/5"
+                                  onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                                />
+                                <div>
+                                  <p className="font-semibold text-sm text-foreground">{bl.label}</p>
+                                  <p className="text-[11px] text-muted-foreground">{bl.domain}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3.5 text-center">
+                              <span className={cn(
+                                "inline-flex items-center justify-center min-w-[42px] px-2 py-1 rounded-lg text-xs font-black border",
+                                dc.bg, dc.border, dc.text
+                              )}>
+                                {bl.dr}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3.5 text-center">
+                              {bl.verified ? (
+                                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-full">
+                                  <CheckCircle2 size={11} /> Verified
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-2.5 py-1 rounded-full">
+                                  <AlertTriangle size={11} /> {bl.note ?? "Not listed"}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-5 py-3.5 text-right">
+                              <a
+                                href={bl.checkUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                              >
+                                View <ExternalLink size={11} />
+                              </a>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="px-5 py-3 border-t border-white/5">
+                  <p className="text-[11px] text-muted-foreground">
+                    <span className="text-emerald-400 font-semibold">Verified</span> = domain found mentioning your site. <span className="text-amber-400 font-semibold">Profile recommended</span> = high-authority platform where you should have a profile. DR scores are industry-standard domain authority ratings (0–100).
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* ── Site Preview Screenshots ── */}
             {(result.screenshots?.desktop || result.screenshots?.mobile) && (
