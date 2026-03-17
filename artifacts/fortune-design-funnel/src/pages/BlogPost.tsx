@@ -7,6 +7,19 @@ import { getPost, BLOG_POSTS, type BlogPost } from "@/data/blogs";
 import { getBlogImage } from "@/data/blogImages";
 import NotFound from "@/pages/not-found";
 
+function injectMidImage(html: string, imgUrl: string, alt: string): string {
+  const matches = [...html.matchAll(/<\/h2>/gi)];
+  if (matches.length < 2) return html;
+  const midIdx = Math.floor(matches.length / 2);
+  const insertAt = matches[midIdx].index! + matches[midIdx][0].length;
+  const figure = `
+<figure style="margin:2.5rem 0;border-radius:1rem;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
+  <img src="${imgUrl}" alt="${alt}" loading="lazy" style="width:100%;height:320px;object-fit:cover;display:block;" />
+  <figcaption style="font-size:0.78rem;color:#94a3b8;text-align:center;padding:0.6rem 1rem 0;">Photo for illustration purposes</figcaption>
+</figure>`;
+  return html.slice(0, insertAt) + figure + html.slice(insertAt);
+}
+
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -71,6 +84,8 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
   if (!post) return <NotFound />;
 
   const heroImg = getBlogImage(post.slug, post.category, "hero");
+  const midImg  = getBlogImage(post.slug, post.category, "mid");
+  const enrichedContent = injectMidImage(post.content, midImg, post.title);
   const related = BLOG_POSTS.filter(p => p.slug !== post.slug && p.category === post.category).slice(0, 3);
 
   return (
@@ -131,7 +146,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             [&_pre]:bg-gray-900 [&_pre]:text-gray-100 [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:overflow-x-auto [&_pre]:text-sm [&_pre]:mb-5
             [&_code]:bg-gray-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:text-gray-800
             [&_pre_code]:bg-transparent [&_pre_code]:text-gray-100 [&_pre_code]:p-0"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: enrichedContent }}
         />
 
         {/* Keywords */}

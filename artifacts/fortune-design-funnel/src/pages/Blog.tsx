@@ -160,6 +160,7 @@ export default function BlogPage() {
                 <img
                   src={getBlogImage(BLOG_POSTS[0].slug, BLOG_POSTS[0].category, "hero")}
                   alt={BLOG_POSTS[0].title}
+                  loading="eager"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/10" />
