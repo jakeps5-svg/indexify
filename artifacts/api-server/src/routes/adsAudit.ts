@@ -4,43 +4,59 @@ import * as crypto from "crypto";
 
 const router: IRouter = Router();
 
-type CheckStatus = "pass" | "warn" | "fail";
+// ── INDUSTRY DETECTION ───────────────────────────────────────────────────────
+const INDUSTRY_KEYWORDS: Record<string, string[]> = {
+  "Healthcare & Medical":   ["doctor","medical","health","clinic","dentist","pharmacy","hospital","therapy","physiotherapy","chiropractic","specialist","gp","nursing","optometrist","dietitian"],
+  "Legal Services":         ["attorney","lawyer","law firm","legal","advocate","solicitor","paralegal","conveyancing","litigation","divorce"],
+  "Construction & Trades":  ["construction","building","contractor","renovation","plumbing","electrical","roofing","painting","tiling","carpentry","bricklaying","handyman","builder"],
+  "Education & Training":   ["school","college","academy","tutoring","training","course","education","coaching","lecturer","e-learning","workshop"],
+  "Real Estate":            ["property","real estate","estate agent","letting","rental","apartment","house","bond","mortgage","sectional title"],
+  "Automotive":             ["car","vehicle","auto","motor","mechanic","tyre","panel beating","exhaust","service centre","detailing","accessories"],
+  "Food & Beverage":        ["restaurant","food","catering","bakery","café","takeaway","delivery","chef","meals","cuisine","drinks","bar"],
+  "Financial Services":     ["financial","insurance","accounting","tax","bookkeeping","investment","wealth","advisory","broker","pension","audit"],
+  "Digital & Technology":   ["marketing","seo","google ads","social media","web design","digital","software","it support","app","cyber","cloud","development"],
+  "Beauty & Wellness":      ["salon","beauty","spa","nail","hair","aesthetics","makeup","massage","skincare","lashes","waxing","microblading"],
+  "Cleaning Services":      ["cleaning","domestic","commercial cleaning","carpet cleaning","laundry","hygiene","sanitising","spring clean"],
+  "Security Services":      ["security","alarm","cctv","access control","guard","surveillance","electric fence","biometric","patrol"],
+  "Travel & Tourism":       ["travel","tourism","tour","accommodation","hotel","lodge","safari","holiday","booking","airport","transfers"],
+  "Events & Entertainment": ["events","wedding","photography","venue","catering","dj","entertainment","birthday","conference","function"],
+  "Retail & E-Commerce":    ["shop","store","retail","products","buy","purchase","online store","delivery","stock","wholesale"],
+  "Agriculture":            ["farming","agriculture","livestock","crop","irrigation","fertilizer","harvest","poultry","dairy","agri"],
+};
 
-interface AuditCheck {
-  name: string;
-  status: CheckStatus;
-  value: string;
-  description: string;
-  impact: "high" | "medium" | "low";
-}
+const INDUSTRY_CPC: Record<string, { min: number; max: number; budget: number }> = {
+  "Healthcare & Medical":   { min: 12, max: 40, budget: 6000 },
+  "Legal Services":         { min: 25, max: 100, budget: 12000 },
+  "Construction & Trades":  { min: 6,  max: 22,  budget: 4500 },
+  "Financial Services":     { min: 18, max: 70,  budget: 10000 },
+  "Real Estate":            { min: 12, max: 45,  budget: 7000 },
+  "Digital & Technology":   { min: 10, max: 35,  budget: 6000 },
+  "Automotive":             { min: 5,  max: 18,  budget: 4000 },
+  "Beauty & Wellness":      { min: 4,  max: 15,  budget: 3500 },
+  "Education & Training":   { min: 6,  max: 20,  budget: 4500 },
+  "Security Services":      { min: 8,  max: 28,  budget: 5000 },
+  "Cleaning Services":      { min: 4,  max: 14,  budget: 3000 },
+  "Events & Entertainment": { min: 5,  max: 18,  budget: 4000 },
+  "Travel & Tourism":       { min: 8,  max: 30,  budget: 5500 },
+  "Food & Beverage":        { min: 4,  max: 14,  budget: 3500 },
+  "Retail & E-Commerce":    { min: 4,  max: 18,  budget: 4500 },
+  "Agriculture":            { min: 5,  max: 16,  budget: 3500 },
+  "General Business":       { min: 5,  max: 20,  budget: 4000 },
+};
 
-interface AuditSection {
-  title: string;
-  score: number;
-  checks: AuditCheck[];
-}
+const NEGATIVE_KEYWORDS_BY_INDUSTRY: Record<string, string[]> = {
+  "Healthcare & Medical":   ["free","diy","how to","wikipedia","youtube","home remedy","symptoms","webmd"],
+  "Legal Services":         ["free legal advice","diy","pro se","lawsuit","malpractice","complaint","bad lawyer"],
+  "Construction & Trades":  ["diy","how to","youtube","tutorial","free","second hand","used"],
+  "Financial Services":     ["free","scam","complaint","bad","worst","review","wikipedia","tutorial"],
+  "Real Estate":            ["rent free","squat","free house","wikipedia","diy","how to sell"],
+  "Digital & Technology":   ["free","crack","pirate","torrent","open source","wikipedia","tutorial"],
+  "Beauty & Wellness":      ["diy","how to","tutorial","youtube","free","homemade","cheap","ingredients"],
+  "Cleaning Services":      ["diy","how to","recipe","homemade","cheap tricks","free tips","wikipedia"],
+  "General Business":       ["free","diy","how to","tutorial","youtube","wikipedia","complaint","review"],
+};
 
-interface AdsAuditResult {
-  url: string;
-  finalUrl: string;
-  overallScore: number;
-  qualityScoreEstimate: number;
-  loadTimeMs: number;
-  pageTitle: string;
-  metaDescription: string;
-  sections: AuditSection[];
-  topIssues: string[];
-  quickWins: string[];
-  conversionElements: {
-    hasForms: boolean;
-    hasPhone: boolean;
-    hasCTA: boolean;
-    ctaCount: number;
-    phonesFound: string[];
-  };
-  screenshots: { desktop: string | null; mobile: string | null };
-  unlockCode: string;
-}
+const SA_CITIES = ["cape town","johannesburg","durban","pretoria","port elizabeth","bloemfontein","east london","nelspruit","polokwane","kimberley","rustenburg","george","pietermaritzburg"];
 
 function normalizeUrl(raw: string): string {
   let url = raw.trim();
@@ -48,38 +64,379 @@ function normalizeUrl(raw: string): string {
   return url;
 }
 
-function scoreSection(checks: AuditCheck[]): number {
-  if (checks.length === 0) return 100;
-  const weighted = checks.reduce((sum, c) => {
-    const w = c.impact === "high" ? 3 : c.impact === "medium" ? 2 : 1;
-    const s = c.status === "pass" ? w : c.status === "warn" ? w * 0.5 : 0;
-    return { score: sum.score + s, total: sum.total + w };
-  }, { score: 0, total: 0 });
-  return Math.round((weighted.score / weighted.total) * 100);
-}
-
 function generateUnlockCode(domain: string): string {
-  const secret = `fd-ads-${domain}-2025`;
+  const secret = `fd-proposal-${domain}-2025`;
   return crypto.createHash("sha256").update(secret).digest("hex").slice(0, 8).toUpperCase();
 }
 
-async function fetchScreenshot(targetUrl: string, mobile: boolean): Promise<string | null> {
-  try {
-    const params = new URLSearchParams({
-      url: targetUrl,
-      screenshot: "true",
-      meta: "false",
-      "viewport.width": mobile ? "390" : "1280",
-      "viewport.height": mobile ? "844" : "800",
-      ...(mobile ? { "viewport.isMobile": "true", "viewport.deviceScaleFactor": "2" } : {}),
-    });
-    const r = await fetch(`https://api.microlink.io/?${params}`, { signal: AbortSignal.timeout(18000) });
-    if (!r.ok) return null;
-    const j = await r.json() as any;
-    return j?.data?.screenshot?.url ?? null;
-  } catch {
-    return null;
+function detectIndustry(text: string, title: string): string {
+  const combined = (text + " " + title).toLowerCase();
+  let best = "General Business";
+  let bestScore = 0;
+  for (const [industry, keywords] of Object.entries(INDUSTRY_KEYWORDS)) {
+    const score = keywords.filter(k => combined.includes(k)).length;
+    if (score > bestScore) { bestScore = score; best = industry; }
   }
+  return best;
+}
+
+function looksLikeBusinessName(s: string): boolean {
+  if (s.length < 4 || s.length > 45) return false;
+  // Reject all-lowercase single common words
+  if (/^[a-z]+$/.test(s) && s.length < 8) return false;
+  // Reject generic marketing words / standalone terms
+  if (/^(seo|ads|web|digital|services|solutions|home|about|contact|web design|marketing|agency)$/i.test(s)) return false;
+  return true;
+}
+
+function extractBusinessName($: cheerio.CheerioAPI, title: string, domain: string): string {
+  // og:site_name is usually the cleanest
+  const siteName = $('meta[property="og:site_name"]').attr("content")?.trim();
+  if (siteName && looksLikeBusinessName(siteName)) return siteName;
+
+  // Logo text — only trust it if it's short and clean
+  const logo = $('[class*="logo"], [id*="logo"], [class*="brand"], [id*="brand"]').first().text().trim();
+  if (logo && looksLikeBusinessName(logo)) return logo;
+
+  // Page title — prefer segments that look like a proper business name
+  const parts = title.split(/\s*[|\-–—:]\s*/).map(p => p.trim()).filter(looksLikeBusinessName);
+  // Return the shortest qualifying segment (usually the brand name)
+  if (parts.length > 0) {
+    return parts.sort((a, b) => a.length - b.length)[0];
+  }
+
+  // Domain-based fallback
+  return domain.replace(/^www\./, "").split(".")[0]
+    .replace(/[-_]/g, " ")
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function extractLocation(bodyText: string): string {
+  for (const city of SA_CITIES) {
+    if (bodyText.toLowerCase().includes(city)) {
+      return city.replace(/\b\w/g, c => c.toUpperCase()) + ", South Africa";
+    }
+  }
+  const schemaAddress = bodyText.match(/"addressLocality"\s*:\s*"([^"]+)"/);
+  if (schemaAddress) return schemaAddress[1] + ", South Africa";
+  return "South Africa";
+}
+
+function extractPhone(bodyText: string): string {
+  const m = bodyText.match(/(\+27|0)[0-9\s\-().]{8,16}/);
+  return m ? m[0].trim() : "";
+}
+
+const NAV_JUNK = ["home","about","about us","contact","contact us","blog","news","faq","careers","gallery","portfolio","login","sign in","register","menu","search","cart","services","products","team","testimonials","privacy","terms","sitemap","back","next","previous","whatsapp us","whatsapp","call us","email us","get a quote","get quote","free quote","our work","our clients","case studies","read more","learn more","view all","see more","click here"];
+
+function isJunkNavItem(text: string): boolean {
+  if (NAV_JUNK.some(j => text.toLowerCase() === j || text.toLowerCase() === j + "s")) return true;
+  // Filter long marketing phrases (likely not service names)
+  if (text.length > 55) return true;
+  // Filter sentences (contain common connector words at start)
+  if (/^(we |our |the |a |get |you |is |are |all |fast|easy|no |with |designed|built|fully)/i.test(text)) return true;
+  return false;
+}
+
+function extractServicesFromSite(html: string, $: cheerio.CheerioAPI, bodyText: string, industry: string): string[] {
+  const candidates: { text: string; score: number }[] = [];
+
+  // 1. Nav/menu links (drop-down items especially)
+  $("nav a, header a, [class*='menu'] a, [class*='nav'] a").each((_, el) => {
+    const text = $(el).text().trim();
+    if (text.length >= 3 && text.length <= 60 && !isJunkNavItem(text)) {
+      candidates.push({ text, score: 2 });
+    }
+  });
+
+  // 2. H2/H3 headings in service-like sections
+  $("h2, h3").each((_, el) => {
+    const text = $(el).text().trim();
+    if (text.length >= 4 && text.length <= 80 && !isJunkNavItem(text)) {
+      candidates.push({ text, score: 3 });
+    }
+  });
+
+  // 3. Schema.org Service / Product names
+  $('script[type="application/ld+json"]').each((_, el) => {
+    try {
+      const json = JSON.parse($(el).text());
+      const items = Array.isArray(json) ? json : [json];
+      for (const item of items) {
+        if (item["@type"] === "Service" || item["@type"] === "Product" || item["@type"] === "ItemList") {
+          if (item.name) candidates.push({ text: item.name, score: 5 });
+          if (item.hasOfferCatalog?.itemListElement) {
+            for (const s of item.hasOfferCatalog.itemListElement) {
+              if (s.name) candidates.push({ text: s.name, score: 5 });
+            }
+          }
+        }
+      }
+    } catch {}
+  });
+
+  // 4. Links that look like service/product pages
+  $("a[href]").each((_, el) => {
+    const href = ($(el).attr("href") ?? "").toLowerCase();
+    if (/\/(service|product|solution|offering|package)s?\/[a-z\-]+/.test(href)) {
+      const text = $(el).text().trim();
+      if (text.length >= 3 && text.length <= 60) candidates.push({ text, score: 4 });
+    }
+  });
+
+  // Deduplicate and clean
+  const seen = new Set<string>();
+  const unique: string[] = [];
+  const sorted = candidates.sort((a, b) => b.score - a.score);
+  for (const c of sorted) {
+    const key = c.text.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim();
+    if (!seen.has(key) && key.length > 2 && !isJunkNavItem(c.text)) {
+      seen.add(key);
+      unique.push(c.text);
+    }
+    if (unique.length >= 8) break;
+  }
+
+  // Fallback: industry-specific default services
+  if (unique.length < 2) {
+    const industryDefaults: Record<string, string[]> = {
+      "Healthcare & Medical":   ["General Practitioner", "Specialist Consultations", "Preventative Healthcare"],
+      "Legal Services":         ["Contract Law", "Family Law", "Commercial Litigation"],
+      "Construction & Trades":  ["Residential Renovation", "Commercial Construction", "Project Management"],
+      "Financial Services":     ["Tax Consulting", "Accounting Services", "Financial Planning"],
+      "Real Estate":            ["Property Sales", "Property Rentals", "Property Management"],
+      "Digital & Technology":   ["Website Design", "SEO Services", "Google Ads Management"],
+      "Automotive":             ["Vehicle Servicing", "Mechanical Repairs", "Tyres & Fitment"],
+      "Beauty & Wellness":      ["Hair Styling", "Beauty Treatments", "Spa Packages"],
+      "Education & Training":   ["Corporate Training", "Online Courses", "Tutoring Services"],
+      "Security Services":      ["Alarm Systems", "CCTV Installation", "Access Control"],
+      "Cleaning Services":      ["Residential Cleaning", "Commercial Cleaning", "Deep Cleaning"],
+      "Events & Entertainment": ["Wedding Planning", "Event Decor", "Photography"],
+      "Travel & Tourism":       ["Tour Packages", "Accommodation", "Airport Transfers"],
+      "Food & Beverage":        ["Restaurant Dining", "Catering Services", "Food Delivery"],
+      "Retail & E-Commerce":    ["Online Store", "Product Catalogue", "Same-Day Delivery"],
+      "General Business":       ["Our Services", "Consulting", "Custom Solutions"],
+    };
+    return industryDefaults[industry] ?? ["Our Services", "Consulting", "Custom Solutions"];
+  }
+
+  return unique;
+}
+
+function generateKeywords(service: string, businessName: string, location: string, industry: string): string[] {
+  const s = service.toLowerCase();
+  const loc = location.split(",")[0].trim();
+  const biz = businessName.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim();
+
+  const kws = [
+    s,
+    `${s} ${loc}`,
+    `best ${s}`,
+    `${s} near me`,
+    `professional ${s}`,
+    `affordable ${s}`,
+    `top ${s} in ${loc}`,
+    `${s} company`,
+    `${s} services`,
+    `${s} specialist`,
+    `best ${s} in ${loc}`,
+    `${s} pricing`,
+    `${s} quote`,
+    `free ${s} consultation`,
+    `${s} experts`,
+    `trusted ${s}`,
+    `reliable ${s}`,
+    `hire ${s}`,
+    `get ${s}`,
+    `${s} help`,
+    `how much does ${s} cost`,
+    `${s} cost`,
+    `${s} rates`,
+    `${s} packages`,
+    `${s} for businesses`,
+    `local ${s}`,
+    `${s} ${loc} price`,
+    `${loc} ${s}`,
+    `${s} south africa`,
+    `${biz} ${s}`,
+  ];
+  return [...new Set(kws.filter(k => k.length > 3))].slice(0, 30);
+}
+
+function hl(s: string): string { return s.slice(0, 30); }
+function desc(s: string): string { return s.slice(0, 90); }
+
+function generateAdCopy(service: string, businessName: string, location: string): { headlines: string[]; descriptions: string[] } {
+  const svc = service;
+  const biz = businessName.length > 1 ? businessName : "We";
+  const loc = location.split(",")[0].trim();
+
+  return {
+    headlines: [
+      hl(`${svc} in ${loc}`),
+      hl(`Professional ${svc}`),
+      hl(`Affordable ${svc}`),
+      hl(`Top-Rated ${svc}`),
+      hl(`${biz} | ${svc}`),
+      hl(`Expert ${svc} Services`),
+      hl(`Get a Free Quote Today`),
+      hl(`Call Us Now`),
+      hl(`Trusted & Certified`),
+      hl(`Results Guaranteed`),
+      hl(`Fast & Reliable Service`),
+      hl(`No Hidden Fees`),
+      hl(`Free Consultation`),
+      hl(`Book Online Now`),
+      hl(`Serving ${loc}`),
+    ],
+    descriptions: [
+      desc(`Looking for ${svc.toLowerCase()} in ${loc}? ${biz} delivers professional results at competitive prices. Get your free quote today.`),
+      desc(`${biz} specialises in ${svc.toLowerCase()} with guaranteed results. Serving ${loc} and surroundings. Contact us for a free consultation.`),
+      desc(`Rated top ${svc.toLowerCase()} provider in ${loc}. Fast, reliable and affordable. Book online or call us today for immediate assistance.`),
+      desc(`Don't overpay for ${svc.toLowerCase()}. ${biz} offers transparent pricing and professional service. Get your free assessment now.`),
+    ],
+  };
+}
+
+interface AdGroup {
+  name: string;
+  previewKeywords: string[];
+  keywords: string[];
+  headlines: string[];
+  descriptions: string[];
+}
+
+interface Campaign {
+  name: string;
+  type: string;
+  objective: string;
+  monthlyBudget: number;
+  dailyBudget: number;
+  biddingStrategy: string;
+  adGroups: AdGroup[];
+}
+
+function buildCampaigns(services: string[], businessName: string, location: string, industry: string): Campaign[] {
+  const cpcData = INDUSTRY_CPC[industry] ?? INDUSTRY_CPC["General Business"];
+  const campaigns: Campaign[] = [];
+
+  // Primary Search Campaign (covers all services)
+  const primaryGroups: AdGroup[] = services.map(svc => {
+    const kws = generateKeywords(svc, businessName, location, industry);
+    const copy = generateAdCopy(svc, businessName, location);
+    return {
+      name: svc,
+      previewKeywords: kws.slice(0, 5),
+      keywords: kws,
+      headlines: copy.headlines,
+      descriptions: copy.descriptions,
+    };
+  });
+
+  campaigns.push({
+    name: `${businessName} — Search (All Services)`,
+    type: "Search",
+    objective: "Leads & Enquiries",
+    monthlyBudget: Math.round(cpcData.budget * 0.6),
+    dailyBudget: Math.round((cpcData.budget * 0.6) / 30),
+    biddingStrategy: "Maximise Conversions",
+    adGroups: primaryGroups,
+  });
+
+  // Branded Campaign
+  const brandKws = [
+    businessName.toLowerCase(),
+    `${businessName.toLowerCase()} reviews`,
+    `${businessName.toLowerCase()} contact`,
+    `${businessName.toLowerCase()} services`,
+    `${businessName.toLowerCase()} ${location.split(",")[0].toLowerCase()}`,
+  ];
+  campaigns.push({
+    name: `${businessName} — Brand Protection`,
+    type: "Search",
+    objective: "Brand Awareness & Direct Traffic",
+    monthlyBudget: Math.round(cpcData.budget * 0.15),
+    dailyBudget: Math.round((cpcData.budget * 0.15) / 30),
+    biddingStrategy: "Target Impression Share (Top of Page)",
+    adGroups: [{
+      name: `${businessName} Brand Terms`,
+      previewKeywords: brandKws.slice(0, 3),
+      keywords: brandKws,
+      headlines: [
+        hl(`${businessName} — Official`),
+        hl(`${businessName} | ${services[0] ?? "Services"}`),
+        hl("Contact Us Directly"),
+        hl("Get a Free Quote"),
+        hl("Trusted & Established"),
+        hl(`Serving ${location.split(",")[0]}`),
+        hl("Book Online Today"),
+        hl("Call Us Now"),
+        hl("Fast Response"),
+        hl("Industry Leaders"),
+        hl("Certified Professionals"),
+        hl("No Commitment Needed"),
+        hl("Free Consultation"),
+        hl("Top Rated"),
+        hl("Results Driven"),
+      ],
+      descriptions: [
+        desc(`${businessName} is the official provider of ${services[0]?.toLowerCase() ?? "professional services"} in ${location.split(",")[0]}. Book your free consultation today.`),
+        desc(`Contact ${businessName} directly for the best rates and professional service. We serve ${location} and surrounding areas.`),
+        desc(`${businessName} — your trusted local provider. Fast response, competitive pricing, and guaranteed results every time.`),
+        desc(`Book directly with ${businessName} for exclusive rates. Professional ${services[0]?.toLowerCase() ?? "service"} in ${location.split(",")[0]}.`),
+      ],
+    }],
+  });
+
+  // Remarketing / Display Campaign
+  campaigns.push({
+    name: `${businessName} — Remarketing (Past Visitors)`,
+    type: "Display",
+    objective: "Re-engage Website Visitors",
+    monthlyBudget: Math.round(cpcData.budget * 0.15),
+    dailyBudget: Math.round((cpcData.budget * 0.15) / 30),
+    biddingStrategy: "Target CPA",
+    adGroups: [{
+      name: "All Website Visitors — 30 Days",
+      previewKeywords: ["Remarketing audience", "Website visitors", "Past enquirers"],
+      keywords: ["Remarketing audience — all visitors (30 days)", "Visitors who viewed service pages", "Cart abandoners / form starters"],
+      headlines: [
+        hl(`Still Need ${services[0] ?? "Help"}?`),
+        hl(`${businessName} — Get a Quote`),
+        hl("We're Ready to Help"),
+        hl("Limited Availability"),
+        hl("Book Your Slot Today"),
+        hl("Don't Miss Out"),
+        hl("Free Consultation Waiting"),
+        hl("Contact Us Now"),
+        hl("Fast & Affordable"),
+        hl("Trusted by Many"),
+        hl("Professional Results"),
+        hl("Call or WhatsApp"),
+        hl("Same-Day Response"),
+        hl("Get Started Today"),
+        hl(`Back for a Reason`),
+      ],
+      descriptions: [
+        desc(`You visited ${businessName} recently — we'd love to help. Get your free quote today with no commitment.`),
+        desc(`Don't let ${services[0]?.toLowerCase() ?? "your needs"} wait. ${businessName} has availability this week. Book your slot today.`),
+        desc(`${businessName} is ready to assist you. Fast, professional, and affordable. Reach out today for your free consultation.`),
+        desc(`We noticed you're interested in ${services[0]?.toLowerCase() ?? "our services"}. Book now and get your free proposal.`),
+      ],
+    }],
+  });
+
+  return campaigns;
+}
+
+function generateNegativeKeywords(industry: string): string[] {
+  return [
+    ...(NEGATIVE_KEYWORDS_BY_INDUSTRY[industry] ?? NEGATIVE_KEYWORDS_BY_INDUSTRY["General Business"]),
+    "free download","template","sample","example","definition","meaning","vs","comparison","alternative",
+    "reddit","quora","facebook","instagram","twitter","linkedin","youtube","tiktok",
+    "jobs","vacancy","career","internship","hire me","cv","resume",
+    "lawsuit","complaint","fraud","scam","fake","illegal",
+  ];
 }
 
 router.post("/ads-audit", async (req, res) => {
@@ -92,27 +449,14 @@ router.post("/ads-audit", async (req, res) => {
   url = normalizeUrl(url);
 
   let parsedUrl: URL;
-  try {
-    parsedUrl = new URL(url);
-  } catch {
-    res.status(400).json({ error: "Invalid URL. Please enter a valid website address." });
-    return;
-  }
+  try { parsedUrl = new URL(url); }
+  catch { res.status(400).json({ error: "Invalid URL. Please enter a valid website address." }); return; }
 
   const domain = parsedUrl.hostname.replace(/^www\./, "");
   const unlockCode = generateUnlockCode(domain);
 
-  const screenshotPromises = Promise.allSettled([
-    fetchScreenshot(url, false),
-    fetchScreenshot(url, true),
-  ]);
-
-  const start = Date.now();
   let html = "";
   let finalUrl = url;
-  let statusCode = 0;
-  let fetchError = "";
-  let responseHeaders: Record<string, string> = {};
 
   try {
     const controller = new AbortController();
@@ -120,308 +464,58 @@ router.post("/ads-audit", async (req, res) => {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml",
         "Accept-Language": "en-ZA,en;q=0.9",
       },
       redirect: "follow",
     });
     clearTimeout(timeout);
-    statusCode = response.status;
     finalUrl = response.url || url;
-    response.headers.forEach((value, key) => { responseHeaders[key.toLowerCase()] = value; });
     html = await response.text();
   } catch (err: any) {
-    fetchError = err?.name === "AbortError"
+    const msg = err?.name === "AbortError"
       ? "The website took too long to respond (timeout after 15s)."
       : `Could not reach the website: ${err?.message ?? "Unknown error"}`;
+    res.status(400).json({ error: msg });
+    return;
   }
 
-  if (fetchError) { res.status(400).json({ error: fetchError }); return; }
-
-  const loadTimeMs = Date.now() - start;
   const $ = cheerio.load(html);
-  const bodyText = $("body").text().toLowerCase();
-  const fullHtml = html.toLowerCase();
+  const bodyText = $("body").text();
 
-  // ── PAGE META ───────────────────────────────────────────────────────────────
   const pageTitle = $("title").first().text().trim();
-  const metaDescription = $('meta[name="description"]').attr("content")?.trim() ?? "";
+  const businessName = extractBusinessName($, pageTitle, domain);
+  const industry = detectIndustry(bodyText, pageTitle);
+  const location = extractLocation(bodyText);
+  const phone = extractPhone(bodyText);
+  const services = extractServicesFromSite(html, $, bodyText, industry);
+  const campaigns = buildCampaigns(services, businessName, location, industry);
+  const negativeKeywords = generateNegativeKeywords(industry);
 
-  // ── CONVERSION ELEMENT DETECTION ────────────────────────────────────────────
-  const forms = $("form").length;
-  const phoneRegex = /(\+27|0)[0-9\s\-()]{8,14}/g;
-  const phonesFound = [...new Set((bodyText.match(phoneRegex) ?? []).map(p => p.trim()))].slice(0, 3);
-  const hasPhone = phonesFound.length > 0;
-  const hasForms = forms > 0;
-
-  const ctaKeywords = ["get started","contact us","call us","request a quote","get a quote","book now",
-    "free consultation","schedule","book a","buy now","order now","sign up","register","enquire",
-    "whatsapp","chat","get in touch","submit","send","enquiry","apply now","claim","download"];
-  const allLinks = $("a, button").map((_, el) => $(el).text().trim().toLowerCase()).get();
-  const ctaCount = allLinks.filter(t => ctaKeywords.some(k => t.includes(k))).length;
-  const hasCTA = ctaCount > 0 || $('[class*="cta"],[class*="btn"],[class*="button"]').length > 2;
-
-  const conversionElements = { hasForms, hasPhone, hasCTA, ctaCount, phonesFound };
-
-  // ── SECTION 1: LANDING PAGE QUALITY (Quality Score) ─────────────────────────
-  const lpChecks: AuditCheck[] = [];
-
-  // Headline clarity
-  const h1s = $("h1").map((_, el) => $(el).text().trim()).get().filter(Boolean);
-  if (h1s.length === 0) {
-    lpChecks.push({ name: "Main Headline (H1)", status: "fail", value: "Missing", impact: "high",
-      description: "No H1 heading found. Google Ads rewards landing pages where the headline matches the ad's message. This is a Quality Score killer." });
-  } else if (h1s[0].length < 10) {
-    lpChecks.push({ name: "Main Headline (H1)", status: "warn", value: `"${h1s[0]}"`, impact: "high",
-      description: "H1 heading is too vague. Your headline should clearly state what you offer to match your ad's intent." });
-  } else {
-    lpChecks.push({ name: "Main Headline (H1)", status: "pass", value: `"${h1s[0].slice(0, 60)}"`, impact: "high",
-      description: "Clear main headline found — this helps ad-to-page relevance, a key Quality Score factor." });
-  }
-
-  // Value proposition
-  const vpKeywords = ["save","guarantee","best","top","leading","trusted","expert","certified","no contract","free","results","proven"];
-  const hasVP = vpKeywords.some(k => bodyText.includes(k));
-  lpChecks.push({ name: "Value Proposition", status: hasVP ? "pass" : "warn", value: hasVP ? "Detected" : "Not clear", impact: "high",
-    description: hasVP
-      ? "Strong value proposition language found — visitors can quickly understand why to choose you."
-      : "No clear value proposition found. Ads convert best when landing pages immediately answer 'Why choose you?'" });
-
-  // Title tag relevance
-  if (!pageTitle) {
-    lpChecks.push({ name: "Page Title", status: "fail", value: "Missing", impact: "high",
-      description: "No page title found. This hurts both your SEO Quality Score and ad relevance." });
-  } else if (pageTitle.length > 60) {
-    lpChecks.push({ name: "Page Title", status: "warn", value: `"${pageTitle.slice(0, 60)}…" (${pageTitle.length} chars)`, impact: "medium",
-      description: "Title too long — will be truncated in search results. Keep under 60 characters." });
-  } else {
-    lpChecks.push({ name: "Page Title", status: "pass", value: `"${pageTitle.slice(0, 60)}"`, impact: "high",
-      description: "Page title is present and a good length — helps align your page with your ad keywords." });
-  }
-
-  // Meta description (Ad preview alignment)
-  if (!metaDescription) {
-    lpChecks.push({ name: "Meta Description", status: "warn", value: "Missing", impact: "medium",
-      description: "No meta description. Google sometimes uses this as ad description text. Add one with a strong CTA." });
-  } else {
-    lpChecks.push({ name: "Meta Description", status: "pass", value: `"${metaDescription.slice(0, 70)}…"`, impact: "medium",
-      description: "Meta description present — Google can use this text in your ad descriptions." });
-  }
-
-  // Content depth
-  const wordCount = bodyText.split(/\s+/).filter(Boolean).length;
-  if (wordCount < 200) {
-    lpChecks.push({ name: "Content Depth", status: "fail", value: `~${wordCount} words`, impact: "high",
-      description: "Very thin content. Google Ads Quality Score penalises landing pages with little content — aim for 300+ words." });
-  } else if (wordCount < 400) {
-    lpChecks.push({ name: "Content Depth", status: "warn", value: `~${wordCount} words`, impact: "medium",
-      description: "Content is light. Adding more detailed copy about your services can improve Quality Score and conversion rate." });
-  } else {
-    lpChecks.push({ name: "Content Depth", status: "pass", value: `~${wordCount} words`, impact: "medium",
-      description: "Good content depth — enough information to satisfy a visitor arriving from an ad." });
-  }
-
-  // ── SECTION 2: MOBILE & SPEED ───────────────────────────────────────────────
-  const mobileChecks: AuditCheck[] = [];
-
-  const viewport = $('meta[name="viewport"]').attr("content");
-  if (viewport?.includes("width=device-width")) {
-    mobileChecks.push({ name: "Mobile Viewport", status: "pass", value: viewport.slice(0, 60), impact: "high",
-      description: "Mobile viewport is correctly set. Over 65% of Google Ads clicks come from mobile — this is critical." });
-  } else {
-    mobileChecks.push({ name: "Mobile Viewport", status: "fail", value: "Missing or incorrect", impact: "high",
-      description: "No mobile viewport tag. Your landing page may display incorrectly on phones, destroying conversion rates." });
-  }
-
-  if (loadTimeMs < 1500) {
-    mobileChecks.push({ name: "Page Load Speed", status: "pass", value: `${loadTimeMs}ms`, impact: "high",
-      description: "Fast page load — excellent for Quality Score. Google penalises slow landing pages in Ads auctions." });
-  } else if (loadTimeMs < 3000) {
-    mobileChecks.push({ name: "Page Load Speed", status: "warn", value: `${loadTimeMs}ms`, impact: "high",
-      description: "Page is a bit slow. Each second of delay reduces conversions by ~7%. Aim for under 1.5s." });
-  } else {
-    mobileChecks.push({ name: "Page Load Speed", status: "fail", value: `${loadTimeMs}ms`, impact: "high",
-      description: "Very slow page load. This directly lowers your Quality Score and increases your cost-per-click." });
-  }
-
-  const hasResponsiveIndicators = fullHtml.includes("max-width") || fullHtml.includes("@media") || $('[class*="col-"],[class*="flex"],[class*="grid"],[class*="responsive"]').length > 3;
-  mobileChecks.push({ name: "Responsive Design", status: hasResponsiveIndicators ? "pass" : "warn", value: hasResponsiveIndicators ? "Detected" : "Unclear", impact: "high",
-    description: hasResponsiveIndicators
-      ? "Responsive CSS detected — layout likely adapts well to mobile screens."
-      : "Could not confirm responsive design. Test your page on mobile to ensure a good experience." });
-
-  const hasLargeImages = $("img:not([loading])").length > 3;
-  mobileChecks.push({ name: "Image Lazy Loading", status: hasLargeImages ? "warn" : "pass", value: hasLargeImages ? "Some images not lazy-loaded" : "Good", impact: "medium",
-    description: hasLargeImages
-      ? "Some images lack lazy loading — they load immediately, slowing page speed on mobile."
-      : "Images appear to use lazy loading — good for mobile performance." });
-
-  // ── SECTION 3: CONVERSION READINESS ────────────────────────────────────────
-  const convChecks: AuditCheck[] = [];
-
-  if (hasCTA) {
-    convChecks.push({ name: "Call-to-Action Buttons", status: ctaCount >= 3 ? "pass" : "warn", value: `${ctaCount} CTA${ctaCount !== 1 ? "s" : ""} detected`, impact: "high",
-      description: ctaCount >= 3
-        ? "Multiple CTAs detected — gives visitors multiple opportunities to convert."
-        : "Limited CTAs found. Ads convert better when there are 3+ clear, action-oriented buttons." });
-  } else {
-    convChecks.push({ name: "Call-to-Action Buttons", status: "fail", value: "None detected", impact: "high",
-      description: "No clear CTA buttons found. Without a compelling call-to-action, visitors arriving from ads won't know what to do next." });
-  }
-
-  convChecks.push({ name: "Contact Form", status: hasForms ? "pass" : "warn", value: hasForms ? `${forms} form(s) found` : "None found", impact: "high",
-    description: hasForms
-      ? "Contact form found — a primary conversion pathway for lead generation ads."
-      : "No form found. Adding a short contact form significantly increases lead capture from Google Ads traffic." });
-
-  convChecks.push({ name: "Phone Number", status: hasPhone ? "pass" : "warn", value: hasPhone ? phonesFound[0] : "Not found", impact: "high",
-    description: hasPhone
-      ? "Phone number found — enables click-to-call tracking in Google Ads, a high-converting feature."
-      : "No phone number detected. Phone numbers on landing pages increase trust and enable call extensions in Ads." });
-
-  // Above-fold CTA
-  const earlyHtml = html.slice(0, html.length * 0.3).toLowerCase();
-  const hasAboveFoldCTA = ctaKeywords.some(k => earlyHtml.includes(k));
-  convChecks.push({ name: "Above-Fold CTA", status: hasAboveFoldCTA ? "pass" : "warn", value: hasAboveFoldCTA ? "Present" : "Not visible", impact: "high",
-    description: hasAboveFoldCTA
-      ? "A CTA appears early on the page — visitors from ads can act immediately without scrolling."
-      : "No CTA visible in the top section. Ads visitors expect an immediate action button — add one above the fold." });
-
-  // Thank you / confirmation page indicator
-  const hasThankYou = bodyText.includes("thank you") || bodyText.includes("confirmation") || bodyText.includes("submitted");
-  convChecks.push({ name: "Conversion Confirmation", status: hasThankYou ? "pass" : "warn", value: hasThankYou ? "Detected" : "Unclear", impact: "medium",
-    description: hasThankYou
-      ? "Confirmation/thank-you language found — enables accurate Google Ads conversion tracking."
-      : "No confirmation language detected. Set up a thank-you page to enable Google Ads conversion tracking." });
-
-  // ── SECTION 4: TRUST & CREDIBILITY ──────────────────────────────────────────
-  const trustChecks: AuditCheck[] = [];
-
-  const isHttps = finalUrl.startsWith("https://");
-  trustChecks.push({ name: "SSL Certificate", status: isHttps ? "pass" : "fail", value: isHttps ? "Secure (HTTPS)" : "Not Secure (HTTP)", impact: "high",
-    description: isHttps
-      ? "HTTPS enabled — Google requires SSL for ads. Visitors see no 'Not Secure' warning."
-      : "No HTTPS. Google Ads may reject your landing page. Immediately install an SSL certificate." });
-
-  const reviewKeywords = ["review","testimonial","star","rated","★","⭐","trustpilot","google review","client said","customer said","says","feedback","our clients","what our"];
-  const hasReviews = reviewKeywords.some(k => bodyText.includes(k));
-  trustChecks.push({ name: "Reviews & Testimonials", status: hasReviews ? "pass" : "warn", value: hasReviews ? "Found" : "Not found", impact: "high",
-    description: hasReviews
-      ? "Reviews/testimonials detected — this social proof is crucial for converting cold ad traffic."
-      : "No reviews or testimonials found. Paid traffic converts much better with visible social proof." });
-
-  const privacyKeywords = ["privacy policy","privacy","popi","gdpr","data protection"];
-  const hasPrivacy = privacyKeywords.some(k => bodyText.includes(k));
-  trustChecks.push({ name: "Privacy Policy", status: hasPrivacy ? "pass" : "warn", value: hasPrivacy ? "Found" : "Not found", impact: "medium",
-    description: hasPrivacy
-      ? "Privacy policy found — required for Google Ads compliance and POPI Act compliance in South Africa."
-      : "No privacy policy found. Google Ads requires one, and it's legally required for collecting user data in South Africa." });
-
-  const guaranteeKeywords = ["guarantee","guaranteed","money back","satisfaction","no contract","cancel anytime","no risk"];
-  const hasGuarantee = guaranteeKeywords.some(k => bodyText.includes(k));
-  trustChecks.push({ name: "Risk Reversal / Guarantee", status: hasGuarantee ? "pass" : "warn", value: hasGuarantee ? "Found" : "Not found", impact: "medium",
-    description: hasGuarantee
-      ? "Risk reversal language found — reduces purchase anxiety for cold ad traffic."
-      : "No guarantee or risk reversal found. Adding one ('No contract', 'Free consultation', etc.) improves ad conversion rates." });
-
-  const hasAddress = /\d+\s+[a-zA-Z]+\s+(street|road|avenue|drive|st\.|rd\.|ave\.|dr\.|way|crescent|lane|close)/i.test(bodyText) || bodyText.includes("cape town") || bodyText.includes("johannesburg") || bodyText.includes("durban");
-  trustChecks.push({ name: "Business Location Info", status: hasAddress ? "pass" : "warn", value: hasAddress ? "Found" : "Not detected", impact: "medium",
-    description: hasAddress
-      ? "Location information found — builds trust with local ad visitors and improves local Quality Score."
-      : "No location detected. For local Google Ads campaigns, showing your address builds trust and can improve ad rank." });
-
-  // ── SECTION 5: TECHNICAL COMPATIBILITY ──────────────────────────────────────
-  const techChecks: AuditCheck[] = [];
-
-  if (statusCode >= 200 && statusCode < 300) {
-    techChecks.push({ name: "HTTP Response", status: "pass", value: `${statusCode} OK`, impact: "high",
-      description: "Page returns a successful 200 response — Google Ads bots can index and approve your page." });
-  } else {
-    techChecks.push({ name: "HTTP Response", status: "fail", value: `${statusCode}`, impact: "high",
-      description: `Page returns status ${statusCode}. Google Ads may disapprove your landing page URL.` });
-  }
-
-  const canonical = $('link[rel="canonical"]').attr("href");
-  techChecks.push({ name: "Canonical URL", status: canonical ? "pass" : "warn", value: canonical ? canonical.slice(0, 60) : "Missing", impact: "low",
-    description: canonical
-      ? "Canonical tag set — prevents duplicate content issues that could affect your Quality Score."
-      : "No canonical tag. While not critical for Ads, it prevents Google from splitting Quality Score across duplicate pages." });
-
-  const hasStructuredData = $('script[type="application/ld+json"]').length > 0;
-  techChecks.push({ name: "Structured Data (Schema)", status: hasStructuredData ? "pass" : "warn", value: hasStructuredData ? "Present" : "Missing", impact: "medium",
-    description: hasStructuredData
-      ? "Schema markup found — can enable rich results and enhance your ad sitelinks."
-      : "No schema markup. Adding LocalBusiness or Service schema can unlock ad extensions and improve click-through rates." });
-
-  const hasOpenGraph = $('meta[property="og:title"]').length > 0;
-  techChecks.push({ name: "Social / OG Meta Tags", status: hasOpenGraph ? "pass" : "warn", value: hasOpenGraph ? "Present" : "Missing", impact: "low",
-    description: hasOpenGraph
-      ? "Open Graph tags found — useful when running remarketing display ads and social retargeting."
-      : "No Open Graph tags. If you run display or social remarketing alongside Google Ads, these improve ad previews." });
-
-  const robotsMeta = $('meta[name="robots"]').attr("content") ?? "";
-  const isBlocked = robotsMeta.includes("noindex") || robotsMeta.includes("nofollow");
-  techChecks.push({ name: "Indexability / Robots", status: isBlocked ? "fail" : "pass", value: isBlocked ? robotsMeta : "Indexable", impact: "high",
-    description: isBlocked
-      ? "Page is blocked from indexing! Google Ads may reject this URL. Remove the noindex/nofollow tag immediately."
-      : "Page is indexable — Google Ads bots can crawl and approve this landing page." });
-
-  // ── BUILD RESULT ────────────────────────────────────────────────────────────
-  const sections: AuditSection[] = [
-    { title: "Landing Page Quality", score: scoreSection(lpChecks), checks: lpChecks },
-    { title: "Mobile & Speed", score: scoreSection(mobileChecks), checks: mobileChecks },
-    { title: "Conversion Readiness", score: scoreSection(convChecks), checks: convChecks },
-    { title: "Trust & Credibility", score: scoreSection(trustChecks), checks: trustChecks },
-    { title: "Technical Compatibility", score: scoreSection(techChecks), checks: techChecks },
-  ];
-
-  const overallScore = Math.round(sections.reduce((s, sec) => s + sec.score, 0) / sections.length);
-
-  // Quality Score estimate (1-10 scale)
-  const qualityScoreEstimate = Math.max(1, Math.min(10, Math.round(overallScore / 10)));
-
-  // Top issues (from fail/warn checks, high impact first)
-  const allChecks = sections.flatMap(s => s.checks);
-  const topIssues = allChecks
-    .filter(c => c.status !== "pass")
-    .sort((a, b) => {
-      const impactOrder = { high: 0, medium: 1, low: 2 };
-      const statusOrder = { fail: 0, warn: 1, pass: 2 };
-      return impactOrder[a.impact] - impactOrder[b.impact] || statusOrder[a.status] - statusOrder[b.status];
-    })
-    .slice(0, 8)
-    .map(c => `${c.name}: ${c.description.split(".")[0]}`);
-
-  // Quick wins (warn checks that are easy to fix)
-  const quickWins = allChecks
-    .filter(c => c.status === "warn" && c.impact !== "low")
-    .slice(0, 5)
-    .map(c => c.name + ": " + c.description.split(".")[0]);
-
-  const screenshotResults = await screenshotPromises;
-  const screenshots = {
-    desktop: screenshotResults[0].status === "fulfilled" ? screenshotResults[0].value : null,
-    mobile:  screenshotResults[1].status === "fulfilled" ? screenshotResults[1].value : null,
+  const cpcData = INDUSTRY_CPC[industry] ?? INDUSTRY_CPC["General Business"];
+  const totalMonthlyBudget = cpcData.budget;
+  const avgCPC = (cpcData.min + cpcData.max) / 2;
+  const estimatedClicks = {
+    min: Math.round((totalMonthlyBudget / cpcData.max) * 0.8),
+    max: Math.round((totalMonthlyBudget / cpcData.min) * 1.1),
   };
 
-  const result: AdsAuditResult = {
+  res.json({
     url,
     finalUrl,
-    overallScore,
-    qualityScoreEstimate,
-    loadTimeMs,
-    pageTitle,
-    metaDescription,
-    sections,
-    topIssues,
-    quickWins,
-    conversionElements,
-    screenshots,
+    businessName,
+    industry,
+    location,
+    phone,
+    servicesDetected: services,
+    campaigns,
+    negativeKeywords,
+    totalMonthlyBudget,
+    expectedCPC: { min: cpcData.min, max: cpcData.max },
+    expectedMonthlyClicks: estimatedClicks,
     unlockCode,
-  };
-
-  res.json(result);
+  });
 });
 
 export default router;

@@ -70,8 +70,8 @@ export function Navbar() {
       divider: false,
     },
     {
-      name: "Free Ads Readiness Audit",
-      desc: "See if your site is ready for Ads",
+      name: "Free Google Ads Proposal",
+      desc: "Get a tailored campaign strategy",
       href: `${import.meta.env.BASE_URL}ads-audit`,
       icon: MousePointerClick,
       color: "text-accent",

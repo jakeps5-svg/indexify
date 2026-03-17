@@ -1,156 +1,116 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MousePointerClick, CheckCircle2, XCircle, AlertTriangle, ChevronDown,
-  ArrowLeft, MessageCircle, Award, Lock, Unlock, Download, Phone,
-  Zap, Shield, Target, TrendingUp, Smartphone, Eye, BarChart3,
-  FileText, ExternalLink, Star, Copy, Check, Monitor
+  MousePointerClick, ArrowLeft, Lock, Unlock, Download, Building2,
+  MapPin, Phone, Tag, Target, Zap, BarChart3, ChevronDown, ChevronRight,
+  TrendingUp, DollarSign, Users, Eye, FileText, CheckCircle2, XCircle,
+  Loader2, Search, Megaphone, RefreshCw
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
-const ACCENT = "hsl(29 100% 65%)";
-const WA_NUMBER = "27832555270";
+const WA_NUMBER = "27760597724";
+const PRIMARY = "hsl(198 69% 52%)";
+const ACCENT  = "hsl(29 100% 65%)";
 
-type CheckStatus = "pass" | "warn" | "fail";
-
-interface AuditCheck {
-  name: string;
-  status: CheckStatus;
-  value: string;
-  description: string;
-  impact: "high" | "medium" | "low";
-}
-
-interface AuditSection {
-  title: string;
-  score: number;
-  checks: AuditCheck[];
-}
-
-interface ConversionElements {
-  hasForms: boolean;
-  hasPhone: boolean;
-  hasCTA: boolean;
-  ctaCount: number;
-  phonesFound: string[];
-}
-
-interface AdsAuditResult {
-  url: string;
-  finalUrl: string;
-  overallScore: number;
-  qualityScoreEstimate: number;
-  loadTimeMs: number;
-  pageTitle: string;
-  metaDescription: string;
-  sections: AuditSection[];
-  topIssues: string[];
-  quickWins: string[];
-  conversionElements: ConversionElements;
-  screenshots: { desktop: string | null; mobile: string | null };
-  unlockCode: string;
-}
-
-const sectionIcons: Record<string, typeof MousePointerClick> = {
-  "Landing Page Quality": FileText,
-  "Mobile & Speed": Smartphone,
-  "Conversion Readiness": Target,
-  "Trust & Credibility": Shield,
-  "Technical Compatibility": Zap,
-};
-
-const statusIcon  = { pass: CheckCircle2, warn: AlertTriangle, fail: XCircle };
-const statusColor = { pass: "text-emerald-500", warn: "text-amber-500", fail: "text-red-500" };
-const statusBg    = {
-  pass: "bg-emerald-50 border-emerald-200",
-  warn: "bg-amber-50 border-amber-200",
-  fail: "bg-red-50 border-red-200",
-};
-
-function scoreColor(score: number) {
-  if (score >= 80) return { text: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200", label: "Great" };
-  if (score >= 65) return { text: "text-sky-600",     bg: "bg-sky-50",     border: "border-sky-200",     label: "Good" };
-  if (score >= 50) return { text: "text-amber-600",   bg: "bg-amber-50",   border: "border-amber-200",   label: "Fair" };
-  if (score >= 35) return { text: "text-orange-600",  bg: "bg-orange-50",  border: "border-orange-200",  label: "Poor" };
-  return               { text: "text-red-600",    bg: "bg-red-50",     border: "border-red-200",     label: "Critical" };
-}
-
-function QsBar({ score }: { score: number }) {
-  const c = scoreColor(score);
+function WhatsAppIcon({ size = 16 }: { size?: number }) {
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-        <div
-          className={cn("h-full rounded-full transition-all duration-1000", {
-            "bg-emerald-500": score >= 80,
-            "bg-sky-500":     score >= 65 && score < 80,
-            "bg-amber-500":   score >= 50 && score < 65,
-            "bg-orange-500":  score >= 35 && score < 50,
-            "bg-red-500":     score < 35,
-          })}
-          style={{ width: `${score}%` }}
-        />
-      </div>
-      <span className={cn("text-xs font-bold w-8 text-right", c.text)}>{score}%</span>
-    </div>
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 3.5c-6.904 0-12.5 5.596-12.5 12.5 0 2.332.643 4.514 1.763 6.38L4 28l5.797-1.52A12.453 12.453 0 0016 28.5c6.904 0 12.5-5.596 12.5-12.5S22.904 3.5 16 3.5z" fill="currentColor"/>
+      <path d="M21.9 19.3c-.3-.15-1.75-.864-2.02-.963-.27-.1-.467-.15-.664.15-.197.3-.764.963-.937 1.16-.173.197-.346.222-.645.075-.3-.148-1.265-.466-2.41-1.487-.89-.795-1.493-1.775-1.668-2.075-.174-.3-.018-.462.13-.61.134-.133.3-.347.448-.52.148-.174.197-.3.296-.497.1-.197.05-.37-.025-.52-.075-.148-.663-1.6-.908-2.19-.24-.574-.483-.496-.663-.505l-.565-.01c-.197 0-.52.074-.792.37-.272.297-1.04 1.016-1.04 2.477s1.065 2.874 1.213 3.072c.149.197 2.1 3.206 5.086 4.494.711.307 1.266.49 1.699.627.714.227 1.364.195 1.878.118.572-.085 1.762-.72 2.01-1.416.248-.696.248-1.292.173-1.416-.074-.124-.272-.197-.57-.347z" fill="white"/>
+    </svg>
   );
 }
 
-function SectionCard({ section, index, locked }: { section: AuditSection; index: number; locked: boolean }) {
-  const [open, setOpen] = useState(false);
-  const Icon = sectionIcons[section.title] ?? BarChart3;
-  const c = scoreColor(section.score);
-  const passes = section.checks.filter(c => c.status === "pass").length;
-  const warns  = section.checks.filter(c => c.status === "warn").length;
-  const fails  = section.checks.filter(c => c.status === "fail").length;
+interface AdGroup {
+  name: string;
+  previewKeywords: string[];
+  keywords: string[];
+  headlines: string[];
+  descriptions: string[];
+}
+
+interface Campaign {
+  name: string;
+  type: string;
+  objective: string;
+  monthlyBudget: number;
+  dailyBudget: number;
+  biddingStrategy: string;
+  adGroups: AdGroup[];
+}
+
+interface ProposalResult {
+  url: string;
+  finalUrl: string;
+  businessName: string;
+  industry: string;
+  location: string;
+  phone: string;
+  servicesDetected: string[];
+  campaigns: Campaign[];
+  negativeKeywords: string[];
+  totalMonthlyBudget: number;
+  expectedCPC: { min: number; max: number };
+  expectedMonthlyClicks: { min: number; max: number };
+  unlockCode: string;
+}
+
+function formatRand(n: number) {
+  return `R${n.toLocaleString("en-ZA")}`;
+}
+
+function CampaignCard({ campaign, index, unlocked }: { campaign: Campaign; index: number; unlocked: boolean }) {
+  const [open, setOpen] = useState(index === 0);
+  const isLocked = !unlocked && index > 0;
+  const typeIcon = campaign.type === "Display" ? Eye : campaign.type === "Shopping" ? Tag : Search;
+  const TypeIcon = typeIcon;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.07 }}
-      className={cn(
-        "bg-white rounded-2xl border overflow-hidden transition-shadow",
-        open ? "border-gray-200 shadow-md" : "border-gray-100 shadow-sm hover:shadow-md",
-        locked && "opacity-60"
-      )}
+      transition={{ delay: index * 0.08 }}
+      className={cn("bg-white rounded-2xl border overflow-hidden", isLocked ? "border-gray-100 opacity-70" : "border-gray-200 shadow-sm")}
     >
       <button
-        onClick={() => !locked && setOpen(!open)}
-        className={cn("w-full flex items-center justify-between px-5 py-4 text-left gap-4", !locked && "hover:bg-gray-50 transition-colors", locked && "cursor-default")}
+        onClick={() => !isLocked && setOpen(!open)}
+        className={cn("w-full flex items-center justify-between px-5 py-4 text-left gap-4", !isLocked && "hover:bg-gray-50 transition-colors", isLocked && "cursor-default")}
       >
         <div className="flex items-center gap-4 min-w-0">
-          <div className={cn("w-14 h-14 rounded-2xl border-2 flex items-center justify-center font-black text-xl shrink-0", c.bg, c.border, c.text)}>
-            {section.score}
+          <div className={cn(
+            "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 text-white",
+            campaign.type === "Display" ? "bg-purple-500" : campaign.type === "Search" && index === 1 ? "bg-blue-500" : "bg-primary"
+          )}>
+            <TypeIcon size={20} />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 mb-0.5">
-              <Icon size={14} className="text-gray-400 shrink-0" />
-              <span className="font-bold text-base text-gray-900 truncate">{section.title}</span>
-              {locked && <Lock size={13} className="text-gray-300 shrink-0" />}
+              <span className="font-bold text-sm text-gray-900 truncate">{campaign.name}</span>
+              {isLocked && <Lock size={12} className="text-gray-300 shrink-0" />}
             </div>
-            <div className="flex items-center gap-3 text-xs text-gray-500">
-              <span className={cn(c.text, "font-semibold")}>{c.label}</span>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+              <span className="px-2 py-0.5 rounded-full bg-gray-100 font-medium">{campaign.type}</span>
               <span>·</span>
-              <span className="text-emerald-600">{passes} passed</span>
-              {warns > 0 && <><span>·</span><span className="text-amber-600">{warns} warnings</span></>}
-              {fails > 0 && <><span>·</span><span className="text-red-600">{fails} failed</span></>}
+              <span>{campaign.objective}</span>
+              {!isLocked && (
+                <>
+                  <span>·</span>
+                  <span className="text-emerald-600 font-semibold">{formatRand(campaign.monthlyBudget)}/mo</span>
+                </>
+              )}
             </div>
           </div>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <div className="hidden sm:block w-24">
-            <QsBar score={section.score} />
-          </div>
-          {!locked && (
+          {!isLocked && (
             <ChevronDown size={16} className={cn("text-gray-400 transition-transform duration-300", open && "rotate-180")} />
           )}
         </div>
       </button>
 
       <AnimatePresence initial={false}>
-        {open && !locked && (
+        {open && !isLocked && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
@@ -158,28 +118,30 @@ function SectionCard({ section, index, locked }: { section: AuditSection; index:
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 pt-2 space-y-2.5 border-t border-gray-100">
-              {section.checks.map((check, i) => {
-                const StatusIcon = statusIcon[check.status];
-                return (
-                  <div key={i} className={cn("flex items-start gap-3 p-3.5 rounded-xl border", statusBg[check.status])}>
-                    <StatusIcon size={16} className={cn("mt-0.5 shrink-0", statusColor[check.status])} />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span className="font-semibold text-sm text-gray-800">{check.name}</span>
-                        <span className={cn(
-                          "text-[10px] font-bold uppercase px-1.5 py-0.5 rounded",
-                          check.impact === "high" ? "bg-red-100 text-red-600" : check.impact === "medium" ? "bg-amber-100 text-amber-600" : "bg-gray-100 text-gray-500"
-                        )}>
-                          {check.impact} impact
-                        </span>
-                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full truncate max-w-[260px]">{check.value}</span>
-                      </div>
-                      <p className="text-xs text-gray-500 leading-relaxed">{check.description}</p>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="px-5 pb-5 pt-1 border-t border-gray-100 space-y-4">
+              <div className="flex flex-wrap gap-4 pt-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <DollarSign size={14} className="text-gray-400" />
+                  <span className="text-gray-500">Daily budget:</span>
+                  <span className="font-bold text-gray-900">{formatRand(campaign.dailyBudget)}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Zap size={14} className="text-gray-400" />
+                  <span className="text-gray-500">Bidding:</span>
+                  <span className="font-bold text-gray-900">{campaign.biddingStrategy}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Target size={14} className="text-gray-400" />
+                  <span className="text-gray-500">Ad groups:</span>
+                  <span className="font-bold text-gray-900">{campaign.adGroups.length}</span>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {campaign.adGroups.map((ag, i) => (
+                  <AdGroupCard key={i} adGroup={ag} unlocked={unlocked} isFirstCampaign={index === 0} groupIndex={i} />
+                ))}
+              </div>
             </div>
           </motion.div>
         )}
@@ -188,117 +150,204 @@ function SectionCard({ section, index, locked }: { section: AuditSection; index:
   );
 }
 
-function generateReport(result: AdsAuditResult): string {
-  const domain = new URL(result.finalUrl).hostname;
-  const now = new Date().toLocaleDateString("en-ZA", { year: "numeric", month: "long", day: "numeric" });
-  const passes = result.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "pass").length, 0);
-  const warns  = result.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "warn").length, 0);
-  const fails  = result.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "fail").length, 0);
+function AdGroupCard({ adGroup, unlocked, isFirstCampaign, groupIndex }: {
+  adGroup: AdGroup; unlocked: boolean; isFirstCampaign: boolean; groupIndex: number;
+}) {
+  const [open, setOpen] = useState(groupIndex === 0);
+  const showFull = unlocked;
+  const showPreview = isFirstCampaign && groupIndex === 0;
 
+  return (
+    <div className="border border-gray-100 rounded-xl overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+      >
+        <div className="flex items-center gap-2">
+          <ChevronRight size={14} className={cn("text-gray-400 transition-transform duration-200", open && "rotate-90")} />
+          <span className="font-semibold text-sm text-gray-800">{adGroup.name}</span>
+          <span className="text-xs text-gray-400">
+            {showFull ? `${adGroup.keywords.length} keywords · ${adGroup.headlines.length} headlines` : `${adGroup.previewKeywords.length} preview keywords`}
+          </span>
+        </div>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: "auto" }}
+            exit={{ height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="p-4 space-y-4">
+              {/* Keywords */}
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">
+                  {showFull ? `Keywords (${adGroup.keywords.length})` : "Sample Keywords"}
+                  {!showFull && <span className="ml-2 text-amber-500 font-normal normal-case">· Full list unlocked with proposal</span>}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(showFull ? adGroup.keywords : adGroup.previewKeywords).map((kw, i) => (
+                    <span key={i} className="px-2.5 py-1 text-xs bg-blue-50 text-blue-700 rounded-full border border-blue-100 font-medium">
+                      {kw}
+                    </span>
+                  ))}
+                  {!showFull && (
+                    <span className="px-2.5 py-1 text-xs bg-gray-100 text-gray-400 rounded-full border border-gray-200 italic">
+                      +{adGroup.keywords.length - adGroup.previewKeywords.length} more…
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Ad Copy — locked unless full */}
+              {showFull ? (
+                <>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Headlines (15)</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                      {adGroup.headlines.map((h, i) => (
+                        <div key={i} className="px-3 py-2 text-xs bg-emerald-50 text-emerald-800 rounded-lg border border-emerald-100 font-medium truncate" title={h}>{h}</div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Descriptions (4)</p>
+                    <div className="space-y-1.5">
+                      {adGroup.descriptions.map((d, i) => (
+                        <div key={i} className="px-3 py-2 text-xs bg-amber-50 text-amber-800 rounded-lg border border-amber-100 leading-relaxed">{d}</div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                  <Lock size={14} className="text-gray-300 shrink-0" />
+                  <p className="text-xs text-gray-400">Ad copy (15 headlines + 4 descriptions) included in full proposal</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function generateProposalHTML(result: ProposalResult): string {
+  const now = new Date().toLocaleDateString("en-ZA", { year: "numeric", month: "long", day: "numeric" });
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Google Ads Audit Report – ${domain}</title>
+<meta charset="UTF-8"/>
+<title>Google Ads Proposal – ${result.businessName}</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111827; background: #fff; padding: 40px; max-width: 900px; margin: 0 auto; }
-  h1 { font-size: 28px; font-weight: 900; color: #111827; margin-bottom: 4px; }
-  .subtitle { color: #6b7280; font-size: 14px; margin-bottom: 32px; }
-  .logo { font-size: 20px; font-weight: 900; margin-bottom: 24px; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111827; background: #fff; padding: 40px; max-width: 960px; margin: 0 auto; }
+  .logo { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
   .logo span { color: hsl(198 69% 52%); }
-  .badge { display: inline-block; background: hsl(29 100% 65%); color: white; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
-  .score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
-  .score-card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; text-align: center; }
-  .score-card .num { font-size: 32px; font-weight: 900; }
-  .score-card .lbl { font-size: 11px; color: #6b7280; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
-  .green { color: #059669; } .amber { color: #d97706; } .red { color: #dc2626; }
-  .section { margin-bottom: 28px; page-break-inside: avoid; }
-  .section-title { font-size: 16px; font-weight: 800; color: #111827; border-bottom: 2px solid #f3f4f6; padding-bottom: 8px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
-  .section-score { font-size: 13px; font-weight: 700; }
-  .check { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; }
-  .check.pass { background: #f0fdf4; border: 1px solid #bbf7d0; }
-  .check.warn { background: #fffbeb; border: 1px solid #fde68a; }
-  .check.fail { background: #fef2f2; border: 1px solid #fecaca; }
-  .check-icon { font-size: 16px; margin-top: 1px; line-height: 1; }
-  .check-name { font-weight: 700; font-size: 13px; margin-bottom: 2px; }
-  .check-val { font-size: 11px; color: #6b7280; }
-  .check-desc { font-size: 12px; color: #4b5563; margin-top: 4px; line-height: 1.5; }
-  .issues { margin-bottom: 28px; }
-  .issue-item { padding: 10px 14px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; font-size: 12px; color: #7f1d1d; margin-bottom: 6px; }
-  .win-item { padding: 10px 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; font-size: 12px; color: #78350f; margin-bottom: 6px; }
-  .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #9ca3af; text-align: center; }
-  @media print { body { padding: 20px; } }
+  .badge { display: inline-block; background: hsl(29 100% 65%); color: white; font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 20px; }
+  h1 { font-size: 28px; font-weight: 900; color: #111827; margin-bottom: 4px; }
+  .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 36px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 32px; }
+  .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; text-align: center; }
+  .card .num { font-size: 28px; font-weight: 900; color: hsl(198 69% 52%); }
+  .card .lbl { font-size: 11px; color: #6b7280; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .section { margin-bottom: 32px; page-break-inside: avoid; }
+  .section-title { font-size: 16px; font-weight: 800; color: #111827; border-bottom: 2px solid #f3f4f6; padding-bottom: 8px; margin-bottom: 16px; }
+  .services { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .svc-tag { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+  .campaign { border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 20px; overflow: hidden; page-break-inside: avoid; }
+  .campaign-header { background: #f9fafb; padding: 14px 18px; border-bottom: 1px solid #e5e7eb; }
+  .campaign-name { font-size: 15px; font-weight: 800; color: #111827; margin-bottom: 4px; }
+  .campaign-meta { font-size: 12px; color: #6b7280; }
+  .campaign-meta span { font-weight: 700; color: #059669; }
+  .ad-group { padding: 16px 18px; border-bottom: 1px solid #f3f4f6; }
+  .ad-group:last-child { border-bottom: none; }
+  .ag-name { font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 10px; }
+  .kw-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .kw { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .hl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+  .hl { background: #f0fdf4; border: 1px solid #bbf7d0; color: #065f46; padding: 5px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+  .desc { background: #fffbeb; border: 1px solid #fde68a; color: #78350f; padding: 8px 10px; border-radius: 6px; font-size: 11px; margin-bottom: 6px; line-height: 1.5; }
+  .neg-kws { display: flex; flex-wrap: wrap; gap: 6px; }
+  .neg-kw { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+  .info-item { padding: 12px 16px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; }
+  .info-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; margin-bottom: 2px; }
+  .info-value { font-size: 14px; font-weight: 700; color: #111827; }
+  .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #9ca3af; margin-bottom: 8px; }
+  .footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #9ca3af; text-align: center; }
+  @media print { body { padding: 24px; } .campaign { page-break-inside: avoid; } }
 </style>
 </head>
 <body>
 <div class="logo">FORTUNE<span>DESIGN</span></div>
-<div class="badge">Google Ads Audit Report</div>
-<h1>Audit Report: ${domain}</h1>
-<p class="subtitle">Generated ${now} · ${result.finalUrl}</p>
+<div class="badge">Google Ads Proposal</div>
+<h1>${result.businessName} — Google Ads Proposal</h1>
+<p class="subtitle">Prepared by Fortune Design · fortunedesign.co.za · Generated ${now}</p>
 
-<div class="score-grid">
-  <div class="score-card">
-    <div class="num ${result.overallScore >= 80 ? "green" : result.overallScore >= 50 ? "amber" : "red"}">${result.overallScore}%</div>
-    <div class="lbl">Overall Score</div>
-  </div>
-  <div class="score-card">
-    <div class="num ${result.qualityScoreEstimate >= 7 ? "green" : result.qualityScoreEstimate >= 5 ? "amber" : "red"}">${result.qualityScoreEstimate}/10</div>
-    <div class="lbl">Est. Quality Score</div>
-  </div>
-  <div class="score-card">
-    <div class="num green">${passes}</div>
-    <div class="lbl">Checks Passed</div>
-  </div>
-  <div class="score-card">
-    <div class="num red">${fails}</div>
-    <div class="lbl">Critical Issues</div>
-  </div>
+<div class="grid-4">
+  <div class="card"><div class="num">${formatRand(result.totalMonthlyBudget)}</div><div class="lbl">Recommended Monthly Budget</div></div>
+  <div class="card"><div class="num">R${result.expectedCPC.min}–R${result.expectedCPC.max}</div><div class="lbl">Estimated CPC Range</div></div>
+  <div class="card"><div class="num">${result.expectedMonthlyClicks.min}–${result.expectedMonthlyClicks.max}</div><div class="lbl">Est. Monthly Clicks</div></div>
+  <div class="card"><div class="num">${result.campaigns.length}</div><div class="lbl">Campaigns Proposed</div></div>
 </div>
 
-${result.topIssues.length > 0 ? `
-<div class="issues">
-  <div class="section-title">🚨 Top Issues to Fix</div>
-  ${result.topIssues.slice(0, 5).map(i => `<div class="issue-item">✗ ${i}</div>`).join("")}
-</div>` : ""}
-
-${result.quickWins.length > 0 ? `
-<div class="issues">
-  <div class="section-title">⚡ Quick Wins</div>
-  ${result.quickWins.map(w => `<div class="win-item">→ ${w}</div>`).join("")}
-</div>` : ""}
-
-${result.sections.map(s => `
 <div class="section">
-  <div class="section-title">
-    ${s.title}
-    <span class="section-score ${s.score >= 80 ? "green" : s.score >= 50 ? "amber" : "red"}">${s.score}%</span>
+  <div class="section-title">Business Overview</div>
+  <div class="info-grid">
+    <div class="info-item"><div class="info-label">Business</div><div class="info-value">${result.businessName}</div></div>
+    <div class="info-item"><div class="info-label">Industry</div><div class="info-value">${result.industry}</div></div>
+    <div class="info-item"><div class="info-label">Location</div><div class="info-value">${result.location}</div></div>
+    <div class="info-item"><div class="info-label">Website</div><div class="info-value">${result.finalUrl}</div></div>
   </div>
-  ${s.checks.map(c => `
-  <div class="check ${c.status}">
-    <div class="check-icon">${c.status === "pass" ? "✓" : c.status === "warn" ? "⚠" : "✗"}</div>
-    <div>
-      <div class="check-name">${c.name}</div>
-      <div class="check-val">${c.value}</div>
-      <div class="check-desc">${c.description}</div>
+  <div class="section-label">Services / Products Detected</div>
+  <div class="services">${result.servicesDetected.map(s => `<span class="svc-tag">${s}</span>`).join("")}</div>
+</div>
+
+<div class="section">
+  <div class="section-title">Proposed Campaign Structure</div>
+  ${result.campaigns.map(c => `
+  <div class="campaign">
+    <div class="campaign-header">
+      <div class="campaign-name">${c.name}</div>
+      <div class="campaign-meta">${c.type} Campaign · ${c.objective} · Budget: <span>${formatRand(c.monthlyBudget)}/month (${formatRand(c.dailyBudget)}/day)</span> · Bidding: ${c.biddingStrategy}</div>
     </div>
+    ${c.adGroups.map(ag => `
+    <div class="ad-group">
+      <div class="ag-name">Ad Group: ${ag.name}</div>
+      <div class="section-label">Keywords (${ag.keywords.length})</div>
+      <div class="kw-grid">${ag.keywords.map(k => `<span class="kw">${k}</span>`).join("")}</div>
+      <div class="section-label">Headlines</div>
+      <div class="hl-grid">${ag.headlines.map(h => `<div class="hl">${h}</div>`).join("")}</div>
+      <div class="section-label">Descriptions</div>
+      ${ag.descriptions.map(d => `<div class="desc">${d}</div>`).join("")}
+    </div>`).join("")}
   </div>`).join("")}
-</div>`).join("")}
+</div>
+
+<div class="section">
+  <div class="section-title">Negative Keywords (Exclusions)</div>
+  <div class="neg-kws">${result.negativeKeywords.map(k => `<span class="neg-kw">−${k}</span>`).join("")}</div>
+</div>
 
 <div class="footer">
-  <p>Generated by Fortune Design · fortunedesign.co.za · info@fortunedesign.co.za · WhatsApp: +27 83 255 5270</p>
-  <p style="margin-top:6px;">This report is confidential and intended solely for the use of the recipient.</p>
+  <p>Prepared by Fortune Design · fortunedesign.co.za · info@fortunedesign.co.za · WhatsApp: +27 76 059 7724</p>
+  <p style="margin-top:6px;">This proposal is confidential and prepared exclusively for ${result.businessName}. Valid for 30 days.</p>
 </div>
 </body>
 </html>`;
 }
 
-function downloadReport(result: AdsAuditResult) {
-  const html = generateReport(result);
+function downloadProposal(result: ProposalResult) {
+  const html = generateProposalHTML(result);
   const blob = new Blob([html], { type: "text/html" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `google-ads-audit-${new URL(result.finalUrl).hostname}-${new Date().toISOString().slice(0, 10)}.html`;
+  const domain = new URL(result.finalUrl).hostname;
+  a.download = `google-ads-proposal-${domain}-${new Date().toISOString().slice(0, 10)}.html`;
   a.click();
   URL.revokeObjectURL(a.href);
 }
@@ -307,15 +356,13 @@ export default function AdsAuditPage() {
   const [inputUrl, setInputUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<AdsAuditResult | null>(null);
+  const [result, setResult] = useState<ProposalResult | null>(null);
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [codeInput, setCodeInput] = useState("");
   const [codeError, setCodeError] = useState("");
   const [unlocked, setUnlocked] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const reportRef = useRef<HTMLDivElement>(null);
 
-  async function runAudit(e: React.FormEvent) {
+  async function runProposal(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setResult(null);
@@ -329,8 +376,8 @@ export default function AdsAuditPage() {
         body: JSON.stringify({ url: inputUrl }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Audit failed");
-      setResult(data as AdsAuditResult);
+      if (!res.ok) throw new Error(data.error ?? "Failed to generate proposal");
+      setResult(data as ProposalResult);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -351,23 +398,12 @@ export default function AdsAuditPage() {
 
   function openWhatsApp() {
     const domain = result ? new URL(result.finalUrl).hostname : inputUrl;
-    const msg = encodeURIComponent(`Hi Fortune Design, I'd like to purchase my full Google Ads Audit report for *${domain}*. Please send me payment details for the R500 full report.`);
+    const biz = result?.businessName ?? domain;
+    const msg = encodeURIComponent(`Hi Fortune Design! I'd like to receive my full Google Ads Proposal for *${biz}* (${domain}). Please send payment details for R500.`);
     window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, "_blank");
   }
 
-  function copyCode() {
-    if (!result) return;
-    navigator.clipboard.writeText(result.unlockCode).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  }
-
-  const passes = result?.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "pass").length, 0) ?? 0;
-  const warns  = result?.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "warn").length, 0) ?? 0;
-  const fails  = result?.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "fail").length, 0) ?? 0;
-  const sc     = result ? scoreColor(result.overallScore) : null;
-  const domain = result ? (() => { try { return new URL(result.finalUrl).hostname; } catch { return result.url; } })() : "";
+  const lockedCampaigns = result ? result.campaigns.length - 1 : 0;
 
   return (
     <div className="min-h-screen bg-slate-50 text-gray-900">
@@ -380,11 +416,11 @@ export default function AdsAuditPage() {
           </a>
           <a href={BASE + "/"} className="font-display font-black text-lg tracking-tight">
             <span className="text-gray-900">FORTUNE</span>
-            <span className="text-primary">DESIGN</span>
+            <span style={{ color: PRIMARY }}>DESIGN</span>
           </a>
           <a href={`https://wa.me/${WA_NUMBER}`} target="_blank" rel="noopener noreferrer"
             className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-[#25d366] text-white text-sm font-bold hover:bg-[#20bc5a] transition-colors">
-            <MessageCircle size={14} /> WhatsApp Us
+            <WhatsAppIcon size={14} /> WhatsApp Us
           </a>
         </div>
       </nav>
@@ -394,14 +430,15 @@ export default function AdsAuditPage() {
         {/* Hero */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold mb-5 border"
-            style={{ background: "hsl(29 100% 65% / 0.1)", color: ACCENT, borderColor: "hsl(29 100% 65% / 0.3)" }}>
-            <MousePointerClick size={14} /> Free Google Ads Readiness Audit
+            style={{ background: "hsl(198 69% 52% / 0.1)", color: PRIMARY, borderColor: "hsl(198 69% 52% / 0.3)" }}>
+            <Megaphone size={14} /> Free Google Ads Proposal Generator
           </div>
           <h1 className="text-4xl md:text-5xl font-black mb-3 leading-tight text-gray-900">
-            Is Your Website <span style={{ color: ACCENT }}>Ready for Google Ads?</span>
+            Your Custom <span style={{ color: ACCENT }}>Google Ads Proposal</span><br />
+            <span style={{ color: PRIMARY }}>In 30 Seconds</span>
           </h1>
           <p className="text-base text-gray-500 max-w-xl mx-auto leading-relaxed">
-            Enter your website URL for a free instant audit. We check landing page quality, mobile speed, conversion readiness and more — all factors that directly affect your Google Ads Quality Score and cost-per-click.
+            Enter your website URL and we'll scan your services & products, then generate a full Google Ads campaign strategy tailored to your business — including keywords, ad copy and budget recommendations.
           </p>
         </motion.div>
 
@@ -410,19 +447,19 @@ export default function AdsAuditPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          onSubmit={runAudit}
+          onSubmit={runProposal}
           className="max-w-2xl mx-auto mb-10"
         >
           <div className="flex gap-3 flex-col sm:flex-row">
             <div className="relative flex-1">
-              <MousePointerClick size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 value={inputUrl}
                 onChange={e => setInputUrl(e.target.value)}
                 placeholder="yourwebsite.co.za"
                 className="w-full pl-10 pr-4 py-4 rounded-xl border border-gray-200 bg-white shadow-sm focus:outline-none focus:ring-2 text-gray-900 placeholder-gray-400 text-base"
-                style={{ "--tw-ring-color": ACCENT } as React.CSSProperties}
+                style={{ "--tw-ring-color": PRIMARY } as React.CSSProperties}
                 disabled={loading}
               />
             </div>
@@ -430,13 +467,13 @@ export default function AdsAuditPage() {
               type="submit"
               disabled={loading || !inputUrl.trim()}
               className="px-8 py-4 rounded-xl font-bold text-white text-base transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
-              style={{ background: ACCENT }}
+              style={{ background: PRIMARY }}
             >
-              {loading ? "Analysing…" : "Run Free Audit"}
+              {loading ? "Generating…" : "Generate Proposal"}
             </button>
           </div>
           <p className="text-center text-xs text-gray-400 mt-3">
-            Free preview · Full report with download available for R500
+            Free preview · Full proposal with ad copy &amp; downloads available for R500
           </p>
         </motion.form>
 
@@ -445,18 +482,24 @@ export default function AdsAuditPage() {
           {loading && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-16">
               <div className="relative inline-block mb-6">
-                <div className="w-20 h-20 rounded-full border-4 border-gray-100 border-t-[hsl(29_100%_65%)] animate-spin" />
-                <MousePointerClick className="absolute inset-0 m-auto" style={{ color: ACCENT }} size={22} />
+                <div className="w-20 h-20 rounded-full border-4 border-gray-100 animate-spin" style={{ borderTopColor: PRIMARY }} />
+                <Megaphone className="absolute inset-0 m-auto" style={{ color: PRIMARY }} size={22} />
               </div>
-              <h3 className="font-black text-xl text-gray-900 mb-2">Auditing Your Website…</h3>
+              <h3 className="font-black text-xl text-gray-900 mb-2">Generating Your Proposal…</h3>
               <p className="text-gray-500 text-sm max-w-xs mx-auto">
-                Checking landing page quality, speed, conversion readiness, and trust signals. This takes 15–30 seconds.
+                Scanning your website, identifying services, and building your custom Google Ads strategy.
               </p>
               <div className="mt-6 flex flex-col items-center gap-2 text-xs text-gray-400">
-                {["Fetching page content…", "Checking mobile readiness…", "Analysing conversion elements…", "Scoring Quality Score factors…"].map((step, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 1.5 }}
+                {[
+                  "Scanning website for services & products…",
+                  "Detecting industry & target audience…",
+                  "Building campaign structure…",
+                  "Generating keyword recommendations…",
+                  "Writing ad copy for each service…",
+                ].map((step, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 1.2 }}
                     className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: ACCENT }} />
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: PRIMARY }} />
                     {step}
                   </motion.div>
                 ))}
@@ -471,7 +514,7 @@ export default function AdsAuditPage() {
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="max-w-2xl mx-auto bg-red-50 border border-red-200 rounded-2xl p-6 text-center mb-8">
               <XCircle size={32} className="text-red-400 mx-auto mb-3" />
-              <h3 className="font-bold text-red-800 mb-1">Audit Failed</h3>
+              <h3 className="font-bold text-red-800 mb-1">Could Not Generate Proposal</h3>
               <p className="text-red-600 text-sm">{error}</p>
             </motion.div>
           )}
@@ -480,306 +523,223 @@ export default function AdsAuditPage() {
         {/* Results */}
         <AnimatePresence>
           {result && !loading && (
-            <motion.div ref={reportRef} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
 
-              {/* Overall Score Banner */}
+              {/* Business Intelligence Card */}
               <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 md:p-8 mb-6">
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                  <div className="flex items-center gap-5">
-                    <div className={cn("w-24 h-24 rounded-2xl border-2 flex flex-col items-center justify-center shrink-0", sc?.bg, sc?.border)}>
-                      <span className={cn("text-4xl font-black leading-none", sc?.text)}>{result.overallScore}</span>
-                      <span className="text-xs text-gray-400 mt-0.5">/ 100</span>
-                    </div>
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-6">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Business Detected</p>
+                    <h2 className="text-2xl font-black text-gray-900">{result.businessName}</h2>
+                    <p className="text-sm text-gray-500 mt-0.5">{result.industry}</p>
+                  </div>
+                  <button
+                    onClick={() => { setInputUrl(""); setResult(null); setUnlocked(false); }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors shrink-0"
+                  >
+                    <RefreshCw size={14} /> New Website
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div className="flex items-start gap-3">
+                    <MapPin size={16} className="text-gray-400 mt-0.5 shrink-0" />
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Ads Readiness Score</p>
-                      </div>
-                      <h2 className="text-2xl font-black text-gray-900 mb-1 truncate max-w-xs">{domain}</h2>
-                      <p className="text-sm text-gray-500 mb-3 truncate max-w-sm">{result.pageTitle || result.finalUrl}</p>
-                      <div className="flex flex-wrap gap-3 text-xs">
-                        <span className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full font-semibold">
-                          <CheckCircle2 size={11} /> {passes} passed
-                        </span>
-                        {warns > 0 && <span className="flex items-center gap-1.5 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full font-semibold">
-                          <AlertTriangle size={11} /> {warns} warnings
-                        </span>}
-                        {fails > 0 && <span className="flex items-center gap-1.5 bg-red-50 text-red-700 border border-red-200 px-2.5 py-1 rounded-full font-semibold">
-                          <XCircle size={11} /> {fails} critical
-                        </span>}
-                      </div>
+                      <p className="text-xs text-gray-400 mb-0.5">Location</p>
+                      <p className="text-sm font-semibold text-gray-900">{result.location}</p>
                     </div>
                   </div>
-
-                  {/* Quality Score Estimate */}
-                  <div className="shrink-0 w-full md:w-auto">
-                    <div className="bg-slate-50 border border-gray-200 rounded-2xl p-5 min-w-[180px]">
-                      <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Est. Quality Score</p>
-                      <div className="flex items-end gap-1 mb-3">
-                        <span className={cn("text-5xl font-black", result.qualityScoreEstimate >= 7 ? "text-emerald-600" : result.qualityScoreEstimate >= 5 ? "text-amber-600" : "text-red-600")}>
-                          {result.qualityScoreEstimate}
-                        </span>
-                        <span className="text-gray-400 text-xl mb-1">/10</span>
+                  {result.phone && (
+                    <div className="flex items-start gap-3">
+                      <Phone size={16} className="text-gray-400 mt-0.5 shrink-0" />
+                      <div>
+                        <p className="text-xs text-gray-400 mb-0.5">Phone</p>
+                        <p className="text-sm font-semibold text-gray-900">{result.phone}</p>
                       </div>
-                      <div className="flex gap-1">
-                        {Array.from({ length: 10 }, (_, i) => (
-                          <div key={i} className={cn("flex-1 h-2 rounded-full", i < result.qualityScoreEstimate
-                            ? result.qualityScoreEstimate >= 7 ? "bg-emerald-500" : result.qualityScoreEstimate >= 5 ? "bg-amber-500" : "bg-red-500"
-                            : "bg-gray-100")} />
-                        ))}
-                      </div>
-                      <p className="text-[10px] text-gray-400 mt-2">Higher = lower cost-per-click</p>
                     </div>
+                  )}
+                  <div className="flex items-start gap-3">
+                    <BarChart3 size={16} className="text-gray-400 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-xs text-gray-400 mb-0.5">Rec. Budget</p>
+                      <p className="text-sm font-semibold text-emerald-600">{formatRand(result.totalMonthlyBudget)}/mo</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <TrendingUp size={16} className="text-gray-400 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-xs text-gray-400 mb-0.5">Est. CPC</p>
+                      <p className="text-sm font-semibold text-gray-900">R{result.expectedCPC.min}–R{result.expectedCPC.max}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Detected Services */}
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">
+                    Services / Products Detected ({result.servicesDetected.length})
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {result.servicesDetected.map((svc, i) => (
+                      <span key={i} className="px-3 py-1.5 rounded-full text-sm font-semibold border"
+                        style={{ background: "hsl(198 69% 52% / 0.08)", color: PRIMARY, borderColor: "hsl(198 69% 52% / 0.25)" }}>
+                        {svc}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
 
-              {/* Key Metrics Strip */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              {/* KPI Preview */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 {[
-                  { label: "Load Time",      value: `${result.loadTimeMs}ms`, icon: Zap,    good: result.loadTimeMs < 1500 },
-                  { label: "Has Forms",      value: result.conversionElements.hasForms ? "Yes ✓" : "No ✗", icon: FileText, good: result.conversionElements.hasForms },
-                  { label: "Phone Number",   value: result.conversionElements.hasPhone ? "Found ✓" : "Missing ✗", icon: Phone, good: result.conversionElements.hasPhone },
-                  { label: "CTAs Found",     value: String(result.conversionElements.ctaCount), icon: Target, good: result.conversionElements.ctaCount >= 3 },
-                ].map(({ label, value, icon: Icon, good }, i) => (
-                  <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 text-center">
-                    <Icon size={20} className={cn("mx-auto mb-2", good ? "text-emerald-500" : "text-amber-500")} />
-                    <p className={cn("font-black text-lg", good ? "text-gray-900" : "text-amber-600")}>{value}</p>
-                    <p className="text-xs text-gray-400 font-medium mt-0.5">{label}</p>
-                  </div>
+                  { label: "Monthly Budget", value: formatRand(result.totalMonthlyBudget), icon: DollarSign, color: "text-emerald-600" },
+                  { label: "Est. Monthly Clicks", value: `${result.expectedMonthlyClicks.min}–${result.expectedMonthlyClicks.max}`, icon: MousePointerClick, color: "text-blue-600" },
+                  { label: "Cost Per Click", value: `R${result.expectedCPC.min}–R${result.expectedCPC.max}`, icon: TrendingUp, color: "text-purple-600" },
+                  { label: "Campaigns", value: result.campaigns.length.toString(), icon: Megaphone, color: "text-amber-600" },
+                ].map((stat, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+                    className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
+                    <stat.icon size={18} className={cn("mx-auto mb-2", stat.color)} />
+                    <p className={cn("text-xl font-black", stat.color)}>{stat.value}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{stat.label}</p>
+                  </motion.div>
                 ))}
               </div>
 
-              {/* Screenshots Preview (free) */}
-              {(result.screenshots.desktop || result.screenshots.mobile) && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6">
-                  <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
-                    <Eye size={12} /> Landing Page Previews
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {result.screenshots.desktop && (
-                      <div>
-                        <p className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
-                          <Monitor size={12} /> Desktop
-                        </p>
-                        <div className="border border-gray-200 rounded-xl overflow-hidden">
-                          <img src={result.screenshots.desktop} alt="Desktop preview" className="w-full object-cover object-top" />
-                        </div>
-                      </div>
-                    )}
-                    {result.screenshots.mobile && (
-                      <div>
-                        <p className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1.5">
-                          <Smartphone size={12} /> Mobile
-                        </p>
-                        <div className="border border-gray-200 rounded-xl overflow-hidden max-w-[200px]">
-                          <img src={result.screenshots.mobile} alt="Mobile preview" className="w-full object-cover object-top" />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Top Issues (free — shown first 3) */}
-              {result.topIssues.length > 0 && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6">
-                  <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
-                    <AlertTriangle size={12} className="text-red-500" /> Top Issues Costing You Ad Performance
-                  </p>
-                  <div className="space-y-2">
-                    {result.topIssues.slice(0, 3).map((issue, i) => (
-                      <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-red-50 border border-red-100">
-                        <XCircle size={15} className="text-red-500 mt-0.5 shrink-0" />
-                        <p className="text-sm text-red-800">{issue}</p>
-                      </div>
-                    ))}
-                    {result.topIssues.length > 3 && (
-                      <div className="flex items-center gap-2 p-3 rounded-xl bg-gray-50 border border-dashed border-gray-200">
-                        <Lock size={14} className="text-gray-300 shrink-0" />
-                        <p className="text-sm text-gray-400">+{result.topIssues.length - 3} more issues in the full report</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Detailed Sections */}
+              {/* Campaign Structure */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-black text-lg text-gray-900">Detailed Section Analysis</h3>
+                  <h3 className="text-lg font-black text-gray-900">Campaign Structure</h3>
                   {!unlocked && (
                     <span className="text-xs text-gray-400 flex items-center gap-1">
-                      <Lock size={11} /> {result.sections.length - 2} sections locked
+                      <Lock size={12} /> {lockedCampaigns} campaign{lockedCampaigns !== 1 ? "s" : ""} locked
                     </span>
                   )}
                 </div>
                 <div className="space-y-3">
-                  {result.sections.map((section, i) => (
-                    <SectionCard key={i} section={section} index={i} locked={!unlocked && i >= 2} />
+                  {result.campaigns.map((c, i) => (
+                    <CampaignCard key={i} campaign={c} index={i} unlocked={unlocked} />
                   ))}
                 </div>
               </div>
 
-              {/* Unlock / Download Panel */}
+              {/* Negative Keywords Preview */}
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                    <XCircle size={16} className="text-red-400" />
+                    Negative Keywords
+                  </h3>
+                  {!unlocked && <Lock size={13} className="text-gray-300" />}
+                </div>
+                {unlocked ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {result.negativeKeywords.map((k, i) => (
+                      <span key={i} className="px-2.5 py-1 text-xs bg-red-50 text-red-600 rounded-full border border-red-100 font-medium">−{k}</span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-400">{result.negativeKeywords.slice(0, 4).join(", ")} <span className="italic">+{result.negativeKeywords.length - 4} more in full proposal…</span></p>
+                )}
+              </div>
+
+              {/* Unlock / Download CTA */}
               {!unlocked ? (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  className="rounded-3xl overflow-hidden border border-gray-100 shadow-lg mb-8">
-                  <div className="p-8 text-white text-center" style={{ background: ACCENT }}>
-                    <Lock size={32} className="mx-auto mb-4 text-white/80" />
-                    <h3 className="text-2xl font-black mb-2">Unlock the Full Report</h3>
-                    <p className="text-white/80 text-base mb-2">View all sections, quick wins, and download a branded PDF report.</p>
-                    <div className="inline-flex items-baseline gap-1 text-white mb-6">
-                      <span className="text-3xl font-semibold">R</span>
-                      <span className="text-6xl font-black">500</span>
-                      <span className="text-white/70 ml-2">once-off</span>
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="relative rounded-3xl overflow-hidden border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6 md:p-8 mb-6"
+                >
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Lock size={18} style={{ color: ACCENT }} />
+                        <span className="font-bold text-sm" style={{ color: ACCENT }}>Full Proposal — R500</span>
+                      </div>
+                      <h3 className="text-xl font-black text-gray-900 mb-2">Unlock the Complete Google Ads Strategy</h3>
+                      <ul className="space-y-1.5 text-sm text-gray-600">
+                        {[
+                          `All ${result.campaigns.length} campaigns with full campaign settings`,
+                          `${result.campaigns.reduce((s, c) => s + c.adGroups.reduce((sum, ag) => sum + ag.keywords.length, 0), 0)}+ keywords across all ad groups`,
+                          `${result.campaigns.reduce((s, c) => s + c.adGroups.length, 0) * 15} headlines + ${result.campaigns.reduce((s, c) => s + c.adGroups.length, 0) * 4} descriptions`,
+                          `${result.negativeKeywords.length} negative keywords to save budget`,
+                          "Downloadable HTML report (print to PDF)",
+                        ].map((item, i) => (
+                          <li key={i} className="flex items-center gap-2">
+                            <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <div className="flex flex-col gap-3 shrink-0">
                       <button
                         onClick={openWhatsApp}
-                        className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white font-bold text-base hover:-translate-y-0.5 transition-all duration-300 shadow-md"
-                        style={{ color: ACCENT }}
+                        className="flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-white text-sm bg-[#25D366] hover:bg-[#20bd5a] transition-colors"
                       >
-                        <MessageCircle size={18} /> Pay R500 via WhatsApp
+                        <WhatsAppIcon size={18} /> Pay R500 via WhatsApp
                       </button>
                       <button
                         onClick={() => setUnlockOpen(true)}
-                        className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-white/20 text-white font-bold text-base hover:-translate-y-0.5 transition-all duration-300 border border-white/30"
+                        className="flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm border border-gray-300 bg-white hover:bg-gray-50 transition-colors text-gray-700"
                       >
-                        <Unlock size={18} /> Enter Unlock Code
+                        <Unlock size={15} /> Enter Unlock Code
                       </button>
                     </div>
-                    <p className="text-white/60 text-xs mt-4">After payment, Fortune Design will send your unlock code via WhatsApp within minutes.</p>
                   </div>
 
-                  {/* Unlock Code Input */}
+                  {/* Unlock code input */}
                   <AnimatePresence>
                     {unlockOpen && (
-                      <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden bg-white">
-                        <div className="p-6 border-t border-gray-100">
-                          <p className="font-bold text-gray-900 mb-1 text-sm">Enter your 8-character unlock code</p>
-                          <p className="text-xs text-gray-400 mb-4">Fortune Design will send this via WhatsApp after payment confirmation.</p>
-                          <div className="flex gap-3">
-                            <input
-                              type="text"
-                              maxLength={8}
-                              value={codeInput}
-                              onChange={e => { setCodeInput(e.target.value.toUpperCase()); setCodeError(""); }}
-                              placeholder="e.g. A1B2C3D4"
-                              className="flex-1 px-4 py-3 rounded-xl border border-gray-200 font-mono uppercase tracking-widest text-center text-lg focus:outline-none focus:ring-2 focus:ring-orange-300"
-                            />
-                            <button
-                              onClick={tryUnlock}
-                              className="px-6 py-3 rounded-xl text-white font-bold transition-all hover:-translate-y-0.5"
-                              style={{ background: ACCENT }}
-                            >
-                              Unlock
-                            </button>
-                          </div>
-                          {codeError && <p className="text-red-500 text-xs mt-2">{codeError}</p>}
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                        className="mt-6 pt-6 border-t border-amber-200">
+                        <div className="flex gap-3 flex-col sm:flex-row max-w-sm">
+                          <input
+                            type="text"
+                            value={codeInput}
+                            onChange={e => { setCodeInput(e.target.value.toUpperCase()); setCodeError(""); }}
+                            placeholder="Enter 8-character code"
+                            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm font-mono text-gray-900 focus:outline-none focus:ring-2"
+                            style={{ "--tw-ring-color": ACCENT } as React.CSSProperties}
+                            onKeyDown={e => e.key === "Enter" && tryUnlock()}
+                          />
+                          <button onClick={tryUnlock} className="px-5 py-3 rounded-xl font-bold text-white text-sm transition-colors"
+                            style={{ background: ACCENT }}>
+                            Unlock
+                          </button>
                         </div>
+                        {codeError && <p className="text-red-600 text-xs mt-2">{codeError}</p>}
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </motion.div>
               ) : (
-                /* Unlocked State */
-                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                  className="bg-emerald-50 border border-emerald-200 rounded-3xl p-8 mb-8 text-center">
-                  <CheckCircle2 size={40} className="text-emerald-500 mx-auto mb-3" />
-                  <h3 className="text-xl font-black text-emerald-900 mb-2">Full Report Unlocked!</h3>
-                  <p className="text-emerald-700 text-sm mb-6">All sections are now visible. You can also download your branded PDF report.</p>
-
-                  {/* Quick Wins */}
-                  {result.quickWins.length > 0 && (
-                    <div className="bg-white rounded-2xl border border-emerald-200 p-5 mb-5 text-left">
-                      <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3 flex items-center gap-2">
-                        <Zap size={12} style={{ color: ACCENT }} /> Quick Wins — Fix These First
-                      </p>
-                      <div className="space-y-2">
-                        {result.quickWins.map((win, i) => (
-                          <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-100">
-                            <AlertTriangle size={14} className="text-amber-500 mt-0.5 shrink-0" />
-                            <p className="text-sm text-amber-800">{win}</p>
-                          </div>
-                        ))}
-                      </div>
+                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                  className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl bg-emerald-50 border border-emerald-200 p-5 mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                      <Unlock size={18} className="text-emerald-600" />
                     </div>
-                  )}
-
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <button
-                      onClick={() => downloadReport(result)}
-                      className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-white font-bold text-base hover:-translate-y-0.5 transition-all duration-300 shadow-md"
-                      style={{ background: ACCENT }}
-                    >
-                      <Download size={18} /> Download PDF Report
-                    </button>
-                    <a
-                      href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hi Fortune Design, I'd like to discuss the Google Ads audit results for my website and get started with a campaign.")}`}
-                      target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-bold text-base border border-gray-200 bg-white text-gray-700 hover:border-emerald-300 hover:-translate-y-0.5 transition-all duration-300"
-                    >
-                      <MessageCircle size={18} className="text-[#25d366]" /> Discuss with Fortune Design
-                    </a>
+                    <div>
+                      <p className="font-bold text-emerald-800">Full Proposal Unlocked</p>
+                      <p className="text-xs text-emerald-600">All campaigns, keywords and ad copy are now visible below</p>
+                    </div>
                   </div>
+                  <button
+                    onClick={() => downloadProposal(result)}
+                    className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-white text-sm bg-emerald-600 hover:bg-emerald-700 transition-colors shrink-0"
+                  >
+                    <Download size={15} /> Download Proposal
+                  </button>
                 </motion.div>
               )}
-
-              {/* CTA Strip */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    {[...Array(5)].map((_, i) => <Star key={i} size={14} className="text-amber-400 fill-amber-400" />)}
-                  </div>
-                  <p className="font-bold text-gray-900">Want us to fix all these issues for you?</p>
-                  <p className="text-sm text-gray-500">Fortune Design manages Google Ads campaigns from R7,300/month.</p>
-                </div>
-                <a href={`${BASE}/services/google-ads`}
-                  className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-all"
-                  style={{ background: ACCENT }}>
-                  View Google Ads Service <ExternalLink size={14} />
-                </a>
-              </div>
 
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Feature list (shown before results) */}
-        {!result && !loading && (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-            {[
-              {
-                icon: TrendingUp,
-                title: "Quality Score Factors",
-                desc: "We check the exact page signals that determine your Google Ads Quality Score — which directly sets your cost-per-click.",
-              },
-              {
-                icon: Target,
-                title: "Conversion Readiness",
-                desc: "CTAs, phone numbers, forms, trust signals — we audit whether your page is set up to turn ad clicks into actual leads.",
-              },
-              {
-                icon: Smartphone,
-                title: "Mobile & Speed Check",
-                desc: "Over 65% of Google Ads clicks are from mobile. We verify your site loads fast and displays correctly on phones.",
-              },
-            ].map(({ icon: Icon, title, desc }, i) => (
-              <div key={i} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm text-center">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
-                  style={{ background: "hsl(29 100% 65% / 0.1)" }}>
-                  <Icon size={22} style={{ color: ACCENT }} />
-                </div>
-                <h3 className="font-bold text-gray-900 mb-2">{title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </motion.div>
-        )}
-
       </div>
     </div>
   );
 }
-
