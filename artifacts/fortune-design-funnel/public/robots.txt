@@ -1,8 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /payment-success
-Disallow: /payment-cancelled
-Disallow: /checkout
 
 Sitemap: https://indexify.co.za/sitemap.xml

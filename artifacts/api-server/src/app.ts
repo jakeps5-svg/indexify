@@ -55,9 +55,6 @@ app.get("/robots.txt", (req: Request, res: Response) => {
 
   const txt = `User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /payment-success
-Disallow: /payment-cancelled
 
 Sitemap: ${base}/sitemap.xml`;
 
