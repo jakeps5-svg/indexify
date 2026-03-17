@@ -25,17 +25,22 @@
     <meta name="twitter:description" content="South Africa's leading SEO and Google Ads agency. Real rankings, real leads, real revenue." />
     <meta name="twitter:image" content="https://indexify.co.za/opengraph.jpg" />
 
-    <!-- Canonical: dynamically set per route so Google indexes each page correctly -->
+    <!-- Canonical: static fallback for non-JS crawlers, updated per route by inline script + React -->
+    <link rel="canonical" href="https://indexify.co.za/" />
     <script>
       (function() {
         var path = window.location.pathname;
-        var canonical = path === '/' ? '/' : path.replace(/\/$/, '');
-        var link = document.createElement('link');
-        link.rel = 'canonical';
-        link.href = 'https://indexify.co.za' + canonical;
-        document.head.appendChild(link);
+        var clean = path === '/' ? '/' : path.replace(/\/$/, '');
+        var url = 'https://indexify.co.za' + clean;
+        var link = document.querySelector('link[rel="canonical"]');
+        if (link) { link.href = url; } else {
+          link = document.createElement('link');
+          link.rel = 'canonical';
+          link.href = url;
+          document.head.appendChild(link);
+        }
         var ogUrl = document.querySelector('meta[property="og:url"]');
-        if (ogUrl) ogUrl.setAttribute('content', 'https://indexify.co.za' + canonical);
+        if (ogUrl) ogUrl.setAttribute('content', url);
       })();
     </script>
 
