@@ -403,9 +403,9 @@ export default function Home() {
                 <a href={`${BASE}/services/seo`} className="flex-1 py-3 rounded-xl border border-primary text-primary font-bold text-sm text-center hover:bg-primary/5 transition-all">
                   Learn More
                 </a>
-                <button onClick={() => { window.location.href = `${window.location.origin}${BASE}/checkout?type=seo-basic`; }} className="flex-1 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md shadow-primary/20">
+                <a href={`${BASE}/pricing`} className="flex-1 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md shadow-primary/20 text-center">
                   Get Started →
-                </button>
+                </a>
               </div>
             </motion.div>
 
@@ -431,9 +431,9 @@ export default function Home() {
                 <a href={`${BASE}/services/google-ads`} className="flex-1 py-3 rounded-xl border font-bold text-sm text-center transition-all hover:-translate-y-0.5" style={{ borderColor: "hsl(29 100% 55%)", color: "hsl(29 100% 45%)" }}>
                   Learn More
                 </a>
-                <button onClick={() => { window.location.href = `${window.location.origin}${BASE}/checkout?type=google-ads`; }} className="flex-1 py-3 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-all shadow-md" style={{ background: "hsl(29 100% 55%)", boxShadow: "0 4px 16px hsl(29 100% 55% / 0.3)" }}>
+                <a href={`${BASE}/pricing`} className="flex-1 py-3 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-all shadow-md text-center" style={{ background: "hsl(29 100% 55%)", boxShadow: "0 4px 16px hsl(29 100% 55% / 0.3)" }}>
                   Get Started →
-                </button>
+                </a>
               </div>
             </motion.div>
 
