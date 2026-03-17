@@ -32,41 +32,38 @@
 }
 
 :root {
-  /* Fortune Design Brand — Dark Theme */
-  /* Background: #151515 */
-  --background: 0 0% 8%;
-  /* Foreground: #ffffff */
-  --foreground: 0 0% 98%;
+  /* Fortune Design Brand — Light Theme */
+  --background: 0 0% 100%;
+  --foreground: 220 20% 9%;
 
-  /* Card: slightly lighter than bg */
-  --card: 0 0% 11%;
-  --card-foreground: 0 0% 98%;
+  --card: 0 0% 98%;
+  --card-foreground: 220 20% 9%;
 
-  --popover: 0 0% 11%;
-  --popover-foreground: 0 0% 98%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 20% 9%;
 
   /* Primary: Fortune Design brand blue #6EC1E4 */
-  --primary: 198 69% 66%;
-  --primary-foreground: 0 0% 8%;
+  --primary: 198 69% 52%;
+  --primary-foreground: 0 0% 100%;
 
-  /* Secondary: dark gray #54595F */
-  --secondary: 213 6% 35%;
-  --secondary-foreground: 0 0% 98%;
+  /* Secondary */
+  --secondary: 220 14% 93%;
+  --secondary-foreground: 220 20% 9%;
 
-  /* Muted: subtle dark */
-  --muted: 0 0% 14%;
-  --muted-foreground: 0 0% 48%;
+  /* Muted */
+  --muted: 220 14% 96%;
+  --muted-foreground: 215 14% 45%;
 
   /* Accent: warm orange #FFBC7D */
-  --accent: 29 100% 75%;
-  --accent-foreground: 0 0% 8%;
+  --accent: 29 100% 65%;
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
 
-  --border: 0 0% 18%;
-  --input: 0 0% 18%;
-  --ring: 198 69% 66%;
+  --border: 220 13% 90%;
+  --input: 220 13% 90%;
+  --ring: 198 69% 52%;
 
   --radius: 0.75rem;
 }
@@ -76,7 +73,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased overflow-x-hidden selection:bg-primary/30 selection:text-primary;
+    @apply bg-background text-foreground font-sans antialiased overflow-x-hidden selection:bg-primary/20 selection:text-primary;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-tight;
@@ -85,11 +82,11 @@
 
 @layer utilities {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-cyan-300 to-accent;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-sky-400 to-accent;
   }
 
   .glass-card {
-    @apply bg-card/60 backdrop-blur-xl border border-white/5 shadow-2xl shadow-black/50;
+    @apply bg-white border border-gray-200 shadow-sm shadow-gray-100/80;
   }
 }
 
