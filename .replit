@@ -24,3 +24,8 @@ expertMode = true
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 20000
+
+[userenv]
+
+[userenv.shared]
+VITE_YOCO_PUBLIC_KEY = "pk_live_8941c7f9Kb392Mye4414"
