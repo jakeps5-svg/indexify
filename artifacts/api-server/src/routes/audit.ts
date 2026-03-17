@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import * as cheerio from "cheerio";
+import * as whoisLib from "whois";
 
 const router: IRouter = Router();
 
@@ -610,53 +611,127 @@ router.post("/audit", async (req, res) => {
   // ─── BACKLINKS & AUTHORITY ───────────────────────────────────────────────────
   const backlinkChecks: AuditCheck[] = [];
 
-  // 1. Domain age / establishment via Wayback Machine CDX API (free, no key)
-  let domainFirstSeen: string | null = null;
-  let domainCrawlCount = 0;
-  try {
-    const cdxUrl = `https://web.archive.org/cdx/search/cdx?url=${parsedUrl.hostname}/*&output=json&limit=1&fl=timestamp&from=20000101&to=20150101`;
-    const cdxRes = await fetch(cdxUrl, { signal: AbortSignal.timeout(6000) });
-    if (cdxRes.ok) {
-      const cdxJson = await cdxRes.json() as string[][];
-      if (cdxJson.length > 1 && cdxJson[1]?.[0]) {
-        const ts = cdxJson[1][0];
-        const year = ts.slice(0, 4);
-        const month = ts.slice(4, 6);
-        const day = ts.slice(6, 8);
-        domainFirstSeen = `${year}-${month}-${day}`;
+  // 1. Domain age — query WHOIS (TCP), then RDAP, then Wayback CDX in parallel
+  const hostname = parsedUrl.hostname.replace(/^www\./, "");
+
+  // Helper: promisify the whois TCP lookup
+  function whoisLookup(domain: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const lookupFn = (whoisLib as any).lookup ?? (whoisLib as any).default?.lookup;
+      if (typeof lookupFn !== "function") {
+        return reject(new Error(`whois.lookup not a function; keys: ${Object.keys(whoisLib as object).join(",")}`));
+      }
+      lookupFn(domain, { timeout: 8000, follow: 3 }, (err: Error | null, data: string | { data: string }[]) => {
+        if (err) return reject(err);
+        resolve(typeof data === "string" ? data : (data as { data: string }[])[0]?.data ?? "");
+      });
+    });
+  }
+
+  // Parse a creation/registration date from raw WHOIS text
+  function parseWhoisDate(raw: string): string | null {
+    const patterns = [
+      /Creation Date:\s*(\d{4}-\d{2}-\d{2})/i,
+      /Registered:\s*(\d{4}-\d{2}-\d{2})/i,
+      /Registration Date:\s*(\d{4}-\d{2}-\d{2})/i,
+      /Created On:\s*(\d{4}-\d{2}-\d{2})/i,
+      /Created:\s*(\d{4}-\d{2}-\d{2})/i,
+      /Domain Registration Date:\s*(\d{4}-\d{2}-\d{2})/i,
+      // ISO datetime format
+      /Creation Date:\s*(\d{4}-\d{2}-\d{2})T/i,
+      // Day-Mon-Year format e.g. "01-Jan-2015"
+      /(?:Created|Registered|Creation Date):\s*(\d{2}-\w{3}-\d{4})/i,
+      // Month Day, Year e.g. "January 1, 2015"
+      /(?:Created|Registered|Creation Date):\s*(\w+ \d{1,2},? \d{4})/i,
+    ];
+    for (const pat of patterns) {
+      const m = raw.match(pat);
+      if (m?.[1]) {
+        const d = new Date(m[1]);
+        if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
       }
     }
-    // Count crawls in the last 2 years
-    const countUrl = `https://web.archive.org/cdx/search/cdx?url=${parsedUrl.hostname}/*&output=json&limit=1&fl=timestamp&from=20230101&showNumPages=true`;
-    const countRes = await fetch(countUrl, { signal: AbortSignal.timeout(6000) });
-    if (countRes.ok) {
-      const countText = await countRes.text();
-      domainCrawlCount = parseInt(countText.trim(), 10) || 0;
-    }
-  } catch { /* network issues */ }
+    return null;
+  }
 
-  if (domainFirstSeen) {
-    const firstYear = parseInt(domainFirstSeen.slice(0, 4), 10);
+  const [whoisResult, rdapResult, cdxResult, crawlCountResult] = await Promise.allSettled([
+    // ── TCP WHOIS (primary — direct protocol, no rate limit for single queries) ─
+    (async (): Promise<{ date: string; source: string } | null> => {
+      const raw = await whoisLookup(hostname);
+      const date = parseWhoisDate(raw);
+      return date ? { date, source: "WHOIS" } : null;
+    })(),
+
+    // ── RDAP JSON API (fallback) ──────────────────────────────────────────────
+    (async (): Promise<{ date: string; source: string } | null> => {
+      const res = await fetch(`https://rdap.org/domain/${hostname}`, {
+        signal: AbortSignal.timeout(6000),
+        headers: { Accept: "application/json" },
+      });
+      if (!res.ok) return null;
+      const data = await res.json() as { events?: { eventAction: string; eventDate: string }[] };
+      const reg = data.events?.find(e =>
+        ["registration", "registration date"].includes(e.eventAction.toLowerCase())
+      );
+      return reg?.eventDate ? { date: reg.eventDate.slice(0, 10), source: "RDAP" } : null;
+    })(),
+
+    // ── Wayback Machine CDX (tertiary — earliest crawl seen) ─────────────────
+    (async (): Promise<{ date: string; source: string } | null> => {
+      const cdxUrl = `https://web.archive.org/cdx/search/cdx?url=${hostname}/*&output=json&limit=1&fl=timestamp&from=20000101&to=20150101`;
+      const res = await fetch(cdxUrl, { signal: AbortSignal.timeout(6000) });
+      if (!res.ok) return null;
+      const json = await res.json() as string[][];
+      if (json.length < 2 || !json[1]?.[0]) return null;
+      const ts = json[1][0];
+      return { date: `${ts.slice(0, 4)}-${ts.slice(4, 6)}-${ts.slice(6, 8)}`, source: "Wayback Machine" };
+    })(),
+
+    // ── Wayback CDX crawl-count (last 2 years) ────────────────────────────────
+    (async (): Promise<number> => {
+      const countUrl = `https://web.archive.org/cdx/search/cdx?url=${hostname}/*&output=json&limit=1&fl=timestamp&from=20230101&showNumPages=true`;
+      const res = await fetch(countUrl, { signal: AbortSignal.timeout(6000) });
+      if (!res.ok) return 0;
+      return parseInt((await res.text()).trim(), 10) || 0;
+    })(),
+  ]);
+
+  // Best registration date: prefer WHOIS > RDAP > Wayback CDX
+  const bestDateResult =
+    (whoisResult.status  === "fulfilled" && whoisResult.value)  ? whoisResult.value  :
+    (rdapResult.status   === "fulfilled" && rdapResult.value)   ? rdapResult.value   :
+    (cdxResult.status    === "fulfilled" && cdxResult.value)    ? cdxResult.value    :
+    null;
+
+  const registrationDate: string | null = bestDateResult?.date ?? null;
+  const dateSource: string = bestDateResult?.source ?? "";
+
+  const domainCrawlCount: number =
+    crawlCountResult.status === "fulfilled" ? crawlCountResult.value : 0;
+
+  if (registrationDate) {
+    const firstYear = parseInt(registrationDate.slice(0, 4), 10);
     const age = new Date().getFullYear() - firstYear;
     if (age >= 5) {
       backlinkChecks.push({
         name: "Domain Age",
         status: "pass",
-        value: `Est. ${age}+ years old (first seen ${domainFirstSeen})`,
+        value: `${age}+ years old (registered ${registrationDate}${dateSource ? ` · ${dateSource}` : ""})`,
         description: `This domain has a significant history (${age}+ years). Older domains tend to carry more authority with Google.`,
       });
     } else if (age >= 2) {
       backlinkChecks.push({
         name: "Domain Age",
         status: "warn",
-        value: `~${age} years old (first seen ${domainFirstSeen})`,
+        value: `~${age} years old (registered ${registrationDate}${dateSource ? ` · ${dateSource}` : ""})`,
         description: `Domain is relatively young (${age} years). Domain age contributes to authority — continue building links consistently to strengthen it.`,
       });
     } else {
       backlinkChecks.push({
         name: "Domain Age",
         status: "warn",
-        value: `New domain (first seen ${domainFirstSeen})`,
+        value: `New domain (registered ${registrationDate}${dateSource ? ` · ${dateSource}` : ""})`,
         description: "New domain detected. Building a consistent backlink profile early is essential for long-term SEO growth.",
       });
     }
@@ -665,7 +740,7 @@ router.post("/audit", async (req, res) => {
       name: "Domain Age",
       status: "warn",
       value: "Unable to determine",
-      description: "Could not verify domain history. Ensure your domain is being actively crawled and indexed by search engines.",
+      description: "Could not retrieve WHOIS registration data for this domain. Try checking whois.domaintools.com directly.",
     });
   }
 
