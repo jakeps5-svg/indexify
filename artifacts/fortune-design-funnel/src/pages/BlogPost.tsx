@@ -7,18 +7,51 @@ import { getPost, BLOG_POSTS, type BlogPost } from "@/data/blogs";
 import { getBlogImage } from "@/data/blogImages";
 import NotFound from "@/pages/not-found";
 
-function injectMidImage(html: string, imgUrl: string, alt: string): string {
+function injectMidImage(html: string, imgUrl: string, alt: string, caption: string): string {
   const matches = [...html.matchAll(/<\/h2>/gi)];
   if (matches.length < 2) return html;
   const midIdx = Math.floor(matches.length / 2);
   const insertAt = matches[midIdx].index! + matches[midIdx][0].length;
   const figure = `
 <figure style="margin:2.5rem 0;border-radius:1rem;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
-  <img src="${imgUrl}" alt="${alt}" loading="lazy" style="width:100%;height:320px;object-fit:cover;display:block;" />
-  <figcaption style="font-size:0.78rem;color:#94a3b8;text-align:center;padding:0.6rem 1rem 0;">Photo for illustration purposes</figcaption>
+  <img src="${imgUrl}" alt="${alt}" loading="lazy" style="width:100%;height:340px;object-fit:cover;display:block;" />
+  <figcaption style="font-size:0.78rem;color:#94a3b8;text-align:center;padding:0.6rem 1rem 0.2rem;">${caption}</figcaption>
 </figure>`;
   return html.slice(0, insertAt) + figure + html.slice(insertAt);
 }
+
+const MID_CAPTIONS: Record<string, string> = {
+  "why-your-business-isnt-ranking-on-google":       "Google Search Console showing impressions, CTR and average position data",
+  "local-seo-south-africa-google-maps":             "Local businesses that invest in Google Business Profile see more foot traffic and calls",
+  "technical-seo-checklist-south-africa":           "A solid technical foundation is what lets Google crawl and index your site efficiently",
+  "what-is-on-page-seo":                            "Every page needs clear headings, a target keyword, and a compelling meta description",
+  "backlinks-domain-authority-south-africa":        "Earning links from reputable SA websites builds trust signals Google uses to rank you",
+  "seo-vs-google-ads":                              "Comparing organic SEO growth against paid Google Ads performance over time",
+  "how-long-does-seo-take":                         "Consistent SEO work compounds — most sites see significant traction after 4–6 months",
+  "keyword-research-south-african-businesses":      "Identifying the exact search terms your ideal customers use in South Africa",
+  "core-web-vitals-google-ranking":                 "Google measures LCP, FID and CLS to decide if your page delivers a fast, stable experience",
+  "seo-content-that-ranks-and-converts":            "Content that answers real questions converts readers into enquiries and sales",
+  "schema-markup-explained":                        "Structured data helps search engines understand your content and display rich results",
+  "why-competitor-ranks-higher":                    "A gap analysis reveals exactly what your competitors do better — and how to close the gap",
+  "rank-google-page-1-south-africa":                "Reaching page 1 on Google requires consistent SEO signals built over time",
+  "google-ads-vs-facebook-ads":                     "Google targets people actively searching; Facebook targets based on demographics and interests",
+  "google-ads-budget-south-africa":                 "A well-planned monthly budget ensures you generate enough data to optimise campaigns",
+  "google-ads-quality-score":                       "High Quality Scores lower your cost-per-click while improving your ad position",
+  "smart-bidding-strategies-google-ads":            "Google's machine learning adjusts bids in real time using hundreds of contextual signals",
+  "google-ads-copy-that-converts":                  "Compelling ad copy with a clear benefit and CTA dramatically improves click-through rates",
+  "google-ads-conversion-tracking":                 "Without conversion tracking, you're flying blind — you can't optimise what you can't measure",
+  "google-ads-mistakes-south-african-businesses":   "Reviewing campaign settings regularly prevents budget from leaking to irrelevant searches",
+  "negative-keywords-stop-wasted-spend":            "Adding negatives removes irrelevant traffic and directs spend toward searches that convert",
+  "google-ads-remarketing":                         "Remarketing ads follow website visitors across the web, keeping your brand top of mind",
+  "google-ads-campaign-structure-roi":              "A logical campaign and ad group hierarchy makes optimisation faster and reporting clearer",
+  "digital-marketing-south-african-smes":           "South African SMEs that invest in digital marketing grow revenue 2–3× faster than those that don't",
+  "generate-more-leads-online-2025":                "Every lead that comes through your website is a potential long-term client relationship",
+  "seo-vs-sem-south-africa":                        "Combining SEO and SEM gives you visibility at every stage of the buyer journey",
+  "website-conversion-rate-optimisation":           "Small UX improvements — faster load, clearer CTAs — can double your lead conversion rate",
+  "page-speed-seo-google-ads":                      "A 1-second delay in page load time can reduce conversions by up to 7%",
+  "track-roi-digital-marketing":                    "Tracking every touchpoint in your marketing funnel reveals exactly where budget is working",
+  "content-marketing-and-seo":                      "Publishing consistent, helpful content signals expertise to both Google and your audience",
+};
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -84,8 +117,9 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
   if (!post) return <NotFound />;
 
   const heroImg = getBlogImage(post.slug, post.category, "hero");
-  const midImg  = getBlogImage(post.slug, post.category, "mid");
-  const enrichedContent = injectMidImage(post.content, midImg, post.title);
+  const midImg   = getBlogImage(post.slug, post.category, "mid");
+  const midCaption = MID_CAPTIONS[post.slug] ?? `Illustration: ${post.title}`;
+  const enrichedContent = injectMidImage(post.content, midImg, post.title, midCaption);
   const related = BLOG_POSTS.filter(p => p.slug !== post.slug && p.category === post.category).slice(0, 3);
 
   return (
