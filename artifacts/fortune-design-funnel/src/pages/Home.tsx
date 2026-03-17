@@ -299,28 +299,28 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black mb-6 text-gray-900">Client <span className="text-primary">Success Stories</span></h2>
-            <p className="text-lg text-gray-500 max-w-2xl mx-auto">Don't just take our word for it. Here's what South African business owners have to say about working with Fortune Design.</p>
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto">Don't just take our word for it. Here's what South African business owners have to say about working with Indexify.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
             {[
               {
-                text: "We are extremely impressed with the results delivered by Fortune Design! Thanks to their strategic approach and consistent efforts, Rapple is now ranking on Page 1 of Google — a major milestone for our brand visibility and online growth. Highly recommend their services to any business looking to seriously boost their online presence.",
+                text: "We are extremely impressed with the results delivered by Indexify! Thanks to their strategic approach and consistent efforts, Rapple is now ranking on Page 1 of Google — a major milestone for our brand visibility and online growth. Highly recommend their services to any business looking to seriously boost their online presence.",
                 author: "Leon De Wet",
                 role: "Rapple Products"
               },
               {
-                text: "Fortune Design has provided outstanding service. Our Google ranking skyrocketed from virtually nowhere to one of the top positions, and we began receiving significantly more inquiries almost immediately. Their team identified numerous gaps and errors that our previous SEO provider had missed. We highly recommend Fortune Design for anyone seeking expert Google optimization.",
+                text: "Indexify has provided outstanding service. Our Google ranking skyrocketed from virtually nowhere to one of the top positions, and we began receiving significantly more inquiries almost immediately. Their team identified numerous gaps and errors that our previous SEO provider had missed. We highly recommend Indexify for anyone seeking expert Google optimization.",
                 author: "Serenity Villa Daniela",
                 role: "Luxury Villa Rentals"
               },
               {
-                text: "Fortune Design's SEO work has completely changed our online presence. We are now ranking on page 1 for our most important search terms and the leads coming through Google have grown steadily every month. Very happy with the results and the service.",
+                text: "Indexify's SEO work has completely changed our online presence. We are now ranking on page 1 for our most important search terms and the leads coming through Google have grown steadily every month. Very happy with the results and the service.",
                 author: "Michael",
                 role: "Captuna Charters"
               },
               {
-                text: "Fortune Design ran our Google Ads campaign and the ROI was exceptional. From the very first month we started receiving high-quality leads. They handled everything professionally and the reporting was always clear and transparent. Highly recommend.",
+                text: "Indexify ran our Google Ads campaign and the ROI was exceptional. From the very first month we started receiving high-quality leads. They handled everything professionally and the reporting was always clear and transparent. Highly recommend.",
                 author: "Jashmir Jungbahadur",
                 role: "JJS Leather"
               }

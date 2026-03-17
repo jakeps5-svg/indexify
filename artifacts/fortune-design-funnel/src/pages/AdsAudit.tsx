@@ -283,8 +283,8 @@ function generateProposalHTML(result: ProposalResult): string {
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111827; background: #fff; padding: 40px; max-width: 960px; margin: 0 auto; }
-  .logo { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
-  .logo span { color: hsl(198 69% 52%); }
+  .logo { font-size: 28px; font-weight: 900; margin-bottom: 8px; background: linear-gradient(90deg, #e040fb 0%, #7c4dff 40%, #00b8d9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -1px; }
+  .logo span { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; display: block; background: linear-gradient(90deg, #7c4dff, #00b8d9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-top: 2px; }
   .badge { display: inline-block; background: hsl(29 100% 65%); color: white; font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 20px; }
   h1 { font-size: 28px; font-weight: 900; color: #111827; margin-bottom: 4px; }
   .subtitle { color: #6b7280; font-size: 13px; margin-bottom: 36px; }
@@ -338,10 +338,10 @@ function generateProposalHTML(result: ProposalResult): string {
 </style>
 </head>
 <body>
-<div class="logo">FORTUNE<span>DESIGN</span></div>
+<div class="logo">indexify.<span>Lead SEO &amp; Google Ads Expert</span></div>
 <div class="badge">Google Ads Proposal</div>
 <h1>${result.businessName} — Strategy Plan</h1>
-<p class="subtitle">High-conversion Google Ads blueprint for ${result.businessName}. Prepared by Fortune Design · Generated ${now}</p>
+<p class="subtitle">High-conversion Google Ads blueprint for ${result.businessName}. Prepared by Indexify · Generated ${now}</p>
 
 <div class="grid-4">
   <div class="card"><div class="num">${formatCurrency(result.totalMonthlyBudget, result.currencySymbol)}</div><div class="lbl">Monthly Budget</div></div>
@@ -430,7 +430,7 @@ function generateProposalHTML(result: ProposalResult): string {
 </div>
 
 <div class="footer">
-  <p>Prepared by Fortune Design · fortunedesign.co.za · info@fortunedesign.co.za · WhatsApp: +27 76 059 7724</p>
+  <p>Prepared by Indexify · indexify.co.za · info@indexify.co.za · WhatsApp: +27 76 059 7724</p>
   <p style="margin-top:6px;">This proposal is confidential and prepared exclusively for ${result.businessName}. Valid for 30 days.</p>
 </div>
 </body>
@@ -523,7 +523,7 @@ export default function AdsAuditPage() {
   function openWhatsApp() {
     const domain = (() => { try { return new URL(result?.finalUrl ?? inputUrl).hostname; } catch { return inputUrl; } })();
     const biz = result?.businessName ?? domain;
-    const msg = encodeURIComponent(`Hi Fortune Design! I'd like to receive my full Google Ads Proposal for *${biz}* (${domain}). Please send payment details for R500.`);
+    const msg = encodeURIComponent(`Hi Indexify! I'd like to receive my full Google Ads Proposal for *${biz}* (${domain}). Please send payment details for R500.`);
     window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, "_blank");
   }
 

@@ -93,10 +93,12 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          <a href={import.meta.env.BASE_URL} className="flex items-center cursor-pointer group">
-            <span className="text-2xl font-black tracking-tighter text-gray-900 group-hover:text-primary transition-colors">
-              FORTUNE<span className="text-primary">DESIGN</span>
-            </span>
+          <a href={import.meta.env.BASE_URL} className="flex items-center cursor-pointer">
+            <img
+              src={`${import.meta.env.BASE_URL}indexify-logo.png`}
+              alt="Indexify – Lead SEO & Google Ads Expert"
+              className="h-10 w-auto object-contain"
+            />
           </a>
 
           {/* Desktop Nav */}

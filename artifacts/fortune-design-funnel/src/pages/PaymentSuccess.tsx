@@ -34,7 +34,7 @@ export default function PaymentSuccess() {
   const serviceNames: Record<string, string> = {
     starter: "Growth Starter",
     leader: "Market Leader",
-    service: "Fortune Design Service",
+    service: "Indexify Service",
     proposal: "Google Ads Proposal",
   };
 
@@ -101,7 +101,7 @@ export default function PaymentSuccess() {
           </div>
 
           <p className="text-xs text-gray-400 mt-8">
-            Payment processed securely by Yoco. Fortune Design (Pty) Ltd · fortunedesign.co.za
+            Payment processed securely by Yoco. Indexify (Pty) Ltd · indexify.co.za
           </p>
         </motion.div>
       </main>

@@ -354,12 +354,12 @@ export default function GoogleAdsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black mb-6 text-gray-900">What Happens When <span style={{ color: ACCENT }}>Experts Manage Your Ads</span></h2>
-            <p className="text-lg text-gray-500 max-w-2xl mx-auto">Most businesses waste 40–60% of their Google Ads budget. Here's the difference Fortune Design makes.</p>
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto">Most businesses waste 40–60% of their Google Ads budget. Here's the difference Indexify makes.</p>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
               className="bg-white border border-red-200 rounded-2xl p-8 shadow-sm">
-              <div className="text-red-500 font-bold text-sm uppercase tracking-widest mb-6">Without Fortune Design</div>
+              <div className="text-red-500 font-bold text-sm uppercase tracking-widest mb-6">Without Indexify</div>
               <div className="space-y-4">
                 {[
                   "Budget wasted on irrelevant clicks from broad keywords",
@@ -380,7 +380,7 @@ export default function GoogleAdsPage() {
             <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
               className="bg-white rounded-2xl p-8 shadow-sm border"
               style={{ borderColor: ACCENT_BORDER }}>
-              <div className="font-bold text-sm uppercase tracking-widest mb-6" style={{ color: ACCENT }}>With Fortune Design</div>
+              <div className="font-bold text-sm uppercase tracking-widest mb-6" style={{ color: ACCENT }}>With Indexify</div>
               <div className="space-y-4">
                 {[
                   "Precise keyword match types that attract only ready-to-buy searchers",
@@ -410,9 +410,9 @@ export default function GoogleAdsPage() {
           </div>
           <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid md:grid-cols-3 gap-6">
             {[
-              { text: "Fortune Design ran our Google Ads campaign and the ROI was exceptional. From the very first month we started receiving high-quality leads. They handled everything professionally and the reporting was always clear and transparent. Highly recommend.", author: "Jashmir Jungbahadur", role: "JJS Leather", stars: 5 },
-              { text: "We were burning through budget on Google Ads with very little to show for it before Fortune Design stepped in. They restructured everything, set up proper conversion tracking, and within 60 days our cost-per-lead dropped by more than half. Outstanding results.", author: "Alltech Rental L.L.C", role: "Equipment Rental", stars: 5 },
-              { text: "Fortune Design has provided outstanding service. Our Google ranking skyrocketed from virtually nowhere to one of the top positions, and we began receiving significantly more inquiries almost immediately. Their team identified numerous gaps and errors that our previous SEO provider had missed. We highly recommend Fortune Design for anyone seeking expert Google optimization.", author: "Serenity Villa Daniela", role: "Luxury Villa Rentals", stars: 5 },
+              { text: "Indexify ran our Google Ads campaign and the ROI was exceptional. From the very first month we started receiving high-quality leads. They handled everything professionally and the reporting was always clear and transparent. Highly recommend.", author: "Jashmir Jungbahadur", role: "JJS Leather", stars: 5 },
+              { text: "We were burning through budget on Google Ads with very little to show for it before Indexify stepped in. They restructured everything, set up proper conversion tracking, and within 60 days our cost-per-lead dropped by more than half. Outstanding results.", author: "Alltech Rental L.L.C", role: "Equipment Rental", stars: 5 },
+              { text: "Indexify has provided outstanding service. Our Google ranking skyrocketed from virtually nowhere to one of the top positions, and we began receiving significantly more inquiries almost immediately. Their team identified numerous gaps and errors that our previous SEO provider had missed. We highly recommend Indexify for anyone seeking expert Google optimization.", author: "Serenity Villa Daniela", role: "Luxury Villa Rentals", stars: 5 },
             ].map((review, i) => (
               <motion.div key={i} variants={fadeInUp} className="bg-white border border-gray-200 rounded-2xl p-7 shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="flex gap-1 mb-5">

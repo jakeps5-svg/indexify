@@ -6,11 +6,13 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-2">
-            <span className="text-2xl font-black tracking-tighter text-white mb-4 block">
-              FORTUNE<span className="text-primary">DESIGN</span>
-            </span>
+            <img
+              src={`${import.meta.env.BASE_URL}indexify-logo.png`}
+              alt="Indexify"
+              className="h-10 w-auto object-contain mb-4 brightness-0 invert"
+            />
             <p className="text-gray-400 max-w-sm leading-relaxed">
-              South Africa's premier digital marketing agency specializing in high-ROI SEO and Google Ads campaigns that drive real revenue.
+              South Africa's leading SEO & Google Ads agency — delivering real rankings, real leads, and real revenue. Powered by Fortune Design.
             </p>
           </div>
 
@@ -37,11 +39,11 @@ export function Footer() {
 
         <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-500">
-            © {new Date().getFullYear()} Fortune Design. All rights reserved.
+            © {new Date().getFullYear()} Indexify · Powered by Fortune Design. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <a href="https://fortunedesign.co.za" target="_blank" rel="noreferrer" className="text-sm text-gray-500 hover:text-primary transition-colors">
-              fortunedesign.co.za
+            <a href="https://indexify.co.za" target="_blank" rel="noreferrer" className="text-sm text-gray-500 hover:text-primary transition-colors">
+              indexify.co.za
             </a>
           </div>
         </div>

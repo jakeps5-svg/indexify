@@ -61,7 +61,7 @@ export default function CheckoutPage() {
 
     void showPopup({
       amountInCents: service.amountInCents,
-      name: "Fortune Design",
+      name: "Indexify",
       description: service.label,
       service: service.label,
       extraBody: {

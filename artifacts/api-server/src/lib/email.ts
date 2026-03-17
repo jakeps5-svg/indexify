@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const SENDER_NAME = process.env.BREVO_SENDER_NAME ?? "Fortune Design";
+const SENDER_NAME = process.env.BREVO_SENDER_NAME ?? "Indexify";
 const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL ?? "support@indexify.co.za";
 
 export async function sendProposalUnlockEmail(opts: {
@@ -20,7 +20,7 @@ export async function sendProposalUnlockEmail(opts: {
   token: string;
   amountPaid: string;
 }) {
-  const subject = `Your Fortune Design Proposal Unlock Token`;
+  const subject = `Your Indexify Proposal Unlock Token`;
 
   const html = `
 <!DOCTYPE html>
@@ -34,8 +34,8 @@ export async function sendProposalUnlockEmail(opts: {
         <!-- Header -->
         <tr>
           <td style="background:linear-gradient(135deg,#0ea5c8,#0284a7);padding:36px 40px;text-align:center;">
-            <div style="font-size:22px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;">FORTUNE<span style="color:#fbbf24;">DESIGN</span></div>
-            <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px;">fortunedesign.co.za</div>
+            <div style="font-size:26px;font-weight:900;letter-spacing:-0.5px;background:linear-gradient(90deg,#e040fb,#7c4dff,#00b8d9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">indexify.</div>
+            <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px;">indexify.co.za</div>
           </td>
         </tr>
 
@@ -58,7 +58,7 @@ export async function sendProposalUnlockEmail(opts: {
             <div style="background:#f8fafc;border-radius:10px;padding:20px;margin-bottom:28px;">
               <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:12px;">How to use your token:</div>
               <ol style="margin:0;padding-left:20px;color:#475569;font-size:13px;line-height:1.8;">
-                <li>Visit <a href="https://fortunedesign.co.za/ads-audit" style="color:#0ea5c8;">fortunedesign.co.za/ads-audit</a></li>
+                <li>Visit <a href="https://indexify.co.za/ads-audit" style="color:#0ea5c8;">indexify.co.za/ads-audit</a></li>
                 <li>Generate your Google Ads proposal</li>
                 <li>Click <strong>"Enter Code"</strong> in the unlock section</li>
                 <li>Paste your token: <strong style="font-family:monospace;">${opts.token}</strong></li>
@@ -75,7 +75,7 @@ export async function sendProposalUnlockEmail(opts: {
         <!-- Footer -->
         <tr>
           <td style="background:#f1f5f9;padding:20px 40px;text-align:center;border-top:1px solid #e2e8f0;">
-            <p style="margin:0;font-size:12px;color:#94a3b8;">Fortune Design (Pty) Ltd &middot; fortunedesign.co.za</p>
+            <p style="margin:0;font-size:12px;color:#94a3b8;">Indexify (Pty) Ltd &middot; indexify.co.za</p>
             <p style="margin:4px 0 0;font-size:12px;color:#94a3b8;">Payment processed securely by Yoco</p>
           </td>
         </tr>
@@ -102,7 +102,7 @@ export async function sendServicePurchaseEmail(opts: {
   phone?: string;
   company?: string;
 }) {
-  const subject = `Welcome to Fortune Design — ${opts.service}`;
+  const subject = `Welcome to Indexify — ${opts.service}`;
 
   const html = `
 <!DOCTYPE html>
@@ -115,8 +115,8 @@ export async function sendServicePurchaseEmail(opts: {
 
         <tr>
           <td style="background:linear-gradient(135deg,#0ea5c8,#0284a7);padding:36px 40px;text-align:center;">
-            <div style="font-size:22px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;">FORTUNE<span style="color:#fbbf24;">DESIGN</span></div>
-            <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px;">fortunedesign.co.za</div>
+            <div style="font-size:26px;font-weight:900;letter-spacing:-0.5px;background:linear-gradient(90deg,#e040fb,#7c4dff,#00b8d9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">indexify.</div>
+            <div style="color:rgba(255,255,255,0.8);font-size:13px;margin-top:4px;">indexify.co.za</div>
           </td>
         </tr>
 
@@ -124,7 +124,7 @@ export async function sendServicePurchaseEmail(opts: {
           <td style="padding:40px 40px 32px;">
             <h1 style="margin:0 0 8px;font-size:24px;font-weight:800;color:#0f172a;">You're in! 🎉</h1>
             <p style="margin:0 0 24px;color:#64748b;font-size:15px;line-height:1.6;">
-              Hi ${opts.name}, your payment of <strong>${opts.amountPaid}</strong> for the <strong>${opts.service}</strong> package has been confirmed. Welcome to Fortune Design!
+              Hi ${opts.name}, your payment of <strong>${opts.amountPaid}</strong> for the <strong>${opts.service}</strong> package has been confirmed. Welcome to Indexify!
             </p>
 
             <div style="background:#f0fdf4;border:2px solid #bbf7d0;border-radius:12px;padding:20px;margin-bottom:28px;">
@@ -144,7 +144,7 @@ export async function sendServicePurchaseEmail(opts: {
 
         <tr>
           <td style="background:#f1f5f9;padding:20px 40px;text-align:center;border-top:1px solid #e2e8f0;">
-            <p style="margin:0;font-size:12px;color:#94a3b8;">Fortune Design (Pty) Ltd &middot; fortunedesign.co.za</p>
+            <p style="margin:0;font-size:12px;color:#94a3b8;">Indexify (Pty) Ltd &middot; indexify.co.za</p>
           </td>
         </tr>
 
@@ -162,7 +162,7 @@ export async function sendServicePurchaseEmail(opts: {
   });
 }
 
-// Internal notification to Fortune Design
+// Internal notification to Indexify
 export async function sendInternalNotification(opts: {
   service: string;
   name: string;
