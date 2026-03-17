@@ -165,6 +165,70 @@ export async function sendServicePurchaseEmail(opts: {
   });
 }
 
+export async function sendContactEmail(opts: {
+  name: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  reason?: string;
+  message: string;
+}) {
+  const subject = `Contact Form: ${opts.reason ?? "General Enquiry"} — ${opts.name}`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);max-width:600px;width:100%;">
+        <tr>
+          <td style="background:linear-gradient(135deg,#0ea5c8,#0284a7);padding:28px 40px;text-align:center;">
+            <div style="font-size:24px;font-weight:900;background:linear-gradient(90deg,#e040fb,#7c4dff,#00b8d9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">indexify.</div>
+            <div style="color:rgba(255,255,255,0.8);font-size:12px;margin-top:2px;">New Contact Form Submission</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px 40px;">
+            <h2 style="margin:0 0 4px;font-size:20px;font-weight:800;color:#0f172a;">${opts.reason ?? "General Enquiry"}</h2>
+            <p style="margin:0 0 24px;color:#64748b;font-size:14px;">Submitted via indexify.co.za/contact</p>
+
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:10px;padding:20px;margin-bottom:20px;">
+              <tr><td style="padding:6px 0;font-size:13px;color:#475569;"><strong style="color:#0f172a;display:inline-block;width:100px;">Name:</strong> ${opts.name}</td></tr>
+              <tr><td style="padding:6px 0;font-size:13px;color:#475569;"><strong style="color:#0f172a;display:inline-block;width:100px;">Email:</strong> <a href="mailto:${opts.email}" style="color:#0ea5c8;">${opts.email}</a></td></tr>
+              <tr><td style="padding:6px 0;font-size:13px;color:#475569;"><strong style="color:#0f172a;display:inline-block;width:100px;">Phone:</strong> ${opts.phone || "—"}</td></tr>
+              <tr><td style="padding:6px 0;font-size:13px;color:#475569;"><strong style="color:#0f172a;display:inline-block;width:100px;">Company:</strong> ${opts.company || "—"}</td></tr>
+            </table>
+
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px;margin-bottom:20px;">
+              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:8px;">Message</div>
+              <p style="margin:0;font-size:14px;color:#334155;line-height:1.7;">${opts.message.replace(/\n/g, "<br>")}</p>
+            </div>
+
+            <a href="mailto:${opts.email}" style="display:inline-block;padding:12px 24px;background:#0ea5c8;color:#fff;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;">Reply to ${opts.name}</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f1f5f9;padding:16px 40px;text-align:center;border-top:1px solid #e2e8f0;">
+            <p style="margin:0;font-size:11px;color:#94a3b8;">Indexify · indexify.co.za</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  await transporter.sendMail({
+    from: `"${SENDER_NAME}" <${SENDER_EMAIL}>`,
+    to: [SENDER_EMAIL, CC_EMAIL],
+    replyTo: `"${opts.name}" <${opts.email}>`,
+    subject,
+    html,
+  });
+}
+
 // Internal notification to Indexify
 export async function sendInternalNotification(opts: {
   service: string;

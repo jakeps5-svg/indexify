@@ -858,6 +858,12 @@ export default function AdsAuditPage() {
                       >
                         <Unlock size={13} /> Enter Code
                       </button>
+                      <a
+                        href={`${BASE}/contact`}
+                        className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all hover:-translate-y-0.5 border border-primary/30 text-primary hover:border-primary hover:bg-primary/5 bg-white"
+                      >
+                        Get a Custom Code
+                      </a>
                     </div>
                     <AnimatePresence>
                       {unlockOpen && (

@@ -11,6 +11,7 @@ import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentCancelled from "@/pages/PaymentCancelled";
 import CheckoutPage from "@/pages/Checkout";
 import PricingPage from "@/pages/Pricing";
+import ContactPage from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/payment-cancelled" component={PaymentCancelled} />
       <Route path="/checkout" component={CheckoutPage} />
       <Route path="/pricing" component={PricingPage} />
+      <Route path="/contact" component={ContactPage} />
       <Route component={NotFound} />
     </Switch>
   );

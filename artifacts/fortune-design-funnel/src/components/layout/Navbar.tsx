@@ -48,6 +48,7 @@ export function Navbar() {
     { name: "Results", id: "results", href: null },
     { name: "Reviews", id: "reviews", href: null },
     { name: "Pricing", id: null, href: `${import.meta.env.BASE_URL}pricing` },
+    { name: "Contact", id: null, href: `${import.meta.env.BASE_URL}contact` },
   ];
 
   const services = [
