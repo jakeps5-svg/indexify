@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, CheckCircle2, XCircle, AlertTriangle, ChevronDown,
   ExternalLink, Zap, Globe, Image, Link2, Share2, ArrowLeft,
-  Clock, FileText, MessageCircle, TrendingUp, Award, BarChart3
+  Clock, FileText, MessageCircle, TrendingUp, Award, BarChart3,
+  Monitor, Smartphone
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +34,7 @@ interface AuditResult {
   metaDescription: string;
   sections: AuditSection[];
   recommendations: string[];
+  screenshots: { desktop: string | null; mobile: string | null };
 }
 
 const sectionIcons: Record<string, typeof Search> = {
@@ -308,7 +310,7 @@ export default function AuditPage() {
               </div>
               <div>
                 <p className="font-bold mb-1">Analysing your website...</p>
-                <p className="text-sm text-muted-foreground">Checking 25+ SEO factors across 6 categories.</p>
+                <p className="text-sm text-muted-foreground">Checking 25+ SEO factors and capturing desktop &amp; mobile screenshots.</p>
               </div>
             </div>
           </motion.div>
@@ -391,6 +393,85 @@ export default function AuditPage() {
                 })}
               </div>
             </div>
+
+            {/* ── Site Preview Screenshots ── */}
+            {(result.screenshots?.desktop || result.screenshots?.mobile) && (
+              <div className="bg-card border border-white/5 rounded-2xl overflow-hidden">
+                <div className="px-5 pt-4 pb-3 border-b border-white/5 flex items-center gap-2">
+                  <Monitor size={14} className="text-muted-foreground" />
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                    Site Preview
+                  </h3>
+                </div>
+                <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+                  {/* Desktop */}
+                  {result.screenshots.desktop && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="p-1.5 rounded-md bg-primary/10 border border-primary/15">
+                          <Monitor size={13} className="text-primary" />
+                        </div>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Desktop — 1280px</span>
+                      </div>
+                      {/* Browser chrome mockup */}
+                      <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+                        <div className="bg-[#1e1e1e] px-3 py-2 flex items-center gap-2 border-b border-white/5">
+                          <div className="flex gap-1.5">
+                            <div className="w-3 h-3 rounded-full bg-red-500/70" />
+                            <div className="w-3 h-3 rounded-full bg-amber-500/70" />
+                            <div className="w-3 h-3 rounded-full bg-emerald-500/70" />
+                          </div>
+                          <div className="flex-1 mx-3 bg-white/5 rounded-md px-3 py-1 text-[10px] text-muted-foreground truncate border border-white/5">
+                            {result.finalUrl}
+                          </div>
+                        </div>
+                        <img
+                          src={result.screenshots.desktop}
+                          alt="Desktop screenshot"
+                          className="w-full block object-cover object-top"
+                          style={{ maxHeight: 340 }}
+                          loading="lazy"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mobile */}
+                  {result.screenshots.mobile && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="p-1.5 rounded-md bg-primary/10 border border-primary/15">
+                          <Smartphone size={13} className="text-primary" />
+                        </div>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Mobile — 390px</span>
+                      </div>
+                      {/* Phone mockup */}
+                      <div className="flex justify-center">
+                        <div className="w-full max-w-[260px]">
+                          <div className="rounded-[28px] overflow-hidden border-[6px] border-white/15 shadow-2xl bg-[#1a1a1a]">
+                            {/* Notch */}
+                            <div className="bg-[#1a1a1a] flex justify-center py-2">
+                              <div className="w-20 h-4 rounded-full bg-black/50" />
+                            </div>
+                            <img
+                              src={result.screenshots.mobile}
+                              alt="Mobile screenshot"
+                              className="w-full block object-cover object-top"
+                              style={{ maxHeight: 420 }}
+                              loading="lazy"
+                            />
+                            {/* Home bar */}
+                            <div className="bg-[#1a1a1a] flex justify-center py-2.5">
+                              <div className="w-24 h-1 rounded-full bg-white/20" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* ── Recommendations ── */}
             {(criticalRecs.length > 0 || improveRecs.length > 0 || backlinkRecs.length > 0) && (

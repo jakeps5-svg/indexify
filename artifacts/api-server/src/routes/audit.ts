@@ -59,6 +59,31 @@ router.post("/audit", async (req, res) => {
   let fetchError = "";
   let responseHeaders: Record<string, string> = {};
 
+  // ── Kick off screenshots in parallel with the main fetch ─────────────────────
+  async function fetchScreenshot(targetUrl: string, mobile: boolean): Promise<string | null> {
+    try {
+      const params = new URLSearchParams({
+        url: targetUrl,
+        screenshot: "true",
+        meta: "false",
+        "viewport.width": mobile ? "390" : "1280",
+        "viewport.height": mobile ? "844" : "800",
+        ...(mobile ? { "viewport.isMobile": "true", "viewport.deviceScaleFactor": "2" } : {}),
+      });
+      const r = await fetch(`https://api.microlink.io/?${params}`, { signal: AbortSignal.timeout(18000) });
+      if (!r.ok) return null;
+      const j = await r.json() as any;
+      return j?.data?.screenshot?.url ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  const screenshotPromises = Promise.allSettled([
+    fetchScreenshot(url, false),
+    fetchScreenshot(url, true),
+  ]);
+
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
@@ -574,6 +599,13 @@ router.post("/audit", async (req, res) => {
   // Append specific backlink-building recommendations at the end
   recommendations.push(...backlinkRecs);
 
+  // ── Resolve screenshots (were kicked off at the top in parallel) ─────────────
+  const [desktopResult, mobileResult] = await screenshotPromises;
+  const screenshots = {
+    desktop: desktopResult.status === "fulfilled" ? desktopResult.value : null,
+    mobile:  mobileResult.status  === "fulfilled" ? mobileResult.value  : null,
+  };
+
   res.json({
     url,
     finalUrl,
@@ -583,6 +615,7 @@ router.post("/audit", async (req, res) => {
     metaDescription: metaDesc,
     sections,
     recommendations,
+    screenshots,
   });
 });
 
