@@ -1,6 +1,9 @@
 import { Router } from "express";
 import * as cheerio from "cheerio";
+import { execFile } from "child_process";
+import { promisify } from "util";
 
+const execFileAsync = promisify(execFile);
 const router = Router();
 
 interface SerpResult {
@@ -22,13 +25,6 @@ const DDG_REGIONS: Record<string, string> = {
   ng: "wt-en",
 };
 
-const DDG_HEADERS = {
-  "User-Agent":
-    "Lynx/2.8.9rel.1 libwww-FM/2.14 SSL-MM/1.4.1 OpenSSL/1.1.1k",
-  "Content-Type": "application/x-www-form-urlencoded",
-  Accept: "text/html,application/xhtml+xml",
-};
-
 interface PageResult {
   href: string;
   title: string;
@@ -39,6 +35,22 @@ interface PageResult {
 interface ParsedPage {
   results: PageResult[];
   nextFormParams: Record<string, string>;
+}
+
+// Use curl instead of Node's fetch — curl (libcurl) bypasses DDG's TLS fingerprint block.
+// DDG Lite returns results when no User-Agent is sent (empty string).
+async function curlPost(url: string, body: string): Promise<string> {
+  const { stdout } = await execFileAsync("curl", [
+    "-s",
+    "--max-time", "15",
+    "-X", "POST",
+    url,
+    "-A", "",
+    "-H", "Content-Type: application/x-www-form-urlencoded",
+    "--data-raw", body,
+    "-L",
+  ]);
+  return stdout;
 }
 
 function parseDDGLitePage(html: string): ParsedPage {
@@ -83,17 +95,14 @@ async function fetchSerpResults(
   const allResults: PageResult[] = [];
   const seenUrls = new Set<string>();
 
-  // Page 1 — initial POST (no pagination params)
-  const firstBody = new URLSearchParams({ q: keyword, kl: region });
-  const r1 = await fetch("https://lite.duckduckgo.com/lite/", {
-    method: "POST",
-    headers: DDG_HEADERS,
-    body: firstBody.toString(),
-  });
+  // Page 1 — initial POST
+  const firstBody = `q=${encodeURIComponent(keyword)}&kl=${region}`;
+  const html1 = await curlPost("https://lite.duckduckgo.com/lite/", firstBody);
 
-  if (!r1.ok) throw new Error(`DDG returned ${r1.status}`);
+  if (!html1 || html1.length < 100) {
+    throw new Error("DDG returned empty response");
+  }
 
-  const html1 = await r1.text();
   const { results: res1, nextFormParams } = parseDDGLitePage(html1);
 
   for (const r of res1) {
@@ -112,25 +121,14 @@ async function fetchSerpResults(
   for (let page = 2; page <= maxPages; page++) {
     if (allResults.length >= maxResults || !currentParams.vqd) break;
 
-    await new Promise((r) => setTimeout(r, 350));
+    await new Promise((r) => setTimeout(r, 400));
 
-    const pageBody = new URLSearchParams({
-      q: keyword,
-      kl: region,
-      ...currentParams,
-    });
+    const params = new URLSearchParams({ q: keyword, kl: region, ...currentParams });
+    const html = await curlPost("https://lite.duckduckgo.com/lite/", params.toString());
 
-    const resp = await fetch("https://lite.duckduckgo.com/lite/", {
-      method: "POST",
-      headers: DDG_HEADERS,
-      body: pageBody.toString(),
-    });
+    if (!html || html.length < 100) break;
 
-    if (!resp.ok) break;
-
-    const html = await resp.text();
-    const { results: pageResults, nextFormParams: nextParams } =
-      parseDDGLitePage(html);
+    const { results: pageResults, nextFormParams: nextParams } = parseDDGLitePage(html);
 
     if (pageResults.length === 0) break;
 
