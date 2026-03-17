@@ -68,6 +68,8 @@ export function Navbar() {
             <div ref={servicesRef} className="relative">
               <button
                 onClick={() => setIsServicesOpen(!isServicesOpen)}
+                aria-label="Toggle services menu"
+                aria-expanded={isServicesOpen}
                 className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
               >
                 Services
@@ -155,6 +157,8 @@ export function Navbar() {
           </a>
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={isMobileMenuOpen}
             className="p-2 text-gray-700"
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}

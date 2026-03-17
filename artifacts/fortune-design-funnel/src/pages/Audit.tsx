@@ -237,7 +237,7 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages, topBackli
                               <div className="aspect-video bg-gray-100 relative overflow-hidden">
                                 <img
                                   src={img.src}
-                                  alt=""
+                                  alt={`Image missing alt text: ${img.filename}`}
                                   className="w-full h-full object-cover object-top transition-transform group-hover:scale-105"
                                   loading="lazy"
                                   onError={e => {
@@ -312,7 +312,7 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages, topBackli
                                   <div className="flex items-center gap-2.5">
                                     <img
                                       src={`https://www.google.com/s2/favicons?domain=${bl.domain}&sz=32`}
-                                      alt=""
+                                      alt={`${bl.label} favicon`}
                                       className="w-4 h-4 rounded-sm shrink-0 bg-gray-100"
                                       onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
                                     />
@@ -346,9 +346,10 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages, topBackli
                                     href={bl.checkUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    aria-label={`View ${bl.label} reference page`}
                                     className="inline-flex items-center gap-1 text-[10px] text-gray-400 hover:text-primary transition-colors"
                                   >
-                                    View <ExternalLink size={10} />
+                                    View <ExternalLink size={10} aria-hidden="true" />
                                   </a>
                                 </td>
                               </tr>
@@ -554,8 +555,8 @@ export default function AuditPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
                       <p className="font-bold text-base text-gray-900 truncate">{result.pageTitle || "Untitled Page"}</p>
-                      <a href={result.finalUrl} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-primary shrink-0 transition-colors">
-                        <ExternalLink size={13} />
+                      <a href={result.finalUrl} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${result.finalUrl}`} className="text-gray-400 hover:text-primary shrink-0 transition-colors">
+                        <ExternalLink size={13} aria-hidden="true" />
                       </a>
                     </div>
                     <p className="text-xs text-gray-400 mb-5 truncate">{result.finalUrl}</p>

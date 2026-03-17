@@ -182,6 +182,8 @@ export default function Home() {
           <img
             src={`${import.meta.env.BASE_URL}images/results-bg.png`}
             alt=""
+            role="presentation"
+            aria-hidden="true"
             className="w-full h-full object-cover opacity-5 mix-blend-multiply"
           />
         </div>
@@ -218,6 +220,8 @@ export default function Home() {
           <img
             src={`${import.meta.env.BASE_URL}images/results-bg.png`}
             alt=""
+            role="presentation"
+            aria-hidden="true"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, hsl(198 69% 18% / 0.93) 0%, hsl(220 40% 10% / 0.95) 100%)" }} />
@@ -381,7 +385,7 @@ export default function Home() {
       </section>
 
       {/* SERVICE CTAs SECTION */}
-      <section id="services" className="py-24 bg-white border-b border-gray-100">
+      <section id="service-packages" className="py-24 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">Everything You Need to <span className="text-gradient">Dominate Google</span></h2>
