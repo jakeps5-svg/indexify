@@ -4,7 +4,7 @@ import { SubmitInquiryBody } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
-const WHATSAPP_NUMBER = "27832555270";
+const WHATSAPP_NUMBER = "27760597724";
 
 router.post("/inquiries", async (req, res) => {
   const parseResult = SubmitInquiryBody.safeParse(req.body);
