@@ -58,7 +58,7 @@ export default function PaymentCancelled() {
           </div>
 
           <p className="text-xs text-gray-400 mt-8">
-            Questions? Contact us on WhatsApp: +27 76 059 7724
+            Questions? Contact us on WhatsApp: +27 60 298 8295
           </p>
         </motion.div>
       </main>

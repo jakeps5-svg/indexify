@@ -89,7 +89,7 @@ export default function PricingPage() {
 
   function openWhatsApp(msg?: string) {
     const text = msg ?? "Hi Indexify! I'd like to find out more about your packages.";
-    window.open(`https://wa.me/27760597724?text=${encodeURIComponent(text)}`, "_blank");
+    window.open(`https://wa.me/27602988295?text=${encodeURIComponent(text)}`, "_blank");
   }
 
   return (

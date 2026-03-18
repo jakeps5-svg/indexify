@@ -129,8 +129,8 @@ export default function Contact() {
                   {
                     icon: Phone,
                     label: "WhatsApp / Call",
-                    value: "+27 76 059 7724",
-                    href: "https://wa.me/27760597724",
+                    value: "+27 60 298 8295",
+                    href: "https://wa.me/27602988295",
                   },
                   {
                     icon: MapPin,
@@ -159,7 +159,7 @@ export default function Contact() {
 
               {/* Quick WhatsApp CTA */}
               <a
-                href="https://wa.me/27760597724?text=Hi%20Indexify!%20I'd%20like%20to%20get%20a%20custom%20quote."
+                href="https://wa.me/27602988295?text=Hi%20Indexify!%20I'd%20like%20to%20get%20a%20custom%20quote."
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-[#25d366] text-white font-bold text-sm hover:bg-[#20bc5a] hover:-translate-y-0.5 transition-all shadow-lg shadow-green-400/20"

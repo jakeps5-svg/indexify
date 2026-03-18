@@ -3,7 +3,7 @@ import { CheckCircle2, MousePointerClick, Search, Zap, ArrowRight } from "lucide
 import { cn } from "@/lib/utils";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-const WA   = "27760597724";
+const WA   = "27602988295";
 
 function goCheckout(type: string) {
   window.location.href = `${window.location.origin}${BASE}/checkout?type=${type}`;

@@ -852,7 +852,7 @@ export default function AuditPage() {
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <a
-                  href="https://wa.me/27760597724"
+                  href="https://wa.me/27602988295"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#25d366] text-white font-bold text-sm hover:bg-[#20bc5a] transition-all shadow-md"

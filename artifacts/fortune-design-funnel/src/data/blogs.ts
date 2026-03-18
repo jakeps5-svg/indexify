@@ -592,7 +592,7 @@ export const BLOG_POSTS: BlogPost[] = [
   "@type": "LocalBusiness",
   "name": "Indexify",
   "url": "https://indexify.co.za",
-  "telephone": "+27760597724",
+  "telephone": "+27602988295",
   "address": {
     "@type": "PostalAddress",
     "addressCountry": "ZA"

@@ -15,7 +15,7 @@ import { PoweredByBadge } from "@/components/PoweredByBadge";
 import { cn } from "@/lib/utils";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
-const WA_NUMBER = "27760597724";
+const WA_NUMBER = "27602988295";
 const PRIMARY = "hsl(198 69% 52%)";
 const ACCENT  = "hsl(259 100% 65%)";
 
@@ -448,7 +448,7 @@ function generateProposalHTML(result: ProposalResult): string {
 </div>
 
 <div class="footer">
-  <p>Prepared by Indexify · indexify.co.za · info@indexify.co.za · WhatsApp: +27 76 059 7724</p>
+  <p>Prepared by Indexify · indexify.co.za · info@indexify.co.za · WhatsApp: +27 60 298 8295</p>
   <p style="margin-top:6px;">This proposal is confidential and prepared exclusively for ${result.businessName}. Valid for 30 days.</p>
 </div>
 </body>

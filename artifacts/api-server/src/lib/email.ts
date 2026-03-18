@@ -86,7 +86,7 @@ export async function sendProposalUnlockEmail(opts: {
             </div>
 
             <p style="margin:0;color:#94a3b8;font-size:13px;line-height:1.6;">
-              Questions? Reply to this email or WhatsApp us at <a href="https://wa.me/27760597724" style="color:#0ea5c8;">+27 76 059 7724</a>
+              Questions? Reply to this email or WhatsApp us at <a href="https://wa.me/27602988295" style="color:#0ea5c8;">+27 60 298 8295</a>
             </p>
           </td>
         </tr>
@@ -156,7 +156,7 @@ export async function sendServicePurchaseEmail(opts: {
             </div>
 
             <p style="margin:0;color:#94a3b8;font-size:13px;">
-              Questions? WhatsApp us at <a href="https://wa.me/27760597724" style="color:#0ea5c8;">+27 76 059 7724</a>
+              Questions? WhatsApp us at <a href="https://wa.me/27602988295" style="color:#0ea5c8;">+27 60 298 8295</a>
             </p>
           </td>
         </tr>
@@ -301,7 +301,7 @@ export async function sendContactEmail(opts: {
             <table cellpadding="0" cellspacing="0">
               <tr>
                 <td style="padding-right:12px;">
-                  <a href="https://wa.me/27760597724" style="display:inline-block;padding:10px 20px;background:#25D366;color:#fff;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;">WhatsApp Us</a>
+                  <a href="https://wa.me/27602988295" style="display:inline-block;padding:10px 20px;background:#25D366;color:#fff;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;">WhatsApp Us</a>
                 </td>
                 <td>
                   <a href="mailto:support@indexify.co.za" style="display:inline-block;padding:10px 20px;background:#0ea5c8;color:#fff;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;">Email Us</a>
@@ -474,7 +474,7 @@ export async function sendMeetingRequestEmail(opts: {
             <table cellpadding="0" cellspacing="0">
               <tr>
                 <td style="padding-right:12px;">
-                  <a href="https://wa.me/27760597724" style="display:inline-block;padding:10px 20px;background:#25D366;color:#fff;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;">WhatsApp Us</a>
+                  <a href="https://wa.me/27602988295" style="display:inline-block;padding:10px 20px;background:#25D366;color:#fff;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;">WhatsApp Us</a>
                 </td>
                 <td>
                   <a href="mailto:support@indexify.co.za" style="display:inline-block;padding:10px 20px;background:#0ea5c8;color:#fff;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;">Email Us</a>

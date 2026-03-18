@@ -8,7 +8,7 @@ import { useSEO } from "@/hooks/useSEO";
 import { useLocation } from "wouter";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-const WA = "27760597724";
+const WA = "27602988295";
 
 const fadeUp = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.55 } } };
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.1 } } };
