@@ -184,6 +184,10 @@ function isJunkNavItem(text: string): boolean {
   if (/^[\+0-9\s\(\)\-]{7,}$/.test(text)) return true;
   if (/@|\.co\.za|\.com|\.net|www\./i.test(text)) return true;
   if (/©|copyright|all rights reserved/i.test(lower)) return true;
+  // Blog/content headings — tips, tricks, guides, tutorials, news posts
+  if (/\b(tips?|tricks?|guide|tutorial|how[\s\-]to|diy|hacks?|advice|inspiration|ideas?|featured|spotlight|trending|popular|latest|recent|new arrivals?|blog post|article|announcement|update|press release|event)\b/i.test(lower)) return true;
+  // Single generic words that are nav labels, not services
+  if (/^(shop|store|sale|offers?|deals?|promotions?|specials?|new|more|other|all|top|best|main|page)$/i.test(lower)) return true;
   return false;
 }
 
