@@ -11,6 +11,9 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 | `/` | Home |
 | `/audit` | Free SEO Audit tool (25+ checks, screenshots, backlinks) |
 | `/serp-checker` | Google SERP Rank Checker (domain + keyword → position in top 100) |
+| `/cape-town` | City landing page — SEO & Google Ads, Western Cape |
+| `/johannesburg` | City landing page — SEO & Google Ads, Gauteng |
+| `/durban` | City landing page — SEO & Google Ads, KwaZulu-Natal |
 | `/services/seo` | SEO service page |
 | `/services/google-ads` | Google Ads service page |
 | `/pricing` | Pricing packages |

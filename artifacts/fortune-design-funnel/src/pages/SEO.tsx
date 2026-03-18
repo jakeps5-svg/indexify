@@ -69,9 +69,18 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 export default function SEOPage() {
   useSEO({
-    title: "SEO Services South Africa – Page 1 Google Rankings | Indexify",
-    description: "Professional SEO services for South African businesses. Get on Google page 1 and attract more customers. Transparent pricing from R5,900/month. Free audit included.",
-    keywords: ["SEO services South Africa", "search engine optimisation South Africa", "SEO agency South Africa", "Google rankings South Africa", "SEO packages South Africa", "affordable SEO South Africa"],
+    title: "SEO Services South Africa – Affordable SEO Agency Cape Town | Indexify",
+    description: "Top-rated SEO agency in South Africa. We help small businesses rank on Google page 1. Affordable SEO services from R5,900/month. Serving Cape Town, Johannesburg & Durban.",
+    keywords: [
+      "SEO services South Africa", "SEO agency South Africa", "SEO company Cape Town",
+      "affordable SEO services SA", "local SEO services South Africa",
+      "small business SEO South Africa", "SEO experts Cape Town", "SEO consultant South Africa",
+      "search engine optimisation South Africa", "SEO packages South Africa",
+      "how much does SEO cost in South Africa", "best SEO agency for small business South Africa",
+      "local SEO services for plumbers Cape Town", "SEO for dentists South Africa",
+      "eCommerce SEO South Africa", "hire SEO agency South Africa",
+      "SEO services pricing South Africa", "is SEO worth it in South Africa",
+    ],
     canonical: "https://indexify.co.za/services/seo",
   });
 

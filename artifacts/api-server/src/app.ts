@@ -27,6 +27,9 @@ app.get("/sitemap.xml", (req: Request, res: Response) => {
     { path: "/audit/",              priority: "0.8", changefreq: "monthly", lastmod: isoNow },
     { path: "/serp-checker/",       priority: "0.8", changefreq: "monthly", lastmod: isoNow },
     { path: "/ads-audit/",          priority: "0.7", changefreq: "monthly", lastmod: isoNow },
+    { path: "/cape-town/",          priority: "0.8", changefreq: "monthly", lastmod: isoNow },
+    { path: "/johannesburg/",       priority: "0.8", changefreq: "monthly", lastmod: isoNow },
+    { path: "/durban/",             priority: "0.8", changefreq: "monthly", lastmod: isoNow },
   ];
 
   const url = (p: typeof pages[0]) =>

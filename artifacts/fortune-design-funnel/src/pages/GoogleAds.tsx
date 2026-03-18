@@ -80,9 +80,18 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 export default function GoogleAdsPage() {
   useSEO({
-    title: "Google Ads Management South Africa – Pay Per Click Experts | Indexify",
-    description: "Expert Google Ads management for South African businesses. Fixed monthly fee, no % of spend. Get more leads with targeted PPC campaigns from R7,300/month.",
-    keywords: ["Google Ads South Africa", "PPC management South Africa", "Google advertising South Africa", "pay per click South Africa", "Google Ads agency Johannesburg", "Google Ads Cape Town"],
+    title: "Google Ads Management South Africa – PPC Agency Cape Town | Indexify",
+    description: "Expert Google Ads management for South African businesses. Fixed monthly fee from R7,300/month. Serving Cape Town, Johannesburg & Durban. No % of spend. Free proposal.",
+    keywords: [
+      "Google Ads management South Africa", "Google Ads agency Cape Town",
+      "PPC management South Africa", "Google Ads expert South Africa",
+      "paid advertising agency SA", "Google Ads services Cape Town",
+      "AdWords management South Africa", "PPC agency Cape Town",
+      "how much does Google Ads cost South Africa", "Google Ads for small business South Africa",
+      "Google Ads for plumbers Cape Town", "PPC services for dentists SA",
+      "how to run Google Ads in South Africa", "best Google Ads agency Cape Town",
+      "Google Ads management packages SA", "affordable PPC services South Africa",
+    ],
     canonical: "https://indexify.co.za/services/google-ads",
   });
 

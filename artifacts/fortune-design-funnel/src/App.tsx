@@ -18,6 +18,9 @@ import TermsOfUsePage from "@/pages/TermsOfUse";
 import BlogPage from "@/pages/Blog";
 import BlogPostPage from "@/pages/BlogPost";
 import SerpCheckerPage from "@/pages/SerpChecker";
+import CapeTownPage from "@/pages/CapeTown";
+import JohannesburgPage from "@/pages/Johannesburg";
+import DurbanPage from "@/pages/Durban";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -40,6 +43,9 @@ function Router() {
       <Route path="/blog" component={BlogPage} />
       <Route path="/blog/:slug" component={BlogPostPage} />
       <Route path="/serp-checker" component={SerpCheckerPage} />
+      <Route path="/cape-town" component={CapeTownPage} />
+      <Route path="/johannesburg" component={JohannesburgPage} />
+      <Route path="/durban" component={DurbanPage} />
       <Route component={NotFound} />
     </Switch>
   );

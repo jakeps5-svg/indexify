@@ -42,9 +42,17 @@ const staggerContainer = {
 
 export default function Home() {
   useSEO({
-    title: "Indexify – SEO & Google Ads Agency South Africa | Rank Higher, Get More Clients",
-    description: "South Africa's leading SEO and Google Ads agency. We help businesses rank on Google page 1 and grow revenue with data-driven campaigns. Transparent pricing, real results.",
-    keywords: ["SEO South Africa", "Google Ads South Africa", "digital marketing South Africa", "SEO agency Johannesburg", "Cape Town SEO", "SEO agency South Africa", "search engine optimisation South Africa"],
+    title: "Indexify – SEO & Google Ads Agency South Africa | Cape Town, Johannesburg, Durban",
+    description: "South Africa's leading SEO and Google Ads agency. Rank on Google page 1 and get more clients. Serving Cape Town, Johannesburg & Durban. Free audit. Real results.",
+    keywords: [
+      "SEO agency South Africa", "Google Ads agency South Africa", "digital marketing agency Cape Town",
+      "SEO services South Africa", "Google Ads management South Africa",
+      "hire SEO agency South Africa", "best Google Ads agency Cape Town",
+      "digital marketing strategies South Africa", "how to get more clients online South Africa",
+      "SEO agency Cape Town", "SEO agency Johannesburg", "digital marketing agency South Africa",
+      "affordable SEO services SA", "affordable PPC services South Africa",
+      "search engine optimisation South Africa", "PPC management South Africa",
+    ],
     canonical: "https://indexify.co.za/",
   });
 

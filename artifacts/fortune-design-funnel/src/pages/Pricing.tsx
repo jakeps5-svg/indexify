@@ -71,9 +71,17 @@ const SEO_PACKAGES = [
 
 export default function PricingPage() {
   useSEO({
-    title: "SEO & Google Ads Pricing South Africa – Transparent Packages | Indexify",
-    description: "Clear, fixed-price SEO and Google Ads packages for South African businesses. From R5,900/month. No hidden fees. Cancel after 3 months if we don't deliver results.",
-    keywords: ["SEO pricing South Africa", "Google Ads pricing South Africa", "digital marketing packages South Africa", "SEO cost South Africa", "affordable Google Ads management"],
+    title: "SEO & Google Ads Pricing South Africa – Packages from R5,900/month | Indexify",
+    description: "Transparent SEO and Google Ads packages for South African businesses. Affordable pricing from R5,900/month. No hidden fees. Free audit. Cape Town, JHB & Durban.",
+    keywords: [
+      "SEO pricing South Africa", "Google Ads pricing South Africa",
+      "SEO services pricing South Africa", "Google Ads management packages SA",
+      "how much does SEO cost in South Africa", "how much does Google Ads cost South Africa",
+      "affordable SEO services SA", "affordable PPC services South Africa",
+      "digital marketing packages South Africa", "SEO cost South Africa",
+      "SEO packages Cape Town", "Google Ads packages South Africa",
+      "hire SEO agency South Africa", "best Google Ads agency Cape Town",
+    ],
     canonical: "https://indexify.co.za/pricing",
   });
 
