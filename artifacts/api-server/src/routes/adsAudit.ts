@@ -153,53 +153,110 @@ function extractPhone(bodyText: string): string {
   return m ? m[0].trim() : "";
 }
 
-const NAV_JUNK = ["home","about","about us","contact","contact us","blog","news","faq","careers","gallery","portfolio","login","sign in","register","menu","search","cart","services","products","team","testimonials","privacy","terms","sitemap","back","next","previous","whatsapp us","whatsapp","call us","email us","get a quote","get quote","free quote","our work","our clients","case studies","read more","learn more","view all","see more","click here","submit","send","close"];
+const NAV_JUNK_SET = new Set([
+  "home","about","about us","contact","contact us","blog","news","faq","careers","gallery",
+  "portfolio","login","sign in","sign up","register","menu","search","cart","services","products",
+  "team","testimonials","privacy","terms","sitemap","back","next","previous",
+  "whatsapp us","whatsapp","call us","email us","get a quote","get quote","free quote",
+  "our work","our clients","case studies","read more","learn more","view all","see more",
+  "click here","submit","send","close","follow us","follow","subscribe","newsletter",
+  "share","like us","connect","social media","stay connected","get in touch","find us on",
+  "connect with us","join us","share this","like this","follow us on",
+  "facebook","instagram","twitter","linkedin","youtube","tiktok","pinterest","snapchat",
+  "social","copyright","all rights reserved","powered by","rss","rss feed",
+  "privacy policy","terms of use","terms and conditions","disclaimer","legal",
+  "company registration","vat number","reg no","physical address","postal address",
+  "quick links","useful links","important links","pages","navigation","site map",
+  "work with us","join our team","careers","vacancies","apply now",
+]);
 
 function isJunkNavItem(text: string): boolean {
-  if (NAV_JUNK.some(j => text.toLowerCase() === j || text.toLowerCase() === j + "s")) return true;
-  if (text.length > 55) return true;
-  if (/^(we |our |the |a |get |you |is |are |all |fast|easy|no |with |designed|built|fully)/i.test(text)) return true;
+  const lower = text.toLowerCase().trim();
+  if (NAV_JUNK_SET.has(lower) || NAV_JUNK_SET.has(lower + "s")) return true;
+  if (text.length > 60 || text.length < 3) return true;
+  // Social/verb-first patterns
+  if (/^(follow|subscribe|connect|like|share|join|tweet|pin|see|view|read|click|submit|send|go to|find us|check out|visit us|contact us|call us|email us|whatsapp|book now|download|navigate|open|close|back|next|previous|scroll)/i.test(lower)) return true;
+  // Contains social platform names
+  if (/facebook|instagram|twitter|linkedin|youtube|tiktok|pinterest|snapchat|telegram|reddit/i.test(lower)) return true;
+  // Generic filler phrases
+  if (/^(we |our |the |a |get |you |is |are |all |fast|easy|no |with |designed|built|fully|since |established|founded|welcome|hello|hi |thank)/i.test(lower)) return true;
+  // Phone numbers, emails, URLs, copyright
+  if (/^[\+0-9\s\(\)\-]{7,}$/.test(text)) return true;
+  if (/@|\.co\.za|\.com|\.net|www\./i.test(text)) return true;
+  if (/©|copyright|all rights reserved/i.test(lower)) return true;
   return false;
 }
+
+// Selectors to skip — footer, sidebar, social sections never contain real services
+const JUNK_SECTIONS = "footer, [class*='footer'], [id*='footer'], aside, [class*='sidebar'], [id*='sidebar'], [class*='social'], [id*='social'], [class*='follow'], [class*='copyright'], [class*='newsletter'], [class*='cookie']";
 
 function extractServicesFromHTML(html: string, $: cheerio.CheerioAPI): string[] {
   const candidates: { text: string; score: number }[] = [];
 
-  $("nav a, header a, [class*='menu'] a, [class*='nav'] a").each((_, el) => {
-    const text = $(el).text().trim();
-    if (text.length >= 3 && text.length <= 60 && !isJunkNavItem(text)) candidates.push({ text, score: 2 });
-  });
-
-  $("h2, h3").each((_, el) => {
-    const text = $(el).text().trim();
-    if (text.length >= 4 && text.length <= 80 && !isJunkNavItem(text)) candidates.push({ text, score: 3 });
-  });
-
+  // 1. JSON-LD structured data — highest confidence, explicitly defined by site owner
   $('script[type="application/ld+json"]').each((_, el) => {
     try {
       const json = JSON.parse($(el).text());
       const items = Array.isArray(json) ? json : [json];
+      const push = (name: string) => {
+        const t = name.trim();
+        if (t.length >= 3 && t.length <= 60 && !isJunkNavItem(t)) candidates.push({ text: t, score: 6 });
+      };
       for (const item of items) {
-        if (item["@type"] === "Service" || item["@type"] === "Product" || item["@type"] === "ItemList") {
-          if (item.name) candidates.push({ text: item.name, score: 5 });
-          if (item.hasOfferCatalog?.itemListElement) {
-            for (const s of item.hasOfferCatalog.itemListElement) {
-              if (s.name) candidates.push({ text: s.name, score: 5 });
-            }
+        if (item["@type"] === "Service" || item["@type"] === "Product") push(item.name ?? "");
+        if (item?.hasOfferCatalog?.itemListElement) {
+          for (const s of item.hasOfferCatalog.itemListElement) {
+            push(s?.itemOffered?.name ?? s?.name ?? "");
           }
+        }
+        if (item["@type"] === "ItemList" && Array.isArray(item.itemListElement)) {
+          for (const s of item.itemListElement) push(s?.item?.name ?? s?.name ?? "");
         }
       }
     } catch {}
   });
 
+  // 2. Links whose URL path contains service/product/category slugs — very reliable
   $("a[href]").each((_, el) => {
+    if ($(el).closest(JUNK_SECTIONS).length > 0) return;
     const href = ($(el).attr("href") ?? "").toLowerCase();
-    if (/\/(service|product|solution|offering|package|shop|category|collection)s?\/[a-z\-]+/.test(href)) {
+    if (/\/(service|product|solution|offering|package|shop|category|collection|industry|what-we-do|niche)s?\/[a-z0-9\-]+/.test(href)) {
       const text = $(el).text().trim();
-      if (text.length >= 3 && text.length <= 60) candidates.push({ text, score: 4 });
+      if (text.length >= 3 && text.length <= 60 && !isJunkNavItem(text)) candidates.push({ text, score: 5 });
     }
   });
 
+  // 3. Headings only within main content areas — skip footer/nav/social completely
+  const $main = $("main, #content, #main, [role='main'], .content, article, .page-content, [class*='main-content'], [class*='page-body']");
+  const $scope = $main.length > 0 ? $main : $.root();
+
+  $scope.find("h2, h3").each((_, el) => {
+    if ($(el).closest(JUNK_SECTIONS).length > 0) return;
+    // Also skip headings directly inside header/nav
+    if ($(el).closest("header, nav, [class*='header'], [class*='nav']").length > 0) return;
+    const text = $(el).text().trim();
+    if (text.length >= 4 && text.length <= 65 && !isJunkNavItem(text)) candidates.push({ text, score: 3 });
+  });
+
+  // 4. Service/product card titles — common pattern: .card h4, .service-item h3, etc.
+  $("[class*='service'], [class*='product'], [class*='offering'], [class*='package'], [class*='solution'], [class*='card']").each((_, section) => {
+    if ($(section).closest(JUNK_SECTIONS).length > 0) return;
+    $(section).find("h3, h4, [class*='title'], [class*='name']").first().each((_, el) => {
+      const text = $(el).text().trim();
+      if (text.length >= 3 && text.length <= 60 && !isJunkNavItem(text)) candidates.push({ text, score: 4 });
+    });
+  });
+
+  // 5. Nav links — but ONLY those that link to service-related paths
+  $("nav a, header a, [class*='menu'] a").each((_, el) => {
+    const href = ($(el).attr("href") ?? "").toLowerCase();
+    const text = $(el).text().trim();
+    if (/\/(service|product|solution|offering|package|shop|category|collection|our-|what-we|industry)/i.test(href)) {
+      if (text.length >= 3 && text.length <= 60 && !isJunkNavItem(text)) candidates.push({ text, score: 4 });
+    }
+  });
+
+  // Deduplicate, sort by score, return top results
   const seen = new Set<string>();
   const unique: string[] = [];
   for (const c of candidates.sort((a, b) => b.score - a.score)) {
