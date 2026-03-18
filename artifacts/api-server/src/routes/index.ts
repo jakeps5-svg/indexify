@@ -6,6 +6,7 @@ import adsAuditRouter from "./adsAudit";
 import checkoutRouter from "./checkout";
 import contactRouter from "./contact";
 import serpRouter from "./serp";
+import bookingRouter from "./booking";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(adsAuditRouter);
 router.use(checkoutRouter);
 router.use(contactRouter);
 router.use(serpRouter);
+router.use(bookingRouter);
 
 export default router;
