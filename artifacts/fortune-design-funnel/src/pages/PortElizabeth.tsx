@@ -33,7 +33,7 @@ const FAQS = [
 
 export default function PortElizabethPage() {
   useSEO({
-    title: "SEO Agency Port Elizabeth | Google Ads Gqeberha & Eastern Cape | Indexify",
+    title: "SEO Agency Port Elizabeth | Google Ads | Indexify",
     description: "Port Elizabeth's trusted SEO and Google Ads agency. Rank higher on Google in Gqeberha and Eastern Cape. Packages from R5,900/month. Free audit. No lock-in.",
     keywords: [
       "SEO agency Port Elizabeth", "Google Ads Port Elizabeth", "SEO Gqeberha",

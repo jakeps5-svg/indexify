@@ -33,8 +33,8 @@ const FAQS = [
 
 export default function CapeTownPage() {
   useSEO({
-    title: "SEO Agency Cape Town | Google Ads & Digital Marketing Cape Town | Indexify",
-    description: "Cape Town's top-rated SEO and Google Ads agency. Rank higher on Google and get more local leads. Affordable digital marketing packages from R5,900/month. Free audit.",
+    title: "SEO Agency Cape Town | Google Ads | Indexify",
+    description: "Cape Town's top-rated SEO and Google Ads agency. Rank higher on Google and get more local leads. Packages from R5,900/month. Free audit.",
     keywords: [
       "SEO agency Cape Town", "Google Ads agency Cape Town", "digital marketing agency Cape Town",
       "SEO services Cape Town", "PPC services Cape Town", "Google Ads Cape Town",

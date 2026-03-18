@@ -6,7 +6,7 @@ import { useSEO } from "@/hooks/useSEO";
 
 export default function PrivacyPolicy() {
   useSEO({
-    title: "Privacy Policy | Indexify – SEO & Google Ads Agency South Africa",
+    title: "Privacy Policy | Indexify SA",
     description: "Indexify's privacy policy — how we collect, use and protect your personal information in accordance with the Protection of Personal Information Act (POPIA).",
     keywords: ["Indexify privacy policy", "POPIA compliance", "data protection South Africa"],
     canonical: "https://indexify.co.za/privacy-policy",

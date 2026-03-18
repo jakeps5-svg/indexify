@@ -402,7 +402,7 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages, topBackli
 
 export default function AuditPage() {
   useSEO({
-    title: "Free SEO Audit South Africa – Instant Website Analysis | Indexify",
+    title: "Free SEO Audit South Africa – Instant Analysis | Indexify",
     description: "Get your free SEO audit in seconds. Discover why your website isn't ranking on Google and what's holding back your organic traffic. No sign-up required.",
     keywords: ["free SEO audit South Africa", "website SEO analysis", "Google ranking check South Africa", "SEO health check", "website audit tool South Africa"],
     canonical: "https://indexify.co.za/audit",

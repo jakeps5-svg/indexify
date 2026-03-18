@@ -33,7 +33,7 @@ const FAQS = [
 
 export default function JohannesburgPage() {
   useSEO({
-    title: "SEO Agency Johannesburg | Google Ads & PPC Johannesburg | Indexify",
+    title: "SEO Agency Johannesburg | Google Ads | Indexify",
     description: "Johannesburg's trusted SEO and Google Ads agency. Rank on Google page 1 and get more Joburg leads. Packages from R5,900/month. Free SEO audit. No lock-in.",
     keywords: [
       "SEO agency Johannesburg", "Google Ads Johannesburg", "PPC agency Johannesburg",

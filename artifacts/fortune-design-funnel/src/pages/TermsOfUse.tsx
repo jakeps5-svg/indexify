@@ -6,7 +6,7 @@ import { useSEO } from "@/hooks/useSEO";
 
 export default function TermsOfUse() {
   useSEO({
-    title: "Terms of Use | Indexify – SEO & Google Ads Agency South Africa",
+    title: "Terms of Use | Indexify SA",
     description: "Indexify's terms of use — the conditions governing use of our website and digital marketing services provided by Fortune Design (Pty) Ltd.",
     keywords: ["Indexify terms of use", "terms and conditions South Africa", "digital marketing agency terms"],
     canonical: "https://indexify.co.za/terms-of-use",

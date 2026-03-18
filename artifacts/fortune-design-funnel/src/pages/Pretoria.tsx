@@ -33,8 +33,8 @@ const FAQS = [
 
 export default function PretoriaPage() {
   useSEO({
-    title: "SEO Agency Pretoria | Google Ads Pretoria & Tshwane | Indexify",
-    description: "Pretoria's trusted SEO and Google Ads agency. Rank on Google page 1 across Tshwane. Packages from R5,900/month. Free SEO audit. Serving Centurion, Midrand & Hatfield.",
+    title: "SEO Agency Pretoria | Google Ads Tshwane | Indexify",
+    description: "Pretoria's trusted SEO & Google Ads agency. Rank across Tshwane. From R5,900/month. Free SEO audit. Serving Centurion & Midrand.",
     keywords: [
       "SEO agency Pretoria", "Google Ads Pretoria", "digital marketing Pretoria",
       "SEO services Pretoria", "SEO Tshwane", "Google Ads Tshwane",

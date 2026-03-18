@@ -79,8 +79,8 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
 
 export default function BlogPage() {
   useSEO({
-    title: "SEO & Google Ads Blog – Expert Guides for South African Businesses | Indexify",
-    description: "Expert articles on SEO, Google Ads and digital marketing for South African businesses. Practical guides with no fluff — strategies that actually move the needle.",
+    title: "SEO & Google Ads Blog – SA Guides | Indexify",
+    description: "Expert articles on SEO, Google Ads and digital marketing for SA businesses. Practical guides with no fluff — strategies that actually move the needle.",
     keywords: ["SEO blog South Africa", "Google Ads tips South Africa", "digital marketing South Africa", "SEO guides for businesses", "online marketing South Africa"],
     canonical: "https://indexify.co.za/blog",
   });

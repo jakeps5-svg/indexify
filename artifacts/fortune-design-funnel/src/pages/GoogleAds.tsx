@@ -80,8 +80,8 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 export default function GoogleAdsPage() {
   useSEO({
-    title: "Google Ads Management South Africa – PPC Agency Cape Town | Indexify",
-    description: "Expert Google Ads management for South African businesses. Fixed monthly fee from R7,300/month. Serving Cape Town, Johannesburg & Durban. No % of spend. Free proposal.",
+    title: "Google Ads Management SA | PPC Agency | Indexify",
+    description: "Expert Google Ads management for SA businesses. Fixed fee from R7,300/month — no % of spend. Cape Town, JHB, Durban & Pretoria. Free proposal.",
     keywords: [
       "Google Ads management South Africa", "Google Ads agency Cape Town",
       "PPC management South Africa", "Google Ads expert South Africa",

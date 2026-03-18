@@ -42,8 +42,8 @@ const staggerContainer = {
 
 export default function Home() {
   useSEO({
-    title: "Indexify – SEO & Google Ads Agency South Africa | Cape Town, Johannesburg, Durban",
-    description: "South Africa's leading SEO and Google Ads agency. Rank on Google page 1 and get more clients. Serving Cape Town, Johannesburg & Durban. Free audit. Real results.",
+    title: "SEO & Google Ads Agency South Africa | Indexify",
+    description: "South Africa's top SEO & Google Ads agency. Rank on page 1 and win more clients. Cape Town, JHB, Durban & Pretoria. Free audit included.",
     keywords: [
       "SEO agency South Africa", "Google Ads agency South Africa", "digital marketing agency Cape Town",
       "SEO services South Africa", "Google Ads management South Africa",

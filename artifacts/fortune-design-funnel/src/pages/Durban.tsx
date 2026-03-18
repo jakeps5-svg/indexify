@@ -33,8 +33,8 @@ const FAQS = [
 
 export default function DurbanPage() {
   useSEO({
-    title: "SEO Services Durban | Google Ads & Digital Marketing Durban | Indexify",
-    description: "Durban's trusted SEO and Google Ads agency. Rank higher on Google and get more KZN leads. Packages from R5,900/month. Free SEO audit. Serving all of KwaZulu-Natal.",
+    title: "SEO Services Durban | Google Ads | Indexify",
+    description: "Durban's trusted SEO & Google Ads agency. Rank on Google and get more KZN leads. From R5,900/month. Free audit. Serving all KwaZulu-Natal.",
     keywords: [
       "SEO services Durban", "Google Ads Durban", "digital marketing Durban",
       "SEO agency Durban", "PPC Durban", "Google Ads management Durban",

@@ -69,8 +69,8 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 
 export default function SEOPage() {
   useSEO({
-    title: "SEO Services South Africa – Affordable SEO Agency Cape Town | Indexify",
-    description: "Top-rated SEO agency in South Africa. We help small businesses rank on Google page 1. Affordable SEO services from R5,900/month. Serving Cape Town, Johannesburg & Durban.",
+    title: "SEO Services South Africa | SEO Agency | Indexify",
+    description: "Top-rated SEO agency in SA helping businesses rank on Google page 1. Affordable SEO from R5,900/month. Cape Town, JHB, Durban & Pretoria.",
     keywords: [
       "SEO services South Africa", "SEO agency South Africa", "SEO company Cape Town",
       "affordable SEO services SA", "local SEO services South Africa",

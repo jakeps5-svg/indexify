@@ -71,7 +71,7 @@ const SEO_PACKAGES = [
 
 export default function PricingPage() {
   useSEO({
-    title: "SEO & Google Ads Pricing South Africa – Packages from R5,900/month | Indexify",
+    title: "SEO & Google Ads Pricing SA | Packages | Indexify",
     description: "Transparent SEO and Google Ads packages for South African businesses. Affordable pricing from R5,900/month. No hidden fees. Free audit. Cape Town, JHB & Durban.",
     keywords: [
       "SEO pricing South Africa", "Google Ads pricing South Africa",
