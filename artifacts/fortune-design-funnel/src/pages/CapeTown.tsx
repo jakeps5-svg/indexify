@@ -3,6 +3,7 @@ import { MapPin, Search, MousePointerClick, TrendingUp, CheckCircle2, ArrowRight
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
+import { CityPricing } from "@/components/CityPricing";
 import { useSEO } from "@/hooks/useSEO";
 import { useLocation } from "wouter";
 
@@ -181,8 +182,11 @@ export default function CapeTownPage() {
         </div>
       </section>
 
+      {/* Pricing */}
+      <CityPricing city="Cape Town" accent="teal" />
+
       {/* FAQ */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-slate-50">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-3xl font-black text-gray-900 text-center mb-10">
             Frequently Asked Questions
