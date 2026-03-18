@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown, Search, MousePointerClick, BarChart3, TrendingUp } from "lucide-react";
+import { Menu, X, ChevronDown, Search, MousePointerClick, BarChart3, TrendingUp, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
-  const [isScrolled, setIsScrolled]       = useState(false);
+  const [isScrolled, setIsScrolled]         = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const [isToolsOpen, setIsToolsOpen]       = useState(false);
+  const [isServicesOpen, setIsServicesOpen]   = useState(false);
+  const [isToolsOpen, setIsToolsOpen]         = useState(false);
+  const [isCitiesOpen, setIsCitiesOpen]       = useState(false);
   const servicesRef = useRef<HTMLDivElement>(null);
   const toolsRef    = useRef<HTMLDivElement>(null);
+  const citiesRef   = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -19,12 +21,9 @@ export function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (servicesRef.current && !servicesRef.current.contains(e.target as Node)) {
-        setIsServicesOpen(false);
-      }
-      if (toolsRef.current && !toolsRef.current.contains(e.target as Node)) {
-        setIsToolsOpen(false);
-      }
+      if (servicesRef.current && !servicesRef.current.contains(e.target as Node)) setIsServicesOpen(false);
+      if (toolsRef.current   && !toolsRef.current.contains(e.target as Node))   setIsToolsOpen(false);
+      if (citiesRef.current  && !citiesRef.current.contains(e.target as Node))  setIsCitiesOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -70,6 +69,14 @@ export function Navbar() {
     },
   ];
 
+  const cities = [
+    { name: "Cape Town",       href: `${BASE}cape-town`,      color: "text-teal-600",   bg: "bg-teal-50",   dot: "bg-teal-500" },
+    { name: "Johannesburg",    href: `${BASE}johannesburg`,   color: "text-purple-600", bg: "bg-purple-50", dot: "bg-purple-500" },
+    { name: "Durban",          href: `${BASE}durban`,         color: "text-emerald-600",bg: "bg-emerald-50",dot: "bg-emerald-500" },
+    { name: "Pretoria",        href: `${BASE}pretoria`,       color: "text-indigo-600", bg: "bg-indigo-50", dot: "bg-indigo-500" },
+    { name: "Port Elizabeth",  href: `${BASE}port-elizabeth`, color: "text-cyan-600",   bg: "bg-cyan-50",   dot: "bg-cyan-500" },
+  ];
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -86,7 +93,7 @@ export function Navbar() {
         {/* Desktop: 3-column centred-logo layout */}
         <div className="hidden md:grid md:grid-cols-3 md:items-center">
 
-          {/* LEFT — Services + Blog */}
+          {/* LEFT — Services + Blog + Free Tools */}
           <div className="flex items-center gap-7">
             {/* Services dropdown */}
             <div ref={servicesRef} className="relative">
@@ -97,10 +104,7 @@ export function Navbar() {
                 className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
               >
                 Services
-                <ChevronDown
-                  size={14}
-                  className={cn("transition-transform duration-200", isServicesOpen && "rotate-180")}
-                />
+                <ChevronDown size={14} className={cn("transition-transform duration-200", isServicesOpen && "rotate-180")} />
               </button>
 
               <AnimatePresence>
@@ -124,9 +128,7 @@ export function Navbar() {
                             <service.icon size={16} className={service.color} />
                           </div>
                           <div>
-                            <div className="font-semibold text-gray-900 text-sm group-hover:text-primary transition-colors">
-                              {service.name}
-                            </div>
+                            <div className="font-semibold text-gray-900 text-sm group-hover:text-primary transition-colors">{service.name}</div>
                             <div className="text-xs text-gray-400 mt-0.5">{service.desc}</div>
                           </div>
                         </a>
@@ -150,10 +152,7 @@ export function Navbar() {
                 className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors whitespace-nowrap"
               >
                 Free Tools
-                <ChevronDown
-                  size={14}
-                  className={cn("transition-transform duration-200", isToolsOpen && "rotate-180")}
-                />
+                <ChevronDown size={14} className={cn("transition-transform duration-200", isToolsOpen && "rotate-180")} />
               </button>
 
               <AnimatePresence>
@@ -177,9 +176,7 @@ export function Navbar() {
                             <tool.icon size={16} className={tool.color} />
                           </div>
                           <div>
-                            <div className="font-semibold text-gray-900 text-sm group-hover:text-primary transition-colors">
-                              {tool.name}
-                            </div>
+                            <div className="font-semibold text-gray-900 text-sm group-hover:text-primary transition-colors">{tool.name}</div>
                             <div className="text-xs text-gray-400 mt-0.5">{tool.desc}</div>
                           </div>
                         </a>
@@ -205,8 +202,53 @@ export function Navbar() {
             </a>
           </div>
 
-          {/* RIGHT — Pricing + Contact + CTA */}
+          {/* RIGHT — Locations + Pricing + Contact + CTA */}
           <div className="flex items-center justify-end gap-7">
+
+            {/* Locations / Cities dropdown */}
+            <div ref={citiesRef} className="relative">
+              <button
+                onClick={() => setIsCitiesOpen(!isCitiesOpen)}
+                aria-label="Toggle locations menu"
+                aria-expanded={isCitiesOpen}
+                className="flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors whitespace-nowrap"
+              >
+                Locations
+                <ChevronDown size={14} className={cn("transition-transform duration-200", isCitiesOpen && "rotate-180")} />
+              </button>
+
+              <AnimatePresence>
+                {isCitiesOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.97 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full right-0 mt-3 w-60 rounded-2xl bg-white border border-gray-200 shadow-xl overflow-hidden"
+                  >
+                    <div className="px-3 py-2 border-b border-gray-100">
+                      <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">We serve</p>
+                    </div>
+                    <div className="p-2">
+                      {cities.map((city) => (
+                        <a
+                          key={city.name}
+                          href={city.href}
+                          onClick={() => setIsCitiesOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors group"
+                        >
+                          <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", city.bg)}>
+                            <MapPin size={13} className={city.color} />
+                          </div>
+                          <span className="font-medium text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{city.name}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <a href={`${BASE}pricing`} className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
               Pricing
             </a>
@@ -290,8 +332,27 @@ export function Navbar() {
 
               <div className="h-px bg-gray-100 mx-4" />
 
+              <div className="px-4 py-2">
+                <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Locations</div>
+                {cities.map((city) => (
+                  <a
+                    key={city.name}
+                    href={city.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 py-2.5 text-base font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", city.bg)}>
+                      <MapPin size={14} className={city.color} />
+                    </div>
+                    {city.name}
+                  </a>
+                ))}
+              </div>
+
+              <div className="h-px bg-gray-100 mx-4" />
+
               {[
-                { name: "Blog", href: `${BASE}blog` },
+                { name: "Blog",    href: `${BASE}blog` },
                 { name: "Pricing", href: `${BASE}pricing` },
                 { name: "Contact", href: `${BASE}contact` },
               ].map((link) => (
