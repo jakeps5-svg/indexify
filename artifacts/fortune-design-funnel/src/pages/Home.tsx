@@ -49,9 +49,12 @@ export default function Home() {
       "SEO services South Africa", "Google Ads management South Africa",
       "hire SEO agency South Africa", "best Google Ads agency Cape Town",
       "digital marketing strategies South Africa", "how to get more clients online South Africa",
-      "SEO agency Cape Town", "SEO agency Johannesburg", "digital marketing agency South Africa",
+      "SEO agency Cape Town", "SEO agency Johannesburg", "SEO agency Durban",
+      "SEO agency Pretoria", "SEO agency Port Elizabeth", "digital marketing agency South Africa",
       "affordable SEO services SA", "affordable PPC services South Africa",
       "search engine optimisation South Africa", "PPC management South Africa",
+      "digital marketing Sandton", "SEO Centurion", "SEO Midrand", "SEO Stellenbosch",
+      "SEO East London", "SEO Bloemfontein", "SEO Nelspruit", "SEO Polokwane",
     ],
     canonical: "https://indexify.co.za/",
   });

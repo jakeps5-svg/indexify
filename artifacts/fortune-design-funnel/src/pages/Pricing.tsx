@@ -81,6 +81,8 @@ export default function PricingPage() {
       "digital marketing packages South Africa", "SEO cost South Africa",
       "SEO packages Cape Town", "Google Ads packages South Africa",
       "hire SEO agency South Africa", "best Google Ads agency Cape Town",
+      "SEO pricing Johannesburg", "SEO pricing Durban", "SEO pricing Pretoria",
+      "Google Ads pricing Cape Town", "digital marketing cost South Africa",
     ],
     canonical: "https://indexify.co.za/pricing",
   });

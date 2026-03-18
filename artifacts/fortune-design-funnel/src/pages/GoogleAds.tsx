@@ -91,6 +91,9 @@ export default function GoogleAdsPage() {
       "Google Ads for plumbers Cape Town", "PPC services for dentists SA",
       "how to run Google Ads in South Africa", "best Google Ads agency Cape Town",
       "Google Ads management packages SA", "affordable PPC services South Africa",
+      "Google Ads agency Johannesburg", "Google Ads Durban", "Google Ads Pretoria",
+      "Google Ads Port Elizabeth", "PPC agency Sandton", "Google Ads Centurion",
+      "Google Ads Midrand", "Google Ads Stellenbosch", "PPC South Africa",
     ],
     canonical: "https://indexify.co.za/services/google-ads",
   });

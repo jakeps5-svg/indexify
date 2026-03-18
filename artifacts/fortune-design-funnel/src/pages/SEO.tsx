@@ -80,6 +80,9 @@ export default function SEOPage() {
       "local SEO services for plumbers Cape Town", "SEO for dentists South Africa",
       "eCommerce SEO South Africa", "hire SEO agency South Africa",
       "SEO services pricing South Africa", "is SEO worth it in South Africa",
+      "SEO agency Johannesburg", "SEO agency Durban", "SEO agency Pretoria",
+      "SEO agency Port Elizabeth", "SEO Sandton", "SEO Centurion", "SEO Midrand",
+      "SEO Stellenbosch", "SEO East London", "SEO Bloemfontein",
     ],
     canonical: "https://indexify.co.za/services/seo",
   });

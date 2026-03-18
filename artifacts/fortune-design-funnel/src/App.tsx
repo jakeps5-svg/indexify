@@ -21,6 +21,8 @@ import SerpCheckerPage from "@/pages/SerpChecker";
 import CapeTownPage from "@/pages/CapeTown";
 import JohannesburgPage from "@/pages/Johannesburg";
 import DurbanPage from "@/pages/Durban";
+import PretoriaPage from "@/pages/Pretoria";
+import PortElizabethPage from "@/pages/PortElizabeth";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -46,6 +48,8 @@ function Router() {
       <Route path="/cape-town" component={CapeTownPage} />
       <Route path="/johannesburg" component={JohannesburgPage} />
       <Route path="/durban" component={DurbanPage} />
+      <Route path="/pretoria" component={PretoriaPage} />
+      <Route path="/port-elizabeth" component={PortElizabethPage} />
       <Route component={NotFound} />
     </Switch>
   );
