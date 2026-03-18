@@ -5,7 +5,7 @@ import {
   BarChart3, Zap, Clock, Award, ChevronDown, ChevronUp, Star,
   DollarSign, RefreshCw, Shield, Eye, Layers, Phone
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
@@ -78,7 +78,15 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   );
 }
 
+declare global { interface Window { gtag?: (...args: unknown[]) => void; } }
+
 export default function GoogleAdsPage() {
+  useEffect(() => {
+    if (typeof window.gtag === "function") {
+      window.gtag("event", "ads_conversion_Form_1", {});
+    }
+  }, []);
+
   useSEO({
     title: "Google Ads Management SA | PPC Agency | Indexify",
     description: "Expert Google Ads management for SA businesses. Fixed fee from R7,300/month — no % of spend. Cape Town, JHB, Durban & Pretoria. Free proposal.",

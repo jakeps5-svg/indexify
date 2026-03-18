@@ -4,7 +4,7 @@ import {
   Globe, FileText, Link2, MapPin, Zap, Clock, Award, ChevronDown,
   ChevronUp, Users, Star, Shield, Eye
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
@@ -67,7 +67,15 @@ function FAQItem({ q, a }: { q: string; a: string }) {
   );
 }
 
+declare global { interface Window { gtag?: (...args: unknown[]) => void; } }
+
 export default function SEOPage() {
+  useEffect(() => {
+    if (typeof window.gtag === "function") {
+      window.gtag("event", "ads_conversion_Form_1", {});
+    }
+  }, []);
+
   useSEO({
     title: "SEO Services South Africa | SEO Agency | Indexify",
     description: "Top-rated SEO agency in SA helping businesses rank on Google page 1. Affordable SEO from R5,900/month. Cape Town, JHB, Durban & Pretoria.",
