@@ -118,36 +118,6 @@ export function Footer() {
               <li><a href={`${BASE}pricing`} className="text-gray-400 hover:text-primary transition-colors text-sm">Pricing Packages</a></li>
               <li><a href={`${BASE}blog`} className="text-gray-400 hover:text-primary transition-colors text-sm">Blog</a></li>
               <li><a href={`${BASE}contact`} className="text-gray-400 hover:text-primary transition-colors text-sm">Contact Us</a></li>
-              <li>
-                <a
-                  href="https://www.facebook.com/FortunedesignSA"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-gray-400 hover:text-primary transition-colors text-sm"
-                >
-                  Facebook
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.instagram.com/fortunedesign_sa/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-gray-400 hover:text-primary transition-colors text-sm"
-                >
-                  Instagram
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.linkedin.com/in/fortune-design-168270213/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-gray-400 hover:text-primary transition-colors text-sm"
-                >
-                  LinkedIn
-                </a>
-              </li>
             </ul>
           </div>
         </div>
