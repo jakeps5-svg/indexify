@@ -29,6 +29,36 @@ function getTodayStr() {
   return d.toISOString().split("T")[0];
 }
 
+function TeamsLogo() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="6" fill="#6264A7"/>
+      <path d="M20.5 10.5h-4v1.5h1.5v7h1.5v-7h1V10.5z" fill="white"/>
+      <path d="M12 13a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z" fill="white"/>
+      <path d="M7 20.5c0-2.485 2.239-4.5 5-4.5s5 2.015 5 4.5V21H7v-.5z" fill="white"/>
+      <path d="M19 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="#C8C6F4"/>
+      <path d="M22 21h-8c0-1.657 1.567-3 3.5-3h1c1.933 0 3.5 1.343 3.5 3z" fill="#C8C6F4"/>
+      <path d="M22 15.5c0 .828.672 1.5 1.5 1.5S25 16.328 25 15.5 24.328 14 23.5 14 22 14.672 22 15.5z" fill="#C8C6F4"/>
+      <path d="M25.5 17h-4c-.276 0-.5.224-.5.5v3h5v-3c0-.276-.224-.5-.5-.5z" fill="#C8C6F4"/>
+    </svg>
+  );
+}
+
+function GoogleMeetLogo() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="6" fill="white"/>
+      <path d="M18.667 16l4 3.2V12.8l-4 3.2z" fill="#EA4335"/>
+      <path d="M6 13.333A2.667 2.667 0 0 1 8.667 10.667h8A2.667 2.667 0 0 1 19.333 13.333v5.333A2.667 2.667 0 0 1 16.667 21.333h-8A2.667 2.667 0 0 1 6 18.667V13.333z" fill="#1A73E8"/>
+      <path d="M6 16h13.333v2.667A2.667 2.667 0 0 1 16.667 21.333h-8A2.667 2.667 0 0 1 6 18.667V16z" fill="#188038"/>
+      <path d="M6 13.333A2.667 2.667 0 0 1 8.667 10.667h8A2.667 2.667 0 0 1 19.333 13.333V16H6V13.333z" fill="#1A73E8"/>
+      <path d="M18.667 16l4-3.2v6.4l-4-3.2z" fill="#FBBC05"/>
+      <path d="M19.333 13.333V16H18.667l-4-3.2V12.8l4 3.2.667-.667z" fill="#EA4335"/>
+      <path d="M19.333 18.667V16H18.667l-4 3.2v.533l4-3.2.667.134z" fill="#188038"/>
+    </svg>
+  );
+}
+
 function CalendarIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="26" height="26">
@@ -191,8 +221,8 @@ export function BookingModal() {
                     <label className={labelClass}>Meeting Platform *</label>
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { value: "teams", label: "Microsoft Teams", color: "#6264A7", icon: "🟦" },
-                        { value: "meet",  label: "Google Meet",      color: "#1a73e8", icon: "🟢" },
+                        { value: "teams", label: "Microsoft Teams", logo: <TeamsLogo /> },
+                        { value: "meet",  label: "Google Meet",      logo: <GoogleMeetLogo /> },
                       ].map((p) => (
                         <button
                           key={p.value}
@@ -201,18 +231,18 @@ export function BookingModal() {
                           className={cn(
                             "flex items-center gap-3 px-4 py-3.5 rounded-xl border-2 text-left transition-all",
                             form.platform === p.value
-                              ? "border-primary bg-primary/5"
+                              ? "border-primary bg-primary/5 shadow-sm"
                               : "border-gray-200 bg-white hover:border-gray-300"
                           )}
                         >
-                          <span className="text-xl">{p.icon}</span>
-                          <div>
+                          <span className="shrink-0">{p.logo}</span>
+                          <div className="flex-1 min-w-0">
                             <p className={cn("text-xs font-bold leading-tight", form.platform === p.value ? "text-primary" : "text-gray-700")}>
                               {p.label}
                             </p>
                           </div>
                           {form.platform === p.value && (
-                            <CheckCircle2 size={15} className="text-primary ml-auto shrink-0" />
+                            <CheckCircle2 size={15} className="text-primary shrink-0" />
                           )}
                         </button>
                       ))}
