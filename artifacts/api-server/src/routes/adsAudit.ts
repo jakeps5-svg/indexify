@@ -569,8 +569,9 @@ function parseUserServices(raw: string): string[] {
 
 // ── ROUTE ────────────────────────────────────────────────────────────────────
 router.post("/ads-audit", async (req, res) => {
-  let { url, services: rawServices, country: rawCountry } = req.body as {
+  let { url, services: rawServices, country: rawCountry, serviceLinks: rawServiceLinks } = req.body as {
     url: string; services?: string; country?: string;
+    serviceLinks?: { name: string; url: string }[];
   };
 
   if (!url || typeof url !== "string") {
@@ -630,11 +631,68 @@ router.post("/ads-audit", async (req, res) => {
   const location = extractLocation(allBodyText, countryName !== "South Africa" ? countryName : undefined);
   const phone = extractPhone(homeBodyText);
 
-  // ── Service detection — priority: user-provided > scraped across all pages ─
+  // ── Service detection — priority: user-provided > service links > scraped ─
   let services: string[] = [];
 
+  // 1. Explicit service names typed by the user
   if (rawServices && rawServices.trim().length > 0) {
     services = parseUserServices(rawServices);
+  }
+
+  // 2. Service links: add named services and scrape each provided URL
+  const validServiceLinks = Array.isArray(rawServiceLinks)
+    ? rawServiceLinks.filter(l => l && typeof l.name === "string" && l.name.trim().length >= 2).slice(0, 10)
+    : [];
+
+  if (validServiceLinks.length > 0) {
+    const seenKeys = new Set<string>(services.map(s => s.toLowerCase()));
+    // Add named services from links first
+    for (const link of validServiceLinks) {
+      const name = link.name.trim();
+      if (!seenKeys.has(name.toLowerCase())) {
+        seenKeys.add(name.toLowerCase());
+        services.push(name);
+      }
+    }
+    // Scrape URLs provided in service links for additional detail
+    const linkUrls = validServiceLinks
+      .filter(l => l.url && typeof l.url === "string" && l.url.trim().length > 4)
+      .map(l => {
+        const raw = l.url.trim();
+        // Support relative paths (e.g. /services/roofing) by prepending the base domain
+        try {
+          new URL(raw); return raw; // already absolute
+        } catch {
+          try {
+            const base = new URL(finalUrl);
+            return new URL(raw, base.origin).toString();
+          } catch { return null; }
+        }
+      })
+      .filter((u): u is string => u !== null);
+
+    await Promise.allSettled(linkUrls.map(async (linkUrl) => {
+      try {
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), 8000);
+        const r = await fetch(linkUrl, {
+          signal: ctrl.signal,
+          headers: { "User-Agent": "Mozilla/5.0 (compatible; GoogleBot/2.1; +http://www.google.com/bot.html)", "Accept": "text/html" },
+          redirect: "follow",
+        });
+        clearTimeout(t);
+        const html = await r.text();
+        const $ = cheerio.load(html);
+        const pageServices = extractServicesFromHTML(html, $);
+        for (const svc of pageServices) {
+          const key = svc.toLowerCase();
+          if (!seenKeys.has(key) && services.length < 15) {
+            seenKeys.add(key);
+            services.push(svc);
+          }
+        }
+      } catch { /* ignore individual page fetch errors */ }
+    }));
   }
 
   if (services.length < 3) {

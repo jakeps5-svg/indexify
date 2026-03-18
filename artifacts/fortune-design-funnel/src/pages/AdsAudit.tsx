@@ -5,7 +5,8 @@ import {
   Lock, Unlock, Download, Target, Zap,
   TrendingUp, DollarSign, Users, MousePointerClick,
   Loader2, Search, Megaphone, RefreshCw, Lightbulb,
-  BarChart3, ChevronDown, Globe, CheckCircle2
+  BarChart3, ChevronDown, Globe, CheckCircle2,
+  Link2, Plus, X, ChevronRight
 } from "lucide-react";
 import { useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
@@ -481,6 +482,8 @@ export default function AdsAuditPage() {
   const [inputUrl, setInputUrl] = useState("");
   const [inputServices, setInputServices] = useState("");
   const [inputCountry, setInputCountry] = useState("South Africa");
+  const [serviceLinks, setServiceLinks] = useState<{ name: string; url: string }[]>([]);
+  const [showServiceLinks, setShowServiceLinks] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ProposalResult | null>(null);
@@ -503,7 +506,12 @@ export default function AdsAuditPage() {
       const res = await fetch(`${BASE}/api/ads-audit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: inputUrl, services: inputServices, country: inputCountry }),
+        body: JSON.stringify({
+          url: inputUrl,
+          services: inputServices,
+          country: inputCountry,
+          serviceLinks: serviceLinks.filter(l => l.name.trim().length > 0),
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to generate proposal");
@@ -636,6 +644,82 @@ export default function AdsAuditPage() {
                 disabled={loading}
               />
               <p className="text-xs text-gray-400 mt-1">Separate multiple services with commas or new lines. The more specific, the better your proposal.</p>
+
+              {/* Service page links — optional */}
+              <div className="mt-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowServiceLinks(v => !v);
+                    if (!showServiceLinks && serviceLinks.length === 0) {
+                      setServiceLinks([{ name: "", url: "" }]);
+                    }
+                  }}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-blue-500 hover:text-blue-700 transition-colors"
+                >
+                  <ChevronRight
+                    size={13}
+                    className="transition-transform duration-200"
+                    style={{ transform: showServiceLinks ? "rotate(90deg)" : "rotate(0deg)" }}
+                  />
+                  <Link2 size={12} />
+                  Add specific service page links
+                  <span className="text-gray-400 font-normal">(optional — improves accuracy)</span>
+                </button>
+
+                <AnimatePresence>
+                  {showServiceLinks && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-3 space-y-2">
+                        <p className="text-xs text-gray-400">
+                          Add each service with its page URL (URL is optional but helps the scraper focus on that specific page).
+                        </p>
+                        {serviceLinks.map((link, i) => (
+                          <div key={i} className="flex gap-2 items-center">
+                            <input
+                              type="text"
+                              value={link.name}
+                              onChange={e => setServiceLinks(prev => prev.map((l, j) => j === i ? { ...l, name: e.target.value } : l))}
+                              placeholder="Service name, e.g. Barber Chairs"
+                              className="flex-1 min-w-0 px-3 py-2 rounded-lg border border-gray-200 bg-slate-50 text-gray-900 placeholder-gray-400 text-xs focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100 transition-all"
+                              disabled={loading}
+                            />
+                            <input
+                              type="text"
+                              value={link.url}
+                              onChange={e => setServiceLinks(prev => prev.map((l, j) => j === i ? { ...l, url: e.target.value } : l))}
+                              placeholder="/page-url or https://..."
+                              className="flex-1 min-w-0 px-3 py-2 rounded-lg border border-gray-200 bg-slate-50 text-gray-900 placeholder-gray-400 text-xs focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-100 transition-all"
+                              disabled={loading}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setServiceLinks(prev => prev.filter((_, j) => j !== i))}
+                              className="shrink-0 p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-50 transition-colors"
+                              disabled={loading}
+                            >
+                              <X size={13} />
+                            </button>
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => setServiceLinks(prev => [...prev, { name: "", url: "" }])}
+                          className="flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-700 font-medium transition-colors mt-1"
+                          disabled={loading}
+                        >
+                          <Plus size={13} /> Add another service link
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
             {/* Step 3 — Country */}
