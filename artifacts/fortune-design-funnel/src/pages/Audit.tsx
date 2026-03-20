@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useSEO } from "@/hooks/useSEO";
+import { jsPDF } from "jspdf";
 import {
   Search, CheckCircle2, XCircle, AlertTriangle,
   ExternalLink, Zap, Globe, Image, Link2, Share2,
   Clock, FileText, TrendingUp, Award, BarChart3,
-  Monitor, Smartphone, ImageOff, Tag, ShieldCheck
+  Monitor, Smartphone, ImageOff, Tag, ShieldCheck, Download
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/layout/Navbar";
@@ -400,6 +401,278 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages, topBackli
   );
 }
 
+function downloadAuditPDF(result: AuditResult) {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const W = 210;
+  const margin = 14;
+  const contentW = W - margin * 2;
+  let y = 0;
+
+  const grade = scoreToGrade(result.overallScore);
+  const passes = result.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "pass").length, 0);
+  const warns  = result.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "warn").length, 0);
+  const fails  = result.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "fail").length, 0);
+  const date   = new Date().toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" });
+
+  function checkPage(needed = 20) {
+    if (y + needed > 280) { doc.addPage(); y = 20; }
+  }
+
+  function hline(color = [226, 232, 240] as [number,number,number]) {
+    doc.setDrawColor(...color);
+    doc.line(margin, y, W - margin, y);
+    y += 4;
+  }
+
+  // ── HEADER ────────────────────────────────────────────────────────────────
+  doc.setFillColor(14, 165, 200);
+  doc.rect(0, 0, W, 28, "F");
+  doc.setFillColor(124, 77, 255);
+  doc.rect(0, 24, W, 4, "F");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(20);
+  doc.setTextColor(255, 255, 255);
+  doc.text("indexify.", margin, 13);
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(200, 240, 255);
+  doc.text("Powered by Fortune Design · fortunedesign.co.za", margin, 19);
+
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(255, 255, 255);
+  doc.text("SEO AUDIT REPORT", W - margin, 13, { align: "right" });
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(200, 240, 255);
+  doc.text(date, W - margin, 19, { align: "right" });
+
+  y = 36;
+
+  // ── URL + TITLE ───────────────────────────────────────────────────────────
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.setTextColor(15, 23, 42);
+  const titleText = doc.splitTextToSize(result.pageTitle || result.finalUrl, contentW);
+  doc.text(titleText, margin, y);
+  y += titleText.length * 6 + 1;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(100, 116, 139);
+  doc.text(result.finalUrl, margin, y);
+  y += 8;
+
+  hline();
+
+  // ── OVERALL SCORE ─────────────────────────────────────────────────────────
+  const scoreColors: Record<string, [number,number,number]> = {
+    "A+": [34,197,94], A: [34,197,94], "B+": [14,165,200], B: [14,165,200],
+    "C+": [245,158,11], C: [245,158,11], D: [249,115,22], F: [239,68,68],
+  };
+  const sc = scoreColors[grade.grade] ?? [239,68,68];
+
+  doc.setFillColor(...sc);
+  doc.roundedRect(margin, y, 36, 22, 3, 3, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.setTextColor(255, 255, 255);
+  doc.text(grade.grade, margin + 18, y + 15, { align: "center" });
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.setTextColor(15, 23, 42);
+  doc.text(`Score: ${result.overallScore}/100`, margin + 44, y + 7);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(100, 116, 139);
+  doc.text(grade.label, margin + 44, y + 13);
+  doc.text(`Load time: ${result.loadTimeMs}ms`, margin + 44, y + 19);
+  y += 28;
+
+  // ── STATS ROW ─────────────────────────────────────────────────────────────
+  const stats = [
+    { label: "Passed",   value: String(passes), color: [34,197,94]  as [number,number,number] },
+    { label: "Warnings", value: String(warns),  color: [245,158,11] as [number,number,number] },
+    { label: "Failed",   value: String(fails),  color: [239,68,68]  as [number,number,number] },
+    { label: "Load ms",  value: String(result.loadTimeMs), color: [14,165,200] as [number,number,number] },
+  ];
+  const cellW = contentW / 4;
+  stats.forEach((st, i) => {
+    const x = margin + i * cellW;
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(x, y, cellW - 2, 14, 2, 2, "FD");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(...st.color);
+    doc.text(st.value, x + cellW / 2 - 1, y + 8, { align: "center" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.setTextColor(100, 116, 139);
+    doc.text(st.label, x + cellW / 2 - 1, y + 12.5, { align: "center" });
+  });
+  y += 20;
+
+  // ── CATEGORY GRADES ───────────────────────────────────────────────────────
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.setTextColor(100, 116, 139);
+  doc.text("CATEGORY GRADES", margin, y);
+  y += 5;
+
+  const catW = contentW / result.sections.length;
+  result.sections.forEach((sec, i) => {
+    const g = scoreToGrade(sec.score);
+    const gc = scoreColors[g.grade] ?? [239,68,68];
+    const x = margin + i * catW;
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(x, y, catW - 2, 16, 2, 2, "FD");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.setTextColor(...gc);
+    doc.text(g.grade, x + catW / 2 - 1, y + 8, { align: "center" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(6);
+    doc.setTextColor(100, 116, 139);
+    const label = sec.title.length > 12 ? sec.title.slice(0, 11) + "…" : sec.title;
+    doc.text(label, x + catW / 2 - 1, y + 13.5, { align: "center" });
+  });
+  y += 22;
+
+  // ── RECOMMENDATIONS ───────────────────────────────────────────────────────
+  const allRecs = result.recommendations;
+  if (allRecs.length > 0) {
+    checkPage(20);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(15, 23, 42);
+    doc.text("RECOMMENDATIONS", margin, y);
+    y += 5;
+    hline();
+
+    const recGroups = [
+      { prefix: "[Critical]", label: "Critical", color: [239, 68, 68] as [number,number,number] },
+      { prefix: "[Improve]",  label: "Improve",  color: [245,158,11] as [number,number,number] },
+      { prefix: "[Backlinks]",label: "Backlinks",color: [14,165,200] as [number,number,number] },
+    ];
+
+    recGroups.forEach(({ prefix, label, color }) => {
+      const recs = allRecs.filter(r => r.startsWith(prefix));
+      if (recs.length === 0) return;
+
+      checkPage(12);
+      doc.setFillColor(...color);
+      doc.roundedRect(margin, y, 22, 5, 1, 1, "F");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7);
+      doc.setTextColor(255, 255, 255);
+      doc.text(label.toUpperCase(), margin + 11, y + 3.5, { align: "center" });
+      y += 7;
+
+      recs.forEach(rec => {
+        const clean = rec.replace(prefix, "").trim();
+        const lines = doc.splitTextToSize(`• ${clean}`, contentW - 4);
+        checkPage(lines.length * 4.5 + 2);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(51, 65, 85);
+        doc.text(lines, margin + 2, y);
+        y += lines.length * 4.5 + 1;
+      });
+      y += 3;
+    });
+  }
+
+  // ── DETAILED SECTIONS ─────────────────────────────────────────────────────
+  doc.addPage();
+  y = 20;
+
+  doc.setFillColor(15, 23, 42);
+  doc.rect(0, 0, W, 14, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(14, 165, 200);
+  doc.text("DETAILED BREAKDOWN", margin, 9);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(148, 163, 184);
+  doc.text(result.finalUrl, W - margin, 9, { align: "right" });
+
+  result.sections.forEach(sec => {
+    const g = scoreToGrade(sec.score);
+    const gc = scoreColors[g.grade] ?? [239,68,68];
+
+    checkPage(18);
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(margin, y, contentW, 10, 2, 2, "FD");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(15, 23, 42);
+    doc.text(sec.title, margin + 3, y + 6.5);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(...gc);
+    doc.text(`${g.grade} (${sec.score}/100)`, W - margin - 2, y + 6.5, { align: "right" });
+    y += 13;
+
+    sec.checks.forEach(check => {
+      const statusColors: Record<string, [number,number,number]> = {
+        pass: [34,197,94], warn: [245,158,11], fail: [239,68,68],
+      };
+      const sc2 = statusColors[check.status] ?? [148,163,184];
+      const icon = check.status === "pass" ? "✓" : check.status === "warn" ? "!" : "✗";
+
+      const lines = doc.splitTextToSize(check.name, contentW - 22);
+      checkPage(lines.length * 4.5 + 4);
+
+      doc.setFillColor(...sc2);
+      doc.circle(margin + 3, y + 2, 2.5, "F");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7);
+      doc.setTextColor(255, 255, 255);
+      doc.text(icon, margin + 3, y + 2.8, { align: "center" });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(51, 65, 85);
+      doc.text(lines, margin + 8, y + 2.5);
+      y += lines.length * 4.5 + 2;
+
+      if (check.description) {
+        const dlines = doc.splitTextToSize(check.description, contentW - 14);
+        checkPage(dlines.length * 3.8 + 2);
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(7);
+        doc.setTextColor(100, 116, 139);
+        doc.text(dlines, margin + 10, y);
+        y += dlines.length * 3.8 + 1;
+      }
+    });
+    y += 4;
+  });
+
+  // ── FOOTER on last page ───────────────────────────────────────────────────
+  const pageCount = doc.getNumberOfPages();
+  for (let p = 1; p <= pageCount; p++) {
+    doc.setPage(p);
+    doc.setFillColor(241, 245, 249);
+    doc.rect(0, 287, W, 10, "F");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    doc.setTextColor(148, 163, 184);
+    doc.text("Indexify · indexify.co.za · Powered by Fortune Design · fortunedesign.co.za", margin, 293);
+    doc.text(`Page ${p} of ${pageCount}`, W - margin, 293, { align: "right" });
+  }
+
+  const domain = new URL(result.finalUrl).hostname.replace("www.", "");
+  doc.save(`indexify-seo-audit-${domain}.pdf`);
+}
+
 export default function AuditPage() {
   useSEO({
     title: "Free SEO Audit South Africa – Instant Analysis | Indexify",
@@ -549,6 +822,16 @@ export default function AuditPage() {
         {/* Results */}
         {result && !loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+
+            {/* ── Download PDF button ── */}
+            <div className="flex justify-end">
+              <button
+                onClick={() => downloadAuditPDF(result)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-all shadow-sm hover:-translate-y-0.5"
+              >
+                <Download size={14} /> Download PDF Report
+              </button>
+            </div>
 
             {/* ── Overall Grade Card ── */}
             <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
