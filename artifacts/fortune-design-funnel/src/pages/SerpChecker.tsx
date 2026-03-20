@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useSEO } from "@/hooks/useSEO";
+import { jsPDF } from "jspdf";
 import {
   Search, Globe, Trophy, TrendingUp, TrendingDown, AlertTriangle,
   CheckCircle2, XCircle, ExternalLink, RefreshCw, BarChart3,
-  Award, Target, Zap, Star, ChevronDown,
+  Award, Target, Zap, Star, ChevronDown, Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/layout/Navbar";
