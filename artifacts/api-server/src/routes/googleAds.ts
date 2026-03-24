@@ -64,7 +64,7 @@ function getBaseUrl(req: Request): string {
 }
 
 function getRedirectUri(req: Request): string {
-  return `${getBaseUrl(req)}/api/auth/google-ads/callback`;
+  return process.env.GOOGLE_ADS_REDIRECT_URI ?? `${getBaseUrl(req)}/api/auth/google-ads/callback`;
 }
 
 async function exchangeCodeForTokens(
