@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown, Search, MousePointerClick, BarChart3, TrendingUp, MapPin } from "lucide-react";
+import { Menu, X, ChevronDown, Search, MousePointerClick, BarChart3, TrendingUp, MapPin, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
@@ -256,6 +256,12 @@ export function Navbar() {
               Contact
             </a>
             <a
+              href={`${BASE}login`}
+              className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-400 px-3 py-2 rounded-full transition-all whitespace-nowrap"
+            >
+              <LogIn size={13} /> Client Login
+            </a>
+            <a
               href={`${BASE}audit`}
               className="px-5 py-2.5 rounded-full bg-primary text-white font-semibold text-sm hover:bg-primary/90 hover:scale-105 transition-all duration-200 shadow-md shadow-primary/20 whitespace-nowrap"
             >
@@ -355,6 +361,7 @@ export function Navbar() {
                 { name: "Blog",    href: `${BASE}blog` },
                 { name: "Pricing", href: `${BASE}pricing` },
                 { name: "Contact", href: `${BASE}contact` },
+                { name: "Client Login", href: `${BASE}login` },
               ].map((link) => (
                 <a
                   key={link.name}
