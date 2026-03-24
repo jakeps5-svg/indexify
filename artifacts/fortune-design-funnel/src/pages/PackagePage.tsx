@@ -9,6 +9,7 @@ import {
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useSEO } from "@/hooks/useSEO";
+import { openWhatsAppModal } from "@/components/WhatsAppModal";
 import { cn } from "@/lib/utils";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -297,8 +298,8 @@ const RELATED_NAMES: Record<string, string> = {
   "market-leader": "Market Leader — R12,500/mo",
 };
 
-function openWhatsApp(msg: string) {
-  window.open(`https://wa.me/27602988295?text=${encodeURIComponent(msg)}`, "_blank");
+function openWhatsApp(_msg: string) {
+  openWhatsAppModal();
 }
 
 export default function PackagePage() {

@@ -6,6 +6,7 @@ import { PoweredByBadge } from "@/components/PoweredByBadge";
 import { CityPricing } from "@/components/CityPricing";
 import { useSEO } from "@/hooks/useSEO";
 import { useLocation } from "wouter";
+import { openWhatsAppModal } from "@/components/WhatsAppModal";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 const WA = "27602988295";
@@ -76,7 +77,7 @@ export default function PretoriaPage() {
                 <Search size={17} /> Get Free SEO Audit
               </button>
               <button
-                onClick={() => window.open(`https://wa.me/${WA}?text=${encodeURIComponent("Hi Indexify! I'm a Pretoria business looking for SEO / Google Ads help.")}`, "_blank")}
+                onClick={() => openWhatsAppModal()}
                 className="px-8 py-4 rounded-xl font-bold bg-white/10 hover:bg-white/20 border border-white/20 transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <Phone size={17} /> WhatsApp Us

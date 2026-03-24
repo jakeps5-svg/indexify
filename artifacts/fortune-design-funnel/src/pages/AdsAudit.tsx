@@ -13,6 +13,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
 import { cn } from "@/lib/utils";
+import { openWhatsAppModal } from "@/components/WhatsAppModal";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
 const WA_NUMBER = "27602988295";
@@ -646,10 +647,7 @@ export default function AdsAuditPage() {
   }
 
   function openWhatsApp() {
-    const domain = (() => { try { return new URL(result?.finalUrl ?? inputUrl).hostname; } catch { return inputUrl; } })();
-    const biz = result?.businessName ?? domain;
-    const msg = encodeURIComponent(`Hi Indexify! I'd like to receive my full Google Ads Proposal for *${biz}* (${domain}). Please send payment details for R500.`);
-    window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`, "_blank");
+    openWhatsAppModal();
   }
 
   function startProposalPayment() {

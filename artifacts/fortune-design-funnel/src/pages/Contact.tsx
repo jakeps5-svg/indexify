@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useSEO } from "@/hooks/useSEO";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
+import { openWhatsAppModal } from "@/components/WhatsAppModal";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -158,15 +159,13 @@ export default function Contact() {
               </div>
 
               {/* Quick WhatsApp CTA */}
-              <a
-                href="https://wa.me/27602988295?text=Hi%20Indexify!%20I'd%20like%20to%20get%20a%20custom%20quote."
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-[#25d366] text-white font-bold text-sm hover:bg-[#20bc5a] hover:-translate-y-0.5 transition-all shadow-lg shadow-green-400/20"
+              <button
+                onClick={() => openWhatsAppModal()}
+                className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-[#25d366] text-white font-bold text-sm hover:bg-[#20bc5a] hover:-translate-y-0.5 transition-all shadow-lg shadow-green-400/20 w-full justify-center"
               >
                 <MessageSquare size={20} />
                 Chat on WhatsApp Instead
-              </a>
+              </button>
 
               <div className="rounded-2xl bg-sky-50 border border-sky-100 p-6">
                 <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">Custom unlock codes</p>

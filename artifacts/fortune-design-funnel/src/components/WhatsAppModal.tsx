@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2, Loader2, Send } from "lucide-react";
 import { useSubmitInquiry } from "@workspace/api-client-react";
@@ -14,9 +14,20 @@ function WhatsAppIcon({ size = 32 }: { size?: number }) {
   );
 }
 
+/** Call this from any button/link anywhere in the app to open the WhatsApp modal. */
+export function openWhatsAppModal() {
+  window.dispatchEvent(new Event("openWhatsAppModal"));
+}
+
 export function WhatsAppModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setIsOpen(true);
+    window.addEventListener("openWhatsAppModal", handler);
+    return () => window.removeEventListener("openWhatsAppModal", handler);
+  }, []);
   
   const [formData, setFormData] = useState<InquiryInput>({
     name: "",

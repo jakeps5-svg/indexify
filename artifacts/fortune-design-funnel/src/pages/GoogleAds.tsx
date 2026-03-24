@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
+import { openWhatsAppModal } from "@/components/WhatsAppModal";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -106,9 +107,7 @@ export default function GoogleAdsPage() {
     canonical: "https://indexify.co.za/services/google-ads",
   });
 
-  const openWhatsApp = () => {
-    window.open("https://wa.me/27832555270?text=Hi%20Fortune%20Design%2C%20I%27m%20interested%20in%20Google%20Ads%20management.%20Can%20we%20chat%3F", "_blank");
-  };
+  const openWhatsApp = openWhatsAppModal;
 
   return (
     <div className="min-h-screen bg-white text-foreground">

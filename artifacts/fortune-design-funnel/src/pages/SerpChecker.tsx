@@ -10,6 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { openWhatsAppModal } from "@/components/WhatsAppModal";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
@@ -523,14 +524,12 @@ export default function SerpCheckerPage() {
                   : "Our experts can help you climb to position #1 with targeted content, backlinks, and technical SEO."}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <a
-                  href="https://wa.me/27602988295"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => openWhatsAppModal()}
                   className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#25d366] text-white font-bold text-sm hover:bg-[#20bc5a] transition-all shadow-md"
                 >
                   <RefreshCw size={15} /> Get a Free SEO Strategy
-                </a>
+                </button>
                 <a
                   href={`${BASE}/audit`}
                   className="flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-all shadow-md"

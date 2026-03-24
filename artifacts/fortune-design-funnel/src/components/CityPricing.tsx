@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { CheckCircle2, MousePointerClick, Search, Zap, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { openWhatsAppModal } from "@/components/WhatsAppModal";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 const WA   = "27602988295";
@@ -233,7 +234,7 @@ export function CityPricing({ city, accent }: Props) {
           <p className="text-gray-400 text-sm">
             Not sure which package is right for {city}?&nbsp;
             <button
-              onClick={() => window.open(`https://wa.me/${WA}?text=${encodeURIComponent(`Hi Indexify! I'm a ${city} business looking for help choosing the right SEO or Google Ads package.`)}`, "_blank")}
+              onClick={() => openWhatsAppModal()}
               className="font-semibold text-gray-600 hover:text-gray-900 underline underline-offset-2 transition-colors"
             >
               Chat with us on WhatsApp

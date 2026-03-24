@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
 import { useSEO } from "@/hooks/useSEO";
+import { openWhatsAppModal } from "@/components/WhatsAppModal";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -90,9 +91,8 @@ export default function PricingPage() {
     canonical: "https://indexify.co.za/pricing",
   });
 
-  function openWhatsApp(msg?: string) {
-    const text = msg ?? "Hi Indexify! I'd like to find out more about your packages.";
-    window.open(`https://wa.me/27602988295?text=${encodeURIComponent(text)}`, "_blank");
+  function openWhatsApp(_msg?: string) {
+    openWhatsAppModal();
   }
 
   return (
