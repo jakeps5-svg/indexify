@@ -212,7 +212,7 @@ export default function ServicesPage() {
                 <img
                   src={`${BASE}/images/seo-illustration.png`}
                   alt="SEO services illustration"
-                  className="absolute inset-0 w-full h-full object-cover object-center opacity-80 group-hover:scale-105 transition-transform duration-500"
+                  className="absolute inset-0 w-full h-full object-cover object-center opacity-80"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent" />
                 <div className="absolute top-4 left-4">
@@ -252,7 +252,7 @@ export default function ServicesPage() {
                 <img
                   src={`${BASE}/images/ads-illustration.png`}
                   alt="Google Ads management illustration"
-                  className="absolute inset-0 w-full h-full object-cover object-center opacity-80 group-hover:scale-105 transition-transform duration-500"
+                  className="absolute inset-0 w-full h-full object-cover object-center opacity-80"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent" />
                 <div className="absolute top-4 left-4">

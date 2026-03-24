@@ -322,11 +322,7 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* SEO Card */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+            <div
               className="bg-white rounded-3xl group hover:border-primary/40 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 relative overflow-hidden flex flex-col"
             >
               {/* Image banner */}
@@ -334,7 +330,7 @@ export default function Home() {
                 <img
                   src={`${import.meta.env.BASE_URL}images/seo-illustration.png`}
                   alt="SEO illustration"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-white/60 to-transparent" />
                 <div className="absolute bottom-4 left-6 w-12 h-12 rounded-xl bg-primary/90 flex items-center justify-center shadow-lg">
@@ -366,14 +362,10 @@ export default function Home() {
                   Learn More About SEO <ArrowRight size={16} />
                 </a>
               </div>
-            </motion.div>
+            </div>
 
             {/* Google Ads Card */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+            <div
               className="bg-white rounded-3xl group hover:border-accent/40 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 relative overflow-hidden flex flex-col"
             >
               {/* Image banner */}
@@ -381,7 +373,7 @@ export default function Home() {
                 <img
                   src={`${import.meta.env.BASE_URL}images/ads-illustration.png`}
                   alt="Google Ads illustration"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-white/60 to-transparent" />
                 <div className="absolute bottom-4 left-6 w-12 h-12 rounded-xl bg-accent flex items-center justify-center shadow-lg">
@@ -413,7 +405,7 @@ export default function Home() {
                   Learn More About Google Ads <ArrowRight size={16} />
                 </a>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
