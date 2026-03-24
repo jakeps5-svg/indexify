@@ -167,6 +167,16 @@ export function Navbar() {
                           </div>
                         </a>
                       ))}
+                      <div className="border-t border-gray-100 mt-2 pt-2">
+                        <a
+                          href={`${BASE}services`}
+                          onClick={() => setIsServicesOpen(false)}
+                          className="flex items-center justify-between px-4 py-2.5 rounded-xl hover:bg-primary/5 text-primary font-semibold text-sm transition-colors"
+                        >
+                          View All Services
+                          <ChevronDown size={14} className="-rotate-90" />
+                        </a>
+                      </div>
                     </div>
                   </motion.div>
                 )}

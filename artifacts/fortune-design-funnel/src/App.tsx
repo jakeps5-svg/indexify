@@ -31,6 +31,7 @@ import ResetPasswordPage from "@/pages/ResetPassword";
 import CustomerPortal from "@/pages/CustomerPortal";
 import AdminDashboard from "@/pages/AdminDashboard";
 import PackagePage from "@/pages/PackagePage";
+import ServicesPage from "@/pages/Services";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/audit" component={AuditPage} />
       <Route path="/ads-audit" component={AdsAuditPage} />
+      <Route path="/services" component={ServicesPage} />
       <Route path="/services/seo" component={SEOPage} />
       <Route path="/services/google-ads" component={GoogleAdsPage} />
       <Route path="/payment-success" component={PaymentSuccess} />
