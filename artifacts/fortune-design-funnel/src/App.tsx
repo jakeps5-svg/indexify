@@ -29,6 +29,7 @@ import ForgotPasswordPage from "@/pages/ForgotPassword";
 import ResetPasswordPage from "@/pages/ResetPassword";
 import CustomerPortal from "@/pages/CustomerPortal";
 import AdminDashboard from "@/pages/AdminDashboard";
+import PackagePage from "@/pages/PackagePage";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/reset-password" component={ResetPasswordPage} />
       <Route path="/portal" component={CustomerPortal} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/packages/:slug" component={PackagePage} />
       <Route component={NotFound} />
     </Switch>
   );

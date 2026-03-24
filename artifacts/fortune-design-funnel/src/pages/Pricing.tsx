@@ -7,14 +7,15 @@ import { useSEO } from "@/hooks/useSEO";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-function goCheckout(type: string) {
-  window.location.href = `${window.location.origin}${BASE}/checkout?type=${type}`;
+function goPackage(slug: string) {
+  window.location.href = `${window.location.origin}${BASE}/packages/${slug}`;
 }
 
 const SEO_PACKAGES = [
   {
     name: "Basic SEO",
     price: "5,900",
+    slug: "basic-seo",
     type: "seo-basic",
     popular: false,
     features: [
@@ -30,6 +31,7 @@ const SEO_PACKAGES = [
   {
     name: "Advanced SEO",
     price: "7,900",
+    slug: "advanced-seo",
     type: "seo-advanced",
     popular: false,
     features: [
@@ -48,6 +50,7 @@ const SEO_PACKAGES = [
   {
     name: "Premium SEO",
     price: "11,900",
+    slug: "premium-seo",
     type: "seo-premium",
     popular: true,
     features: [
@@ -220,7 +223,7 @@ export default function PricingPage() {
                 </div>
                 <div className="p-8 pt-0 space-y-3">
                   <a
-                    href={`${BASE}/services/seo`}
+                    href={`${BASE}/packages/${pkg.slug}`}
                     className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 flex items-center justify-center ${
                       pkg.popular
                         ? "bg-white text-primary hover:bg-white/90 shadow-lg"
@@ -276,7 +279,7 @@ export default function PricingPage() {
               </div>
               <p className="text-white/70 text-sm mb-8">per month + your ad spend</p>
               <a
-                href={`${BASE}/services/google-ads`}
+                href={`${BASE}/packages/google-ads`}
                 className="w-full py-3.5 rounded-xl bg-white font-bold text-sm hover:-translate-y-0.5 transition-all shadow-lg mb-3 flex items-center justify-center"
                 style={{ color: "hsl(259 100% 50%)" }}
               >
@@ -348,7 +351,7 @@ export default function PricingPage() {
                 </div>
                 <div className="space-y-3">
                   <a
-                    href={`${BASE}/checkout?type=seo-advanced`}
+                    href={`${BASE}/packages/market-leader`}
                     className="block w-full py-3.5 rounded-xl bg-white font-bold text-sm text-center hover:-translate-y-0.5 transition-all shadow-lg"
                     style={{ color: "hsl(198 69% 35%)" }}
                   >
@@ -413,12 +416,12 @@ export default function PricingPage() {
               >
                 Generate Free Preview <ArrowRight size={16} />
               </a>
-              <button
-                onClick={() => goCheckout("proposal")}
+              <a
+                href={`${BASE}/checkout?type=proposal`}
                 className="flex items-center gap-2 px-8 py-4 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary/5 hover:-translate-y-0.5 transition-all"
               >
                 Unlock Full Report — R500
-              </button>
+              </a>
             </div>
           </motion.div>
         </div>
