@@ -344,20 +344,25 @@ router.get("/auth/google-ads/callback", async (req, res) => {
   const baseUrl = getSiteBaseUrl(req);
   const { code, state, error } = req.query as { code?: string; state?: string; error?: string };
 
+  console.log("[gads-callback] query params:", { code: code ? "present" : "missing", state: state?.slice(0, 20), error });
+
   if (error || !code) {
-    const msg = encodeURIComponent(error ?? "No authorisation code received");
+    const msg = error ?? "No authorisation code received";
+    console.error("[gads-callback] early exit — error from Google:", msg);
     const dest = state?.startsWith("client_") ? "portal" : "admin";
-    return res.redirect(`${baseUrl}/${dest}?gads=error&msg=${msg}`);
+    return res.redirect(`${baseUrl}/${dest}?gads=error&msg=${encodeURIComponent(msg)}`);
   }
 
   const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_ADS_CLIENT_SECRET;
+  console.log("[gads-callback] credentials present:", { clientId: !!clientId, clientSecret: !!clientSecret });
   if (!clientId || !clientSecret) {
     const dest = state?.startsWith("client_") ? "portal" : "admin";
     return res.redirect(`${baseUrl}/${dest}?gads=error&msg=${encodeURIComponent("OAuth credentials not configured")}`);
   }
 
   const redirectUri = getRedirectUri(req);
+  console.log("[gads-callback] redirectUri for token exchange:", redirectUri);
 
   // ── CLIENT FLOW ──
   if (state?.startsWith("client_")) {
@@ -369,13 +374,22 @@ router.get("/auth/google-ads/callback", async (req, res) => {
       const decoded = jwt.verify(stateToken, JWT_SECRET) as { userId: number; redirectUri: string };
       userId = decoded.userId;
       storedRedirectUri = decoded.redirectUri;
-    } catch {
+      console.log("[gads-callback] JWT verified — userId:", userId, "storedRedirectUri:", storedRedirectUri);
+    } catch (jwtErr: any) {
+      console.error("[gads-callback] JWT verify failed:", jwtErr?.message);
       return res.redirect(`${baseUrl}/portal?gads=error&msg=${encodeURIComponent("Session expired or invalid. Please try connecting again.")}`);
     }
 
     try {
       // Use the exact same redirectUri that was in the auth request (critical for token exchange)
       const tokens = await exchangeCodeForTokens(code, storedRedirectUri);
+      console.log("[gads-callback] token exchange result:", {
+        hasAccessToken: !!tokens.access_token,
+        hasRefreshToken: !!tokens.refresh_token,
+        error: tokens.error,
+        error_description: tokens.error_description,
+      });
+
       if (!tokens.access_token || !tokens.refresh_token) {
         const msg = tokens.error_description ?? tokens.error ?? "No tokens returned — try connecting again.";
         return res.redirect(`${baseUrl}/portal?gads=error&msg=${encodeURIComponent(msg)}`);
@@ -383,6 +397,7 @@ router.get("/auth/google-ads/callback", async (req, res) => {
 
       // Auto-discover the first accessible Google Ads customer account
       const customerId = await listFirstCustomerId(tokens.access_token);
+      console.log("[gads-callback] discovered customerId:", customerId);
 
       await db.update(usersTable)
         .set({ googleAdsRefreshToken: tokens.refresh_token, googleAdsCustomerId: customerId })
@@ -390,7 +405,7 @@ router.get("/auth/google-ads/callback", async (req, res) => {
 
       return res.redirect(`${baseUrl}/portal?gads=connected`);
     } catch (err: any) {
-      console.error("[gads-client-callback]", err);
+      console.error("[gads-client-callback] unexpected error:", err);
       return res.redirect(`${baseUrl}/portal?gads=error&msg=${encodeURIComponent(err?.message ?? "Unexpected error")}`);
     }
   }
@@ -398,6 +413,11 @@ router.get("/auth/google-ads/callback", async (req, res) => {
   // ── ADMIN FLOW ──
   try {
     const tokens = await exchangeCodeForTokens(code, redirectUri);
+    console.log("[gads-admin-callback] token exchange result:", {
+      hasRefreshToken: !!tokens.refresh_token,
+      error: tokens.error,
+      error_description: tokens.error_description,
+    });
     if (!tokens.refresh_token) {
       const msg = tokens.error_description ?? tokens.error ?? "No refresh token returned";
       return res.redirect(`${baseUrl}/admin?gads=error&msg=${encodeURIComponent(msg)}`);
@@ -405,7 +425,7 @@ router.get("/auth/google-ads/callback", async (req, res) => {
     await setSetting("google_ads_refresh_token", tokens.refresh_token);
     res.redirect(`${baseUrl}/admin?gads=connected`);
   } catch (err: any) {
-    console.error("[gads-admin-callback]", err);
+    console.error("[gads-admin-callback] unexpected error:", err);
     res.redirect(`${baseUrl}/admin?gads=error&msg=${encodeURIComponent(err?.message ?? "Unexpected error")}`);
   }
 });

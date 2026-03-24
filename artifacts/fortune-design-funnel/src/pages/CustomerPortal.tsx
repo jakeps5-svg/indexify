@@ -78,10 +78,27 @@ export default function CustomerPortal() {
 
   useEffect(() => {
     if (loading) return;
-    if (!user) { navigate("/login"); return; }
+    if (!user) {
+      // Preserve any ?gads= state so we can show the toast after login
+      const params = new URLSearchParams(window.location.search);
+      const gadsParam = params.get("gads");
+      if (gadsParam) {
+        sessionStorage.setItem("pendingGads", window.location.search);
+      }
+      navigate("/login");
+      return;
+    }
     if (user.role === "admin") { navigate("/admin"); return; }
 
-    const params = new URLSearchParams(window.location.search);
+    // Check URL params first, fall back to sessionStorage (set when user was not logged in)
+    let search = window.location.search;
+    const pending = sessionStorage.getItem("pendingGads");
+    if (!new URLSearchParams(search).get("gads") && pending) {
+      search = pending;
+      sessionStorage.removeItem("pendingGads");
+    }
+
+    const params = new URLSearchParams(search);
     const gadsParam = params.get("gads");
     const msg = params.get("msg");
     if (gadsParam === "connected") {
