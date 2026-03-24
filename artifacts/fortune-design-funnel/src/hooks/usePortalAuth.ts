@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 
-const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
 const TOKEN_KEY = "indexify_portal_token";
 const USER_KEY = "indexify_portal_user";
 
@@ -13,47 +12,62 @@ export interface PortalUser {
   phone?: string;
 }
 
+function getStoredUser(): PortalUser | null {
+  try {
+    const raw = localStorage.getItem(USER_KEY);
+    if (raw) return JSON.parse(raw) as PortalUser;
+  } catch {}
+  return null;
+}
+
+function getStoredToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
 export function usePortalAuth() {
-  const [user, setUser] = useState<PortalUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Initialise synchronously from localStorage so the very first render already
+  // has the correct user.  No async gap → no spurious redirect to /login.
+  const [user, setUser] = useState<PortalUser | null>(getStoredUser);
+  // loading=true only while we are validating a stored token with the server
+  const [loading, setLoading] = useState<boolean>(() => !!getStoredToken());
 
-  const token = () => localStorage.getItem(TOKEN_KEY);
+  const validateToken = useCallback(async () => {
+    const t = getStoredToken();
+    if (!t) {
+      // No token at all — we're done, user stays null
+      setLoading(false);
+      return;
+    }
 
-  const fetchMe = useCallback(async () => {
-    const t = token();
-    const cached = localStorage.getItem(USER_KEY);
-
-    // Immediately restore from cache so pages don't flash a redirect
-    if (cached) { try { setUser(JSON.parse(cached)); } catch {} }
-    if (!t) { setLoading(false); return; }
-
-    // Set loading false right away (cached user prevents redirect)
-    setLoading(false);
-
-    // Validate token silently in the background
+    // We have a token. Validate it silently in the background.
     try {
-      const res = await fetch(`${BASE}/api/auth/me`, {
+      const res = await fetch(`/api/auth/me`, {
         headers: { Authorization: `Bearer ${t}` },
       });
-      if (!res.ok) {
-        // Token is explicitly rejected — log out
+      if (res.status === 401) {
+        // Server explicitly rejected the token — clear everything
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(USER_KEY);
         setUser(null);
-      } else {
-        const u = await res.json();
+      } else if (res.ok) {
+        const u: PortalUser = await res.json();
         localStorage.setItem(USER_KEY, JSON.stringify(u));
         setUser(u);
       }
+      // Any other status (500, network hiccup) → keep the cached user
     } catch {
       // Network error — keep cached user, do not log out
+    } finally {
+      setLoading(false);
     }
   }, []);
 
-  useEffect(() => { fetchMe(); }, [fetchMe]);
+  useEffect(() => {
+    validateToken();
+  }, [validateToken]);
 
-  const login = async (email: string, password: string) => {
-    const res = await fetch(`${BASE}/api/auth/login`, {
+  const login = async (email: string, password: string): Promise<PortalUser> => {
+    const res = await fetch(`/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -70,13 +84,18 @@ export function usePortalAuth() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     setUser(null);
+    setLoading(false);
   };
 
   const authFetch = async (url: string, opts: RequestInit = {}) => {
-    const t = token();
-    return fetch(`${BASE}${url}`, {
+    const t = getStoredToken();
+    return fetch(url, {
       ...opts,
-      headers: { ...(opts.headers ?? {}), Authorization: `Bearer ${t}`, "Content-Type": "application/json" },
+      headers: {
+        ...(opts.headers ?? {}),
+        Authorization: `Bearer ${t}`,
+        "Content-Type": "application/json",
+      },
     });
   };
 
