@@ -245,18 +245,68 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ANALYTICS SHOWCASE IMAGE */}
-      <section className="overflow-hidden">
-        <div className="relative w-full max-h-[420px] overflow-hidden">
-          <img
-            src={`${import.meta.env.BASE_URL}images/homepage-analytics.png`}
-            alt="Digital marketing analytics dashboard showing SEO keyword rankings climbing and Google Ads campaign performance metrics improving month over month for South African businesses"
-            className="w-full h-full object-cover object-top"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/75 via-gray-900/10 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
-            <p className="text-white text-lg md:text-xl font-semibold max-w-xl">Real-time performance tracking — so you always know exactly what your investment is delivering.</p>
-          </div>
+      {/* DASHBOARD PREVIEW SECTION */}
+      <section className="py-20 bg-gray-50 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-10"
+          >
+            <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 tracking-wide uppercase">Live Results</span>
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-3">Every rand tracked. <span className="text-primary">Every result visible.</span></h2>
+            <p className="text-gray-500 max-w-xl mx-auto">Your dedicated client portal gives you real-time visibility into rankings, traffic, and ad performance — all in one place.</p>
+          </motion.div>
+
+          {/* Browser mockup frame */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="rounded-2xl overflow-hidden shadow-2xl border border-gray-200 bg-white"
+          >
+            {/* Browser chrome bar */}
+            <div className="bg-gray-100 border-b border-gray-200 px-4 py-3 flex items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full bg-red-400" />
+                <span className="w-3 h-3 rounded-full bg-yellow-400" />
+                <span className="w-3 h-3 rounded-full bg-green-400" />
+              </div>
+              <div className="flex-1 bg-white rounded-md px-3 py-1 text-xs text-gray-400 border border-gray-200 max-w-xs mx-auto text-center">
+                portal.indexify.co.za
+              </div>
+            </div>
+            {/* Dashboard screenshot */}
+            <img
+              src={`${import.meta.env.BASE_URL}images/dashboard-preview.png`}
+              alt="Indexify client portal showing SEO rankings and Google Ads performance metrics"
+              className="w-full object-cover object-top max-h-[420px]"
+            />
+          </motion.div>
+
+          {/* Proof points below */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="grid grid-cols-3 gap-6 mt-8"
+          >
+            {[
+              { label: "Keyword rank tracking", desc: "Updated weekly" },
+              { label: "Ad spend & ROI reports", desc: "Real-time data" },
+              { label: "Monthly strategy calls", desc: "Dedicated account manager" },
+            ].map((item, i) => (
+              <div key={i} className="text-center">
+                <CheckCircle2 className="mx-auto text-primary mb-2" size={22} />
+                <p className="font-semibold text-gray-800 text-sm">{item.label}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{item.desc}</p>
+              </div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
