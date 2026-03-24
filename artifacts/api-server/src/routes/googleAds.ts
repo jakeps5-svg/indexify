@@ -31,7 +31,7 @@ interface Totals {
 }
 
 interface GadsMetrics {
-  status: "connected" | "not_linked" | "pending_oauth" | "error";
+  status: "connected" | "not_linked" | "pending_oauth" | "pending_customer_id" | "error";
   customerId?: string;
   dateRange?: string;
   campaigns?: CampaignRow[];
@@ -120,7 +120,10 @@ async function refreshAccessToken(refreshToken: string): Promise<string | null> 
 
 async function listFirstCustomerId(accessToken: string): Promise<string | null> {
   const devToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
-  if (!devToken) return null;
+  if (!devToken) {
+    console.warn("[gads] GOOGLE_ADS_DEVELOPER_TOKEN not set — skipping customer ID discovery");
+    return null;
+  }
   try {
     const res = await fetch("https://googleads.googleapis.com/v17/customers:listAccessibleCustomers", {
       headers: {
@@ -128,10 +131,16 @@ async function listFirstCustomerId(accessToken: string): Promise<string | null> 
         "developer-token": devToken,
       },
     });
-    const data = await res.json() as { resourceNames?: string[] };
+    const data = await res.json() as { resourceNames?: string[]; error?: any };
+    console.log("[gads] listAccessibleCustomers response:", JSON.stringify(data));
+    if (data.error) {
+      console.error("[gads] listAccessibleCustomers error:", data.error);
+      return null;
+    }
     const first = data.resourceNames?.[0];
     return first ? first.replace("customers/", "") : null;
-  } catch {
+  } catch (err) {
+    console.error("[gads] listAccessibleCustomers fetch failed:", err);
     return null;
   }
 }
@@ -220,6 +229,11 @@ async function fetchGoogleAdsMetrics(user: { id: number; googleAdsCustomerId: st
     const accessToken = await refreshAccessToken(user.googleAdsRefreshToken);
     if (!accessToken) return { status: "error", error: "Could not refresh your Google Ads token. Try reconnecting." };
     return fetchMetricsWithToken(accessToken, user.googleAdsCustomerId);
+  }
+
+  // ── Has refresh token but no customer ID (auto-discovery failed — admin must link the ID) ──
+  if (user.googleAdsRefreshToken && !user.googleAdsCustomerId) {
+    return { status: "pending_customer_id" };
   }
 
   // ── Client has a Customer ID set by admin but no personal refresh token ──

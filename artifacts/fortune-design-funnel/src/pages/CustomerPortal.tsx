@@ -662,6 +662,27 @@ export default function CustomerPortal() {
               </div>
             )}
 
+            {/* Connected but customer ID not yet linked by admin */}
+            {!gadsLoading && gads?.status === "pending_customer_id" && (
+              <div className="bg-white border border-gray-100 rounded-2xl p-10 text-center shadow-sm">
+                <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle2 size={28} className="text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Google Account Connected</h3>
+                <p className="text-gray-500 text-sm max-w-sm mx-auto">
+                  Your Google account has been linked successfully. Your account manager will connect your Google Ads Customer ID shortly — your campaign data will appear here once that's done.
+                </p>
+                <p className="mt-4 text-xs text-gray-300">Need it done faster? Send us a message in the Chat tab.</p>
+                <button
+                  onClick={disconnectGoogleAds}
+                  disabled={gadsDisconnecting}
+                  className="mt-5 text-xs text-red-400 hover:text-red-600 underline transition-colors"
+                >
+                  Disconnect and try a different account
+                </button>
+              </div>
+            )}
+
             {/* Error */}
             {!gadsLoading && gads?.status === "error" && (
               <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center shadow-sm">
