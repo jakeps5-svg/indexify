@@ -1,9 +1,11 @@
 import { Router, type Request } from "express";
-import { randomBytes } from "crypto";
+import jwt from "jsonwebtoken";
 import { db, pool } from "@workspace/db";
 import { usersTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAuth, requireAdmin } from "../middlewares/auth.js";
+
+const JWT_SECRET = process.env.JWT_SECRET ?? "indexify-secret-key-2026";
 
 const router = Router();
 
@@ -54,13 +56,12 @@ async function setSetting(key: string, value: string): Promise<void> {
   `, [key, value]);
 }
 
-async function deleteSetting(key: string): Promise<void> {
-  await pool.query("DELETE FROM portal_settings WHERE key = $1", [key]);
-}
 
 function getBaseUrl(req: Request): string {
-  const domain = process.env.REPLIT_DEV_DOMAIN;
-  return domain ? `https://${domain}` : `${req.protocol}://${req.get("host")}`;
+  // Honour reverse-proxy headers so this works correctly on indexify.co.za and any other domain
+  const proto = (req.headers["x-forwarded-proto"] as string) ?? req.protocol ?? "https";
+  const host = (req.headers["x-forwarded-host"] as string) ?? req.headers.host ?? "indexify.co.za";
+  return `${proto}://${host}`;
 }
 
 function getRedirectUri(req: Request): string {
@@ -239,13 +240,14 @@ router.get("/portal/google-ads/auth-url", requireAuth, (req, res) => {
   if (!clientId) {
     return res.status(503).json({ error: "Google Ads integration not configured yet. Contact your account manager." });
   }
-  const nonce = randomBytes(20).toString("hex");
-  const userId = req.auth!.userId;
-  // Store nonce→userId with 15-min expiry encoded in value
-  const expiry = Date.now() + 15 * 60 * 1000;
-  setSetting(`gads_nonce_${nonce}`, `${expiry}:${userId}`).catch(console.error);
 
   const redirectUri = getRedirectUri(req);
+  const userId = req.auth!.userId;
+
+  // Sign a short-lived token containing userId + the exact redirectUri used here.
+  // The callback verifies this signature — no database lookup needed, works across environments.
+  const statePayload = jwt.sign({ userId, redirectUri }, JWT_SECRET, { expiresIn: "15m" });
+
   const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
   url.searchParams.set("client_id", clientId);
   url.searchParams.set("redirect_uri", redirectUri);
@@ -253,7 +255,7 @@ router.get("/portal/google-ads/auth-url", requireAuth, (req, res) => {
   url.searchParams.set("scope", "https://www.googleapis.com/auth/adwords");
   url.searchParams.set("access_type", "offline");
   url.searchParams.set("prompt", "consent");
-  url.searchParams.set("state", `client_${nonce}`);
+  url.searchParams.set("state", `client_${statePayload}`);
   res.json({ url: url.toString() });
 });
 
@@ -342,28 +344,27 @@ router.get("/auth/google-ads/callback", async (req, res) => {
 
   // ── CLIENT FLOW ──
   if (state?.startsWith("client_")) {
-    const nonce = state.slice("client_".length);
-    const stored = await getSetting(`gads_nonce_${nonce}`);
-    await deleteSetting(`gads_nonce_${nonce}`);
+    const stateToken = state.slice("client_".length);
 
-    if (!stored) {
-      return res.redirect(`${baseUrl}/portal?gads=error&msg=${encodeURIComponent("Session expired. Please try again.")}`);
+    let userId: number;
+    let storedRedirectUri: string;
+    try {
+      const decoded = jwt.verify(stateToken, JWT_SECRET) as { userId: number; redirectUri: string };
+      userId = decoded.userId;
+      storedRedirectUri = decoded.redirectUri;
+    } catch {
+      return res.redirect(`${baseUrl}/portal?gads=error&msg=${encodeURIComponent("Session expired or invalid. Please try connecting again.")}`);
     }
-
-    const [expiryStr, userIdStr] = stored.split(":");
-    if (Date.now() > Number(expiryStr)) {
-      return res.redirect(`${baseUrl}/portal?gads=error&msg=${encodeURIComponent("Session expired. Please try again.")}`);
-    }
-    const userId = Number(userIdStr);
 
     try {
-      const tokens = await exchangeCodeForTokens(code, redirectUri);
+      // Use the exact same redirectUri that was in the auth request (critical for token exchange)
+      const tokens = await exchangeCodeForTokens(code, storedRedirectUri);
       if (!tokens.access_token || !tokens.refresh_token) {
-        const msg = tokens.error_description ?? tokens.error ?? "No tokens returned";
+        const msg = tokens.error_description ?? tokens.error ?? "No tokens returned — try connecting again.";
         return res.redirect(`${baseUrl}/portal?gads=error&msg=${encodeURIComponent(msg)}`);
       }
 
-      // Auto-discover the first accessible customer account
+      // Auto-discover the first accessible Google Ads customer account
       const customerId = await listFirstCustomerId(tokens.access_token);
 
       await db.update(usersTable)
