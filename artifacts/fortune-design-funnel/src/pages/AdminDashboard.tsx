@@ -5,7 +5,7 @@ import {
   Users, FileText, MessageSquare, Calendar, LogOut,
   TrendingUp, DollarSign, Send, CheckCircle2, PlusCircle,
   X, ChevronDown, Badge, AlertCircle, Clock, Search,
-  Package, RefreshCw, BarChart3,
+  Package, RefreshCw, BarChart3, Bell,
 } from "lucide-react";
 import { usePortalAuth } from "@/hooks/usePortalAuth";
 import { cn } from "@/lib/utils";
@@ -78,6 +78,9 @@ export default function AdminDashboard() {
   const [newInvoice, setNewInvoice] = useState({ userId: "", subscriptionId: "", amountRands: "", description: "", dueDate: "" });
   const [newSub, setNewSub] = useState({ serviceSlug: "basic-seo", notes: "" });
   const [saving, setSaving] = useState(false);
+
+  const [showUpdateModal, setShowUpdateModal] = useState<Customer | null>(null);
+  const [newUpdate, setNewUpdate] = useState({ title: "", content: "", subscriptionId: "" });
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
@@ -162,6 +165,25 @@ export default function AdminDashboard() {
       await loadInvoices();
       setShowAddInvoice(false);
       setNewInvoice({ userId: "", subscriptionId: "", amountRands: "", description: "", dueDate: "" });
+    } finally { setSaving(false); }
+  }
+
+  async function postUpdate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!showUpdateModal) return;
+    setSaving(true);
+    try {
+      await authFetch("/api/admin/updates", {
+        method: "POST",
+        body: JSON.stringify({
+          userId: showUpdateModal.id,
+          subscriptionId: newUpdate.subscriptionId ? Number(newUpdate.subscriptionId) : undefined,
+          title: newUpdate.title,
+          content: newUpdate.content,
+        }),
+      });
+      setShowUpdateModal(null);
+      setNewUpdate({ title: "", content: "", subscriptionId: "" });
     } finally { setSaving(false); }
   }
 
@@ -360,6 +382,7 @@ export default function AdminDashboard() {
                         <button onClick={() => { setShowAddSub(c); setNewSub({ serviceSlug: "basic-seo", notes: "" }); }} className="text-xs font-bold text-sky-600 bg-sky-50 border border-sky-200 px-3 py-1.5 rounded-lg hover:bg-sky-100 transition-colors">+ Service</button>
                         <button onClick={() => { setTab("chat"); setSelectedCustomer(c); }} className="text-xs font-bold text-violet-600 bg-violet-50 border border-violet-200 px-3 py-1.5 rounded-lg hover:bg-violet-100 transition-colors">Chat</button>
                         <button onClick={() => { setShowAddInvoice(true); setNewInvoice(f => ({ ...f, userId: String(c.id), subscriptionId: String(c.subscriptions[0]?.id ?? "") })); }} className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition-colors">Invoice</button>
+                        <button onClick={() => { setShowUpdateModal(c); setNewUpdate({ title: "", content: "", subscriptionId: String(c.subscriptions[0]?.id ?? "") }); }} className="text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg hover:bg-amber-100 transition-colors flex items-center gap-1"><Bell size={11} />Update</button>
                       </div>
                     </div>
                   </div>
@@ -586,6 +609,48 @@ export default function AdminDashboard() {
                 <button type="button" onClick={() => setShowAddSub(null)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50 transition-all">Cancel</button>
                 <button type="submit" disabled={saving} className="flex-1 py-2.5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-all disabled:opacity-60">
                   {saving ? "Adding…" : "Add Service"}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* ── Modal: Post Service Update ── */}
+      {showUpdateModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-2xl p-6 shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h3 className="font-black text-gray-900 text-lg">Post Service Update</h3>
+                <p className="text-xs text-gray-400 mt-0.5">To: {showUpdateModal.name}</p>
+              </div>
+              <button onClick={() => setShowUpdateModal(null)} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+            </div>
+            <form onSubmit={postUpdate} className="space-y-3">
+              {showUpdateModal.subscriptions.length > 0 && (
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">Service (optional)</label>
+                  <select value={newUpdate.subscriptionId} onChange={e => setNewUpdate(f => ({ ...f, subscriptionId: e.target.value }))} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none bg-gray-50">
+                    <option value="">General update (no specific service)</option>
+                    {showUpdateModal.subscriptions.map(s => (
+                      <option key={s.id} value={s.id}>{s.serviceName}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">Title</label>
+                <input type="text" required placeholder="e.g. March SEO Report Ready" value={newUpdate.title} onChange={e => setNewUpdate(f => ({ ...f, title: e.target.value }))} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none bg-gray-50" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase tracking-wide">Content</label>
+                <textarea required rows={4} placeholder="Write your update here…" value={newUpdate.content} onChange={e => setNewUpdate(f => ({ ...f, content: e.target.value }))} className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none bg-gray-50 resize-none" />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setShowUpdateModal(null)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50">Cancel</button>
+                <button type="submit" disabled={saving} className="flex-1 py-2.5 rounded-xl bg-amber-500 text-white font-bold text-sm hover:bg-amber-600 transition-all disabled:opacity-60">
+                  {saving ? "Posting…" : "Post Update"}
                 </button>
               </div>
             </form>

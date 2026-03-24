@@ -5,14 +5,18 @@ import {
   LayoutDashboard, FileText, MessageSquare, Calendar,
   LogOut, CheckCircle2, Clock, AlertCircle, Send,
   TrendingUp, Package, BadgeCheck, Video, Wifi,
-  ChevronRight, ExternalLink,
+  ChevronRight, ExternalLink, Bell,
 } from "lucide-react";
 import { usePortalAuth } from "@/hooks/usePortalAuth";
 import { cn } from "@/lib/utils";
 import { useSEO } from "@/hooks/useSEO";
 
-type Tab = "dashboard" | "services" | "invoices" | "meeting" | "chat";
+type Tab = "dashboard" | "services" | "invoices" | "meeting" | "chat" | "updates";
 
+interface ServiceUpdate {
+  id: number; title: string; content: string; createdAt: string;
+  serviceName?: string; subscriptionId?: number;
+}
 interface Subscription {
   id: number; serviceName: string; serviceSlug: string;
   priceRands: string; status: string; startDate: string; nextInvoiceDate: string; notes?: string;
@@ -50,6 +54,7 @@ export default function CustomerPortal() {
   const [meetingForm, setMeetingForm] = useState({ preferredDate: "", preferredTime: "", meetingType: "google-meet", notes: "" });
   const [meetingLoading, setMeetingLoading] = useState(false);
   const [meetingSuccess, setMeetingSuccess] = useState(false);
+  const [updates, setUpdates] = useState<ServiceUpdate[]>([]);
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
@@ -66,6 +71,9 @@ export default function CustomerPortal() {
       authFetch("/api/portal/invoices").then(r => r.json()).then(setInvoices);
     }
     if (tab === "chat" && user) loadChat();
+    if (tab === "updates" && user) {
+      authFetch("/api/portal/updates").then(r => r.json()).then(setUpdates);
+    }
   }, [tab, user]);
 
   useEffect(() => {
@@ -115,6 +123,7 @@ export default function CustomerPortal() {
     { id: "dashboard" as Tab, label: "Dashboard", icon: LayoutDashboard },
     { id: "services" as Tab, label: "Services", icon: Package },
     { id: "invoices" as Tab, label: "Invoices", icon: FileText },
+    { id: "updates" as Tab, label: "Updates", icon: Bell },
     { id: "meeting" as Tab, label: "Book Meeting", icon: Calendar },
     { id: "chat" as Tab, label: "Chat", icon: MessageSquare, badge: dashboard?.unreadMessages },
   ];
@@ -422,6 +431,49 @@ export default function CustomerPortal() {
                 </form>
               )}
             </div>
+          </motion.div>
+        )}
+
+        {/* ── Updates Tab ── */}
+        {tab === "updates" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-gray-900">Service Updates</h2>
+              <span className="text-xs text-gray-400">{updates.length} update{updates.length !== 1 ? "s" : ""}</span>
+            </div>
+            {updates.length === 0 ? (
+              <div className="bg-white border border-gray-100 rounded-2xl p-12 text-center shadow-sm">
+                <Bell size={36} className="mx-auto mb-3 text-gray-200" />
+                <p className="text-gray-500 font-medium">No updates yet</p>
+                <p className="text-gray-400 text-sm mt-1">Your account manager will post updates here when there's news about your services.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {updates.map(u => (
+                  <div key={u.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          {u.serviceName && (
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-primary bg-primary/8 border border-primary/20 px-2 py-0.5 rounded-full">
+                              {u.serviceName}
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="font-bold text-gray-900 text-base">{u.title}</h3>
+                        <p className="text-gray-600 text-sm mt-2 leading-relaxed whitespace-pre-wrap">{u.content}</p>
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <Bell size={14} className="text-primary" />
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-50">
+                      {new Date(u.createdAt).toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </motion.div>
         )}
 

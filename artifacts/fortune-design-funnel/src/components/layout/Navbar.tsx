@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown, Search, MousePointerClick, BarChart3, TrendingUp, MapPin, LogIn } from "lucide-react";
+import { Menu, X, ChevronDown, Search, MousePointerClick, BarChart3, TrendingUp, MapPin, LogIn, LogOut, UserCircle2, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+interface StoredUser { name: string; email: string; role: string; }
 
 export function Navbar() {
   const [isScrolled, setIsScrolled]         = useState(false);
@@ -9,9 +11,31 @@ export function Navbar() {
   const [isServicesOpen, setIsServicesOpen]   = useState(false);
   const [isToolsOpen, setIsToolsOpen]         = useState(false);
   const [isCitiesOpen, setIsCitiesOpen]       = useState(false);
+  const [isPortalOpen, setIsPortalOpen]       = useState(false);
+  const [portalUser, setPortalUser]           = useState<StoredUser | null>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
   const toolsRef    = useRef<HTMLDivElement>(null);
   const citiesRef   = useRef<HTMLDivElement>(null);
+  const portalRef   = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("indexify_portal_user");
+    if (stored) { try { setPortalUser(JSON.parse(stored)); } catch {} }
+    const onStorage = () => {
+      const s = localStorage.getItem("indexify_portal_user");
+      setPortalUser(s ? JSON.parse(s) : null);
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  function handleLogout() {
+    localStorage.removeItem("indexify_portal_token");
+    localStorage.removeItem("indexify_portal_user");
+    setPortalUser(null);
+    setIsPortalOpen(false);
+    window.location.href = "/";
+  }
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -24,6 +48,7 @@ export function Navbar() {
       if (servicesRef.current && !servicesRef.current.contains(e.target as Node)) setIsServicesOpen(false);
       if (toolsRef.current   && !toolsRef.current.contains(e.target as Node))   setIsToolsOpen(false);
       if (citiesRef.current  && !citiesRef.current.contains(e.target as Node))  setIsCitiesOpen(false);
+      if (portalRef.current  && !portalRef.current.contains(e.target as Node))  setIsPortalOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -249,12 +274,59 @@ export function Navbar() {
             <a href={`${BASE}contact`} className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
               Contact
             </a>
-            <a
-              href={`${BASE}login`}
-              className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-400 px-3 py-2 rounded-full transition-all whitespace-nowrap"
-            >
-              <LogIn size={13} /> Client Login
-            </a>
+            {portalUser ? (
+              <div ref={portalRef} className="relative">
+                <button
+                  onClick={() => setIsPortalOpen(!isPortalOpen)}
+                  className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 border border-gray-200 hover:border-primary/40 px-3 py-2 rounded-full transition-all whitespace-nowrap bg-white shadow-sm"
+                >
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-primary to-violet-500 flex items-center justify-center text-white text-[10px] font-black shrink-0">
+                    {portalUser.name?.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="max-w-[120px] truncate text-xs">{portalUser.email}</span>
+                  <ChevronDown size={12} className={cn("transition-transform duration-200 text-gray-400", isPortalOpen && "rotate-180")} />
+                </button>
+                <AnimatePresence>
+                  {isPortalOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.97 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute top-full right-0 mt-3 w-56 rounded-2xl bg-white border border-gray-200 shadow-xl overflow-hidden z-50"
+                    >
+                      <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                        <p className="text-xs font-bold text-gray-900 truncate">{portalUser.name}</p>
+                        <p className="text-[11px] text-gray-400 truncate mt-0.5">{portalUser.email}</p>
+                      </div>
+                      <div className="p-1.5">
+                        <a
+                          href={`${BASE}${portalUser.role === "admin" ? "admin" : "portal"}`}
+                          onClick={() => setIsPortalOpen(false)}
+                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
+                        >
+                          <LayoutDashboard size={14} className="text-primary" />
+                          {portalUser.role === "admin" ? "Admin Dashboard" : "My Portal"}
+                        </a>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-red-50 transition-colors text-sm font-medium text-red-500 text-left"
+                        >
+                          <LogOut size={14} /> Sign Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <a
+                href={`${BASE}login`}
+                className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-400 px-3 py-2 rounded-full transition-all whitespace-nowrap"
+              >
+                <LogIn size={13} /> Client Login
+              </a>
+            )}
             <a
               href={`${BASE}audit`}
               className="px-5 py-2.5 rounded-full bg-primary text-white font-semibold text-sm hover:bg-primary/90 hover:scale-105 transition-all duration-200 shadow-md shadow-primary/20 whitespace-nowrap"
@@ -355,7 +427,6 @@ export function Navbar() {
                 { name: "Blog",    href: `${BASE}blog` },
                 { name: "Pricing", href: `${BASE}pricing` },
                 { name: "Contact", href: `${BASE}contact` },
-                { name: "Client Login", href: `${BASE}login` },
               ].map((link) => (
                 <a
                   key={link.name}
@@ -366,6 +437,36 @@ export function Navbar() {
                   {link.name}
                 </a>
               ))}
+              {portalUser ? (
+                <div className="mx-4 mt-1 rounded-xl border border-gray-100 bg-gray-50 overflow-hidden">
+                  <div className="px-4 py-2.5 border-b border-gray-100">
+                    <p className="text-xs font-bold text-gray-900">{portalUser.name}</p>
+                    <p className="text-[11px] text-gray-400 truncate">{portalUser.email}</p>
+                  </div>
+                  <a
+                    href={`${BASE}${portalUser.role === "admin" ? "admin" : "portal"}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    <LayoutDashboard size={14} className="text-primary" />
+                    {portalUser.role === "admin" ? "Admin Dashboard" : "My Portal"}
+                  </a>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors text-left border-t border-gray-100"
+                  >
+                    <LogOut size={14} /> Sign Out
+                  </button>
+                </div>
+              ) : (
+                <a
+                  href={`${BASE}login`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block px-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  Client Login
+                </a>
+              )}
 
               <div className="px-4 pt-2">
                 <a

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { db } from "@workspace/db";
 import {
   subscriptionsTable, invoicesTable, chatMessagesTable,
-  meetingRequestsTable, usersTable,
+  meetingRequestsTable, usersTable, serviceUpdatesTable,
 } from "@workspace/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { requireAuth } from "../middlewares/auth.js";
@@ -96,6 +96,26 @@ router.post("/portal/meeting", requireAuth, async (req, res) => {
     res.json(meeting);
   } catch (err) {
     res.status(500).json({ error: "Failed to submit meeting request" });
+  }
+});
+
+router.get("/portal/updates", requireAuth, async (req, res) => {
+  try {
+    const uid = req.auth!.userId;
+    const updates = await db.select({
+      id: serviceUpdatesTable.id,
+      title: serviceUpdatesTable.title,
+      content: serviceUpdatesTable.content,
+      createdAt: serviceUpdatesTable.createdAt,
+      serviceName: subscriptionsTable.serviceName,
+      subscriptionId: serviceUpdatesTable.subscriptionId,
+    }).from(serviceUpdatesTable)
+      .leftJoin(subscriptionsTable, eq(serviceUpdatesTable.subscriptionId, subscriptionsTable.id))
+      .where(eq(serviceUpdatesTable.userId, uid))
+      .orderBy(desc(serviceUpdatesTable.createdAt));
+    res.json(updates);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to load updates" });
   }
 });
 

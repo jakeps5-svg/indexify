@@ -57,6 +57,15 @@ export const chatMessagesTable = pgTable("portal_chat_messages", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const serviceUpdatesTable = pgTable("portal_service_updates", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => usersTable.id),
+  subscriptionId: integer("subscription_id").references(() => subscriptionsTable.id),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const meetingRequestsTable = pgTable("portal_meeting_requests", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => usersTable.id),
@@ -78,3 +87,4 @@ export type Subscription = typeof subscriptionsTable.$inferSelect;
 export type Invoice = typeof invoicesTable.$inferSelect;
 export type ChatMessage = typeof chatMessagesTable.$inferSelect;
 export type MeetingRequest = typeof meetingRequestsTable.$inferSelect;
+export type ServiceUpdate = typeof serviceUpdatesTable.$inferSelect;

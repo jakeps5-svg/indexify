@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { db } from "@workspace/db";
 import {
   usersTable, subscriptionsTable, invoicesTable,
-  chatMessagesTable, meetingRequestsTable,
+  chatMessagesTable, meetingRequestsTable, serviceUpdatesTable,
 } from "@workspace/db/schema";
 import { eq, and, desc, ne } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/auth.js";
@@ -218,6 +218,55 @@ router.patch("/admin/meetings/:id", requireAdmin, async (req, res) => {
     res.json(updated);
   } catch (err) {
     res.status(500).json({ error: "Failed to update meeting" });
+  }
+});
+
+router.get("/admin/updates", requireAdmin, async (req, res) => {
+  try {
+    const userId = req.query.userId ? Number(req.query.userId) : undefined;
+    const query = db.select({
+      id: serviceUpdatesTable.id,
+      userId: serviceUpdatesTable.userId,
+      subscriptionId: serviceUpdatesTable.subscriptionId,
+      title: serviceUpdatesTable.title,
+      content: serviceUpdatesTable.content,
+      createdAt: serviceUpdatesTable.createdAt,
+      serviceName: subscriptionsTable.serviceName,
+      customerName: usersTable.name,
+    }).from(serviceUpdatesTable)
+      .leftJoin(subscriptionsTable, eq(serviceUpdatesTable.subscriptionId, subscriptionsTable.id))
+      .leftJoin(usersTable, eq(serviceUpdatesTable.userId, usersTable.id))
+      .orderBy(desc(serviceUpdatesTable.createdAt));
+    const rows = userId
+      ? await query.where(eq(serviceUpdatesTable.userId, userId))
+      : await query;
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to load updates" });
+  }
+});
+
+router.post("/admin/updates", requireAdmin, async (req, res) => {
+  try {
+    const { userId, subscriptionId, title, content } = req.body as {
+      userId: number; subscriptionId?: number; title: string; content: string;
+    };
+    if (!userId || !title || !content) return res.status(400).json({ error: "userId, title and content required" });
+    const [update] = await db.insert(serviceUpdatesTable).values({
+      userId, subscriptionId: subscriptionId ?? null, title, content,
+    }).returning();
+    res.status(201).json(update);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create update" });
+  }
+});
+
+router.delete("/admin/updates/:id", requireAdmin, async (req, res) => {
+  try {
+    await db.delete(serviceUpdatesTable).where(eq(serviceUpdatesTable.id, Number(req.params.id)));
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete update" });
   }
 });
 

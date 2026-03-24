@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
 const TOKEN_KEY = "indexify_portal_token";
+const USER_KEY = "indexify_portal_user";
 
 export interface PortalUser {
   id: number;
@@ -20,13 +21,24 @@ export function usePortalAuth() {
 
   const fetchMe = useCallback(async () => {
     const t = token();
-    if (!t) { setLoading(false); return; }
+    if (!t) {
+      const cached = localStorage.getItem(USER_KEY);
+      if (cached) { try { setUser(JSON.parse(cached)); } catch {} }
+      setLoading(false); return;
+    }
     try {
       const res = await fetch(`${BASE}/api/auth/me`, {
         headers: { Authorization: `Bearer ${t}` },
       });
-      if (!res.ok) { localStorage.removeItem(TOKEN_KEY); setUser(null); }
-      else setUser(await res.json());
+      if (!res.ok) {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        setUser(null);
+      } else {
+        const u = await res.json();
+        localStorage.setItem(USER_KEY, JSON.stringify(u));
+        setUser(u);
+      }
     } catch { setUser(null); }
     finally { setLoading(false); }
   }, []);
@@ -42,12 +54,14 @@ export function usePortalAuth() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error ?? "Login failed");
     localStorage.setItem(TOKEN_KEY, data.token);
+    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
     setUser(data.user);
     return data.user as PortalUser;
   };
 
   const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
     setUser(null);
   };
 
