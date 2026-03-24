@@ -104,7 +104,7 @@ export default function GoogleAdsPage() {
       "Google Ads Port Elizabeth", "PPC agency Sandton", "Google Ads Centurion",
       "Google Ads Midrand", "Google Ads Stellenbosch", "PPC South Africa",
     ],
-    canonical: "https://indexify.co.za/services/google-ads",
+    canonical: "https://indexify.co.za/services/google-ads/",
   });
 
   const openWhatsApp = openWhatsAppModal;

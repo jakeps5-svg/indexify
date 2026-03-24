@@ -44,7 +44,7 @@ export default function PretoriaPage() {
       "local SEO Pretoria", "digital marketing Tshwane", "SEO Centurion",
       "SEO Midrand", "Google Ads Centurion", "affordable SEO Pretoria",
     ],
-    canonical: "https://indexify.co.za/pretoria",
+    canonical: "https://indexify.co.za/pretoria/",
   });
 
   const [, navigate] = useLocation();

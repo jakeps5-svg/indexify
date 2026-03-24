@@ -127,7 +127,7 @@ export default function ServicesPage() {
       "Google Ads management Cape Town", "online marketing agency South Africa",
       "local SEO services South Africa", "search marketing agency SA",
     ],
-    canonical: "https://indexify.co.za/services",
+    canonical: "https://indexify.co.za/services/",
   });
 
   return (

@@ -44,7 +44,8 @@ export function useSEO({
   useEffect(() => {
     document.title = title;
 
-    const path = window.location.pathname.replace(/\/$/, "") || "/";
+    const rawPath = window.location.pathname.replace(/\/$/, "");
+    const path = rawPath ? `${rawPath}/` : "/";
     const canonicalUrl = canonical ?? `${SITE_URL}${path}`;
 
     setMeta('meta[name="description"]',        "content", description);

@@ -309,7 +309,7 @@ export default function PackagePage() {
   useSEO({
     title: pkg ? `${pkg.name} | Indexify SEO Packages` : "Package Not Found | Indexify",
     description: pkg ? pkg.summary : "",
-    canonical: pkg ? `https://indexify.co.za/packages/${params.slug}` : undefined,
+    canonical: pkg ? `https://indexify.co.za/packages/${params.slug}/` : undefined,
   });
 
   if (!pkg) {

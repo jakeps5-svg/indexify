@@ -44,7 +44,7 @@ export default function CapeTownPage() {
       "Google Ads management Cape Town", "PPC agency Cape Town", "best Google Ads agency Cape Town",
       "affordable SEO Cape Town", "digital marketing Cape Town", "search engine optimisation Cape Town",
     ],
-    canonical: "https://indexify.co.za/cape-town",
+    canonical: "https://indexify.co.za/cape-town/",
   });
 
   const [, navigate] = useLocation();

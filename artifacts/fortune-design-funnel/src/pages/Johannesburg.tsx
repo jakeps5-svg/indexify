@@ -45,7 +45,7 @@ export default function JohannesburgPage() {
       "affordable SEO Johannesburg", "Google Ads expert Johannesburg",
       "digital marketing agency Johannesburg", "PPC services Johannesburg",
     ],
-    canonical: "https://indexify.co.za/johannesburg",
+    canonical: "https://indexify.co.za/johannesburg/",
   });
 
   const [, navigate] = useLocation();

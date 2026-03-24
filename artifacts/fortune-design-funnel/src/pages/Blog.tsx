@@ -82,7 +82,7 @@ export default function BlogPage() {
     title: "SEO & Google Ads Blog – SA Guides | Indexify",
     description: "Expert articles on SEO, Google Ads and digital marketing for SA businesses. Practical guides with no fluff — strategies that actually move the needle.",
     keywords: ["SEO blog South Africa", "Google Ads tips South Africa", "digital marketing South Africa", "SEO guides for businesses", "online marketing South Africa"],
-    canonical: "https://indexify.co.za/blog",
+    canonical: "https://indexify.co.za/blog/",
   });
 
   const [filter, setFilter] = useState<Filter>("All");

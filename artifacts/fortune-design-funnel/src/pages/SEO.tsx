@@ -93,7 +93,7 @@ export default function SEOPage() {
       "SEO agency Port Elizabeth", "SEO Sandton", "SEO Centurion", "SEO Midrand",
       "SEO Stellenbosch", "SEO East London", "SEO Bloemfontein",
     ],
-    canonical: "https://indexify.co.za/services/seo",
+    canonical: "https://indexify.co.za/services/seo/",
   });
 
   const openWhatsApp = openWhatsAppModal;

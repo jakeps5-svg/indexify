@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://indexify.co.za/sitemap.xml
+Sitemap: https://indexify.co.za/rss.xml
