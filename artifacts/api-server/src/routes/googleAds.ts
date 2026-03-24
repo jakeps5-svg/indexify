@@ -304,6 +304,26 @@ router.delete("/portal/google-ads", requireAuth, async (req, res) => {
   }
 });
 
+// ── Client portal: save their own Google Ads Customer ID ──
+router.patch("/portal/google-ads/customer-id", requireAuth, async (req, res) => {
+  try {
+    const uid = req.auth!.userId;
+    const raw = (req.body as { customerId?: string }).customerId ?? "";
+    // Strip dashes/spaces so "123-456-7890" → "1234567890"
+    const customerId = raw.replace(/[\s\-]/g, "").trim();
+    if (!customerId || !/^\d{8,12}$/.test(customerId)) {
+      return res.status(400).json({ error: "Invalid Customer ID — must be 8–12 digits (dashes are ok)." });
+    }
+    await db.update(usersTable)
+      .set({ googleAdsCustomerId: customerId })
+      .where(eq(usersTable.id, uid));
+    res.json({ ok: true, customerId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to save Customer ID" });
+  }
+});
+
 // ── Admin: set Google Ads Customer ID for a client ──
 router.patch("/admin/customers/:id/google-ads", requireAdmin, async (req, res) => {
   try {

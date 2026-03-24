@@ -75,6 +75,9 @@ export default function CustomerPortal() {
   const [gadsConnecting, setGadsConnecting] = useState(false);
   const [gadsToast, setGadsToast] = useState<{ type: "success" | "error"; msg: string } | null>(null);
   const [gadsDisconnecting, setGadsDisconnecting] = useState(false);
+  const [gadsCustomerIdInput, setGadsCustomerIdInput] = useState("");
+  const [gadsCustomerIdSaving, setGadsCustomerIdSaving] = useState(false);
+  const [gadsCustomerIdError, setGadsCustomerIdError] = useState<string | null>(null);
 
   useEffect(() => {
     if (loading) return;
@@ -192,6 +195,29 @@ export default function CustomerPortal() {
       setTimeout(() => setGadsToast(null), 5000);
     } finally {
       setGadsDisconnecting(false);
+    }
+  }
+
+  async function saveGadsCustomerId() {
+    setGadsCustomerIdError(null);
+    setGadsCustomerIdSaving(true);
+    try {
+      const r = await authFetch("/api/portal/google-ads/customer-id", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customerId: gadsCustomerIdInput }),
+      });
+      const data = await r.json();
+      if (!r.ok) { setGadsCustomerIdError(data.error ?? "Failed to save."); return; }
+      setGadsToast({ type: "success", msg: "Customer ID saved! Fetching your campaign data…" });
+      setTimeout(() => setGadsToast(null), 5000);
+      setGadsCustomerIdInput("");
+      const refreshed = await authFetch("/api/portal/google-ads").then(res => res.json());
+      setGads(refreshed);
+    } catch {
+      setGadsCustomerIdError("Something went wrong. Please try again.");
+    } finally {
+      setGadsCustomerIdSaving(false);
     }
   }
 
@@ -662,24 +688,80 @@ export default function CustomerPortal() {
               </div>
             )}
 
-            {/* Connected but customer ID not yet linked by admin */}
+            {/* Connected but customer ID not yet linked */}
             {!gadsLoading && gads?.status === "pending_customer_id" && (
-              <div className="bg-white border border-gray-100 rounded-2xl p-10 text-center shadow-sm">
-                <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle2 size={28} className="text-emerald-400" />
+              <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+                {/* Header */}
+                <div className="flex items-center gap-3 p-6 border-b border-gray-50">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
+                    <CheckCircle2 size={20} className="text-emerald-500" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-gray-900">Google Account Connected</h3>
+                    <p className="text-xs text-gray-400 mt-0.5">One last step — enter your Google Ads Customer ID below</p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Google Account Connected</h3>
-                <p className="text-gray-500 text-sm max-w-sm mx-auto">
-                  Your Google account has been linked successfully. Your account manager will connect your Google Ads Customer ID shortly — your campaign data will appear here once that's done.
-                </p>
-                <p className="mt-4 text-xs text-gray-300">Need it done faster? Send us a message in the Chat tab.</p>
-                <button
-                  onClick={disconnectGoogleAds}
-                  disabled={gadsDisconnecting}
-                  className="mt-5 text-xs text-red-400 hover:text-red-600 underline transition-colors"
-                >
-                  Disconnect and try a different account
-                </button>
+
+                <div className="p-6 space-y-6">
+                  {/* Customer ID input */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">Your Google Ads Customer ID</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="e.g. 123-456-7890"
+                        value={gadsCustomerIdInput}
+                        onChange={e => { setGadsCustomerIdInput(e.target.value); setGadsCustomerIdError(null); }}
+                        onKeyDown={e => e.key === "Enter" && saveGadsCustomerId()}
+                        className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 placeholder:text-gray-300"
+                      />
+                      <button
+                        onClick={saveGadsCustomerId}
+                        disabled={gadsCustomerIdSaving || !gadsCustomerIdInput.trim()}
+                        className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white font-bold px-5 py-2.5 rounded-xl transition-colors text-sm shrink-0"
+                      >
+                        {gadsCustomerIdSaving
+                          ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          : "Save"}
+                      </button>
+                    </div>
+                    {gadsCustomerIdError && (
+                      <p className="mt-2 text-xs text-red-500 flex items-center gap-1">
+                        <AlertCircle size={12} /> {gadsCustomerIdError}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Instructions */}
+                  <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+                    <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">How to find your Customer ID</p>
+                    <ol className="space-y-2.5">
+                      {[
+                        "Sign in to your Google Ads account.",
+                        "Click your profile picture in the top right corner.",
+                        "Your Customer ID will be listed under your account name.",
+                      ].map((step, i) => (
+                        <li key={i} className="flex items-start gap-2.5 text-sm text-gray-600">
+                          <span className="flex-shrink-0 w-5 h-5 rounded-full bg-violet-100 text-violet-700 text-xs font-bold flex items-center justify-center mt-0.5">
+                            {i + 1}
+                          </span>
+                          {step}
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+
+                  {/* Disconnect link */}
+                  <div className="text-center pt-1">
+                    <button
+                      onClick={disconnectGoogleAds}
+                      disabled={gadsDisconnecting}
+                      className="text-xs text-gray-300 hover:text-red-400 underline transition-colors"
+                    >
+                      Disconnect and use a different account
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 
