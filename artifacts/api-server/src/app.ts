@@ -4,8 +4,16 @@ import router from "./routes";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const UPLOADS_DIR = path.join(__dirname, "../../uploads");
+// Safe path resolution that works in both ESM (dev/tsx) and CJS (esbuild production bundle).
+// In the CJS bundle import.meta.url is undefined, so fileURLToPath throws — we fall back to
+// an absolute path anchored at process.cwd() which is the workspace root in production.
+const UPLOADS_DIR = (() => {
+  try {
+    return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../uploads");
+  } catch {
+    return path.resolve(process.cwd(), "artifacts/api-server/uploads");
+  }
+})();
 
 const app: Express = express();
 
