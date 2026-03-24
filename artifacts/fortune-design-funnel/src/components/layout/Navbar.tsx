@@ -365,64 +365,113 @@ export function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden bg-white border-b border-gray-200 overflow-hidden"
           >
-            <div className="px-4 pt-2 pb-6 space-y-1 flex flex-col">
-              <div className="px-4 py-2">
-                <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Services</div>
-                {services.map((service) => (
-                  <a
-                    key={service.name}
-                    href={service.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 py-2.5 text-base font-medium text-gray-600 hover:text-gray-900 transition-colors"
-                  >
-                    <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", service.bg)}>
-                      <service.icon size={14} className={service.color} />
-                    </div>
-                    {service.name}
-                  </a>
-                ))}
+            <div className="px-4 pt-2 pb-6 flex flex-col gap-0.5">
+
+              {/* Collapsible: Services */}
+              <div>
+                <button
+                  onClick={() => setIsServicesOpen(v => !v)}
+                  className="flex items-center justify-between w-full px-3 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
+                >
+                  Services
+                  <ChevronDown size={15} className={cn("text-gray-400 transition-transform duration-200", isServicesOpen && "rotate-180")} />
+                </button>
+                <AnimatePresence>
+                  {isServicesOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden pl-3"
+                    >
+                      {services.map((service) => (
+                        <a
+                          key={service.name}
+                          href={service.href}
+                          onClick={() => { setIsMobileMenuOpen(false); setIsServicesOpen(false); }}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                        >
+                          <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", service.bg)}>
+                            <service.icon size={13} className={service.color} />
+                          </div>
+                          {service.name}
+                        </a>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
-              <div className="h-px bg-gray-100 mx-4" />
-
-              <div className="px-4 py-2">
-                <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Free Tools</div>
-                {tools.map((tool) => (
-                  <a
-                    key={tool.name}
-                    href={tool.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 py-2.5 text-base font-medium text-gray-600 hover:text-gray-900 transition-colors"
-                  >
-                    <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", tool.bg)}>
-                      <tool.icon size={14} className={tool.color} />
-                    </div>
-                    {tool.name}
-                  </a>
-                ))}
+              {/* Collapsible: Free Tools */}
+              <div>
+                <button
+                  onClick={() => setIsToolsOpen(v => !v)}
+                  className="flex items-center justify-between w-full px-3 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
+                >
+                  Free Tools
+                  <ChevronDown size={15} className={cn("text-gray-400 transition-transform duration-200", isToolsOpen && "rotate-180")} />
+                </button>
+                <AnimatePresence>
+                  {isToolsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden pl-3"
+                    >
+                      {tools.map((tool) => (
+                        <a
+                          key={tool.name}
+                          href={tool.href}
+                          onClick={() => { setIsMobileMenuOpen(false); setIsToolsOpen(false); }}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                        >
+                          <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", tool.bg)}>
+                            <tool.icon size={13} className={tool.color} />
+                          </div>
+                          {tool.name}
+                        </a>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
-              <div className="h-px bg-gray-100 mx-4" />
-
-              <div className="px-4 py-2">
-                <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Locations</div>
-                {cities.map((city) => (
-                  <a
-                    key={city.name}
-                    href={city.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center gap-3 py-2.5 text-base font-medium text-gray-600 hover:text-gray-900 transition-colors"
-                  >
-                    <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", city.bg)}>
-                      <MapPin size={14} className={city.color} />
-                    </div>
-                    {city.name}
-                  </a>
-                ))}
+              {/* Collapsible: Locations */}
+              <div>
+                <button
+                  onClick={() => setIsCitiesOpen(v => !v)}
+                  className="flex items-center justify-between w-full px-3 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
+                >
+                  Locations
+                  <ChevronDown size={15} className={cn("text-gray-400 transition-transform duration-200", isCitiesOpen && "rotate-180")} />
+                </button>
+                <AnimatePresence>
+                  {isCitiesOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden pl-3"
+                    >
+                      {cities.map((city) => (
+                        <a
+                          key={city.name}
+                          href={city.href}
+                          onClick={() => { setIsMobileMenuOpen(false); setIsCitiesOpen(false); }}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                        >
+                          <span className={cn("w-2 h-2 rounded-full shrink-0", city.dot)} />
+                          {city.name}
+                        </a>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
-              <div className="h-px bg-gray-100 mx-4" />
-
+              {/* Direct links */}
+              <div className="h-px bg-gray-100 my-1" />
               {[
                 { name: "Blog",    href: `${BASE}blog` },
                 { name: "Pricing", href: `${BASE}pricing` },
@@ -432,16 +481,24 @@ export function Navbar() {
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="block px-3 py-3 text-sm font-semibold text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-colors"
                 >
                   {link.name}
                 </a>
               ))}
+
+              {/* Portal / login section */}
+              <div className="h-px bg-gray-100 my-1" />
               {portalUser ? (
-                <div className="mx-4 mt-1 rounded-xl border border-gray-100 bg-gray-50 overflow-hidden">
-                  <div className="px-4 py-2.5 border-b border-gray-100">
-                    <p className="text-xs font-bold text-gray-900">{portalUser.name}</p>
-                    <p className="text-[11px] text-gray-400 truncate">{portalUser.email}</p>
+                <div className="rounded-xl border border-gray-100 bg-gray-50 overflow-hidden">
+                  <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-violet-500 flex items-center justify-center text-white text-[11px] font-black shrink-0">
+                      {portalUser.name?.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-gray-900 truncate">{portalUser.name}</p>
+                      <p className="text-[11px] text-gray-400 truncate">{portalUser.email}</p>
+                    </div>
                   </div>
                   <a
                     href={`${BASE}${portalUser.role === "admin" ? "admin" : "portal"}`}
@@ -462,20 +519,23 @@ export function Navbar() {
                 <a
                   href={`${BASE}login`}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-3 py-3 text-sm font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-colors"
                 >
-                  Client Login
+                  <LogIn size={15} className="text-gray-400" /> Client Login
                 </a>
               )}
 
-              <div className="px-4 pt-2">
+              {/* CTA */}
+              <div className="pt-2">
                 <a
                   href={`${BASE}audit`}
-                  className="block w-full px-5 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition-colors text-center shadow-md shadow-primary/20"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block w-full px-5 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition-colors text-center shadow-md shadow-primary/20 text-sm"
                 >
                   Get Free Audit
                 </a>
               </div>
+
             </div>
           </motion.div>
         )}
