@@ -25,6 +25,7 @@ import DurbanPage from "@/pages/Durban";
 import PretoriaPage from "@/pages/Pretoria";
 import PortElizabethPage from "@/pages/PortElizabeth";
 import LoginPage from "@/pages/Login";
+import AdminLoginPage from "@/pages/AdminLogin";
 import ForgotPasswordPage from "@/pages/ForgotPassword";
 import ResetPasswordPage from "@/pages/ResetPassword";
 import CustomerPortal from "@/pages/CustomerPortal";
@@ -58,6 +59,7 @@ function Router() {
       <Route path="/pretoria" component={PretoriaPage} />
       <Route path="/port-elizabeth" component={PortElizabethPage} />
       <Route path="/login" component={LoginPage} />
+      <Route path="/admin-login" component={AdminLoginPage} />
       <Route path="/forgot-password" component={ForgotPasswordPage} />
       <Route path="/reset-password" component={ResetPasswordPage} />
       <Route path="/portal" component={CustomerPortal} />

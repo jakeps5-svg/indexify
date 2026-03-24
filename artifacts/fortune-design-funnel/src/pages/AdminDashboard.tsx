@@ -118,7 +118,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (loading) return;
-    if (!user) { navigate("/login"); return; }
+    if (!user) { navigate("/admin-login"); return; }
     if (user.role !== "admin") { navigate("/portal"); return; }
   }, [user, loading]);
 
@@ -351,7 +351,7 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center gap-3">
             <span className="text-slate-300 text-sm hidden sm:block">{user?.name}</span>
-            <button onClick={() => { logout(); navigate("/login"); }} className="flex items-center gap-1.5 text-slate-400 hover:text-white text-xs transition-colors">
+            <button onClick={() => { logout(); navigate("/admin-login"); }} className="flex items-center gap-1.5 text-slate-400 hover:text-white text-xs transition-colors">
               <LogOut size={14} /> Sign out
             </button>
           </div>
