@@ -24,6 +24,9 @@ import JohannesburgPage from "@/pages/Johannesburg";
 import DurbanPage from "@/pages/Durban";
 import PretoriaPage from "@/pages/Pretoria";
 import PortElizabethPage from "@/pages/PortElizabeth";
+import LoginPage from "@/pages/Login";
+import CustomerPortal from "@/pages/CustomerPortal";
+import AdminDashboard from "@/pages/AdminDashboard";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -51,6 +54,9 @@ function Router() {
       <Route path="/durban" component={DurbanPage} />
       <Route path="/pretoria" component={PretoriaPage} />
       <Route path="/port-elizabeth" component={PortElizabethPage} />
+      <Route path="/login" component={LoginPage} />
+      <Route path="/portal" component={CustomerPortal} />
+      <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

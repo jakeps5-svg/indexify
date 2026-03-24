@@ -20,6 +20,9 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 | `/contact` | Contact form (Brevo email) |
 | `/blog` | Blog listing |
 | `/checkout` | Yoco payment checkout |
+| `/login` | Client portal login (JWT auth) |
+| `/portal` | Customer dashboard — services, invoices, meeting booking, live chat |
+| `/admin` | Admin dashboard — client management, invoices, chat, meetings |
 
 ## Stack
 

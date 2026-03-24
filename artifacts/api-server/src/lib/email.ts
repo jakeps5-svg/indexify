@@ -557,3 +557,89 @@ export async function sendInternalNotification(opts: {
     html,
   });
 }
+
+export async function sendInvoiceEmail(opts: {
+  to: string; name: string; invoiceNumber: string;
+  description: string; amountRands: string; dueDate: string;
+}) {
+  const subject = `Invoice ${opts.invoiceNumber} from Indexify — R${opts.amountRands}`;
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07);">
+        <tr><td style="background:linear-gradient(135deg,#0ea5c8,#7c4dff);padding:32px 40px;text-align:center;">
+          <div style="font-size:28px;font-weight:900;color:#fff;letter-spacing:-1px;">indexify.</div>
+          <div style="color:rgba(255,255,255,0.7);font-size:13px;margin-top:4px;">Powered by Fortune Design</div>
+        </td></tr>
+        <tr><td style="padding:40px;">
+          <p style="color:#64748b;font-size:15px;">Hi ${opts.name},</p>
+          <p style="color:#1e293b;font-size:15px;">Please find your invoice details below.</p>
+          <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:24px;margin:24px 0;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr><td style="color:#64748b;font-size:13px;padding:6px 0;">Invoice Number</td><td style="text-align:right;font-weight:700;color:#1e293b;">${opts.invoiceNumber}</td></tr>
+              <tr><td style="color:#64748b;font-size:13px;padding:6px 0;border-top:1px solid #e0f2fe;">Description</td><td style="text-align:right;font-weight:600;color:#1e293b;">${opts.description}</td></tr>
+              <tr><td style="color:#64748b;font-size:13px;padding:6px 0;border-top:1px solid #e0f2fe;">Amount Due</td><td style="text-align:right;font-weight:900;color:#0ea5c8;font-size:20px;">R${opts.amountRands}</td></tr>
+              <tr><td style="color:#64748b;font-size:13px;padding:6px 0;border-top:1px solid #e0f2fe;">Due Date</td><td style="text-align:right;font-weight:700;color:#dc2626;">${opts.dueDate}</td></tr>
+            </table>
+          </div>
+          <p style="color:#64748b;font-size:14px;">To pay, please EFT to our bank account or contact us via WhatsApp at <a href="https://wa.me/27602988295" style="color:#0ea5c8;">+27 60 298 8295</a>.</p>
+          <p style="color:#64748b;font-size:13px;margin-top:32px;">Regards,<br/><strong style="color:#1e293b;">The Indexify Team</strong><br/>Powered by Fortune Design · fortunedesign.co.za</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+  await sendEmail({
+    to: [{ email: opts.to, name: opts.name }],
+    cc: [{ email: CC_EMAIL }],
+    subject,
+    html,
+  });
+}
+
+export async function sendMeetingRequestFromPortal(opts: {
+  name: string; email: string; phone: string;
+  preferredDate: string; preferredTime: string;
+  meetingType: string; notes: string;
+}) {
+  const subject = `New Meeting Request from Portal — ${opts.name}`;
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07);">
+        <tr><td style="background:linear-gradient(135deg,#0ea5c8,#7c4dff);padding:28px 40px;">
+          <div style="font-size:24px;font-weight:900;color:#fff;">indexify. — Meeting Request</div>
+          <div style="color:rgba(255,255,255,0.7);font-size:12px;margin-top:2px;">From the Client Portal</div>
+        </td></tr>
+        <tr><td style="padding:32px 40px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td style="padding:8px 0;border-bottom:1px solid #f1f5f9;color:#64748b;font-size:13px;">Client Name</td><td style="padding:8px 0;border-bottom:1px solid #f1f5f9;font-weight:700;">${opts.name}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #f1f5f9;color:#64748b;font-size:13px;">Email</td><td style="padding:8px 0;border-bottom:1px solid #f1f5f9;">${opts.email}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #f1f5f9;color:#64748b;font-size:13px;">Phone</td><td style="padding:8px 0;border-bottom:1px solid #f1f5f9;">${opts.phone || "—"}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #f1f5f9;color:#64748b;font-size:13px;">Date</td><td style="padding:8px 0;border-bottom:1px solid #f1f5f9;font-weight:700;">${opts.preferredDate}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #f1f5f9;color:#64748b;font-size:13px;">Time</td><td style="padding:8px 0;border-bottom:1px solid #f1f5f9;">${opts.preferredTime}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #f1f5f9;color:#64748b;font-size:13px;">Platform</td><td style="padding:8px 0;border-bottom:1px solid #f1f5f9;text-transform:capitalize;">${opts.meetingType.replace("-", " ")}</td></tr>
+            <tr><td style="padding:8px 0;color:#64748b;font-size:13px;">Notes</td><td style="padding:8px 0;">${opts.notes || "—"}</td></tr>
+          </table>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+  await sendEmail({
+    to: [{ email: CC_EMAIL }],
+    replyTo: { email: opts.email, name: opts.name },
+    subject,
+    html,
+  });
+}

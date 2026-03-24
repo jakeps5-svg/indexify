@@ -7,6 +7,9 @@ import checkoutRouter from "./checkout";
 import contactRouter from "./contact";
 import serpRouter from "./serp";
 import bookingRouter from "./booking";
+import authRouter from "./auth";
+import portalRouter from "./portal";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -18,5 +21,8 @@ router.use(checkoutRouter);
 router.use(contactRouter);
 router.use(serpRouter);
 router.use(bookingRouter);
+router.use(authRouter);
+router.use(portalRouter);
+router.use(adminRouter);
 
 export default router;

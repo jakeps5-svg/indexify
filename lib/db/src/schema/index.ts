@@ -19,3 +19,4 @@
 
 export * from "./inquiries";
 export * from "./charges";
+export * from "./portal";
