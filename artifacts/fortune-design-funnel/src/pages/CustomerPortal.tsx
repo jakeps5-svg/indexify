@@ -330,6 +330,32 @@ export default function CustomerPortal() {
                 </div>
               )}
             </div>
+
+            {/* Bank details card — shown when there are unpaid invoices */}
+            {invoices.some(i => i.status === "pending" || i.status === "sent" || i.status === "overdue") && (
+              <div className="mt-4 bg-sky-50 border border-sky-200 rounded-2xl p-5">
+                <h3 className="font-bold text-sky-900 text-sm mb-3 flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-sky-200 flex items-center justify-center text-[10px] font-black text-sky-700">R</span>
+                  EFT Banking Details
+                </h3>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                  {[
+                    ["Bank", "First National Bank (FNB)"],
+                    ["Account Holder", "Indexify"],
+                    ["Account Number", "63139187181"],
+                    ["Branch Code", "254005"],
+                    ["Account Type", "Cheque"],
+                    ["Reference", "Your invoice number"],
+                  ].map(([label, value]) => (
+                    <div key={label} className="flex flex-col">
+                      <span className="text-[10px] font-bold text-sky-600 uppercase tracking-wide">{label}</span>
+                      <span className={cn("font-semibold text-sky-900", label === "Account Number" && "font-black text-base text-primary")}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[11px] text-sky-600 mt-3">Please use your invoice number as the payment reference. WhatsApp us at +27 60 298 8295 once paid.</p>
+              </div>
+            )}
           </motion.div>
         )}
 

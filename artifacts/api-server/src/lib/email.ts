@@ -586,7 +586,18 @@ export async function sendInvoiceEmail(opts: {
               <tr><td style="color:#64748b;font-size:13px;padding:6px 0;border-top:1px solid #e0f2fe;">Due Date</td><td style="text-align:right;font-weight:700;color:#dc2626;">${opts.dueDate}</td></tr>
             </table>
           </div>
-          <p style="color:#64748b;font-size:14px;">To pay, please EFT to our bank account or contact us via WhatsApp at <a href="https://wa.me/27602988295" style="color:#0ea5c8;">+27 60 298 8295</a>.</p>
+          <p style="color:#1e293b;font-size:14px;font-weight:700;margin-bottom:8px;">Banking Details — EFT Payment</p>
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr><td style="color:#64748b;font-size:13px;padding:5px 0;">Bank</td><td style="text-align:right;font-weight:700;color:#1e293b;font-size:13px;">First National Bank (FNB)</td></tr>
+              <tr><td style="color:#64748b;font-size:13px;padding:5px 0;border-top:1px solid #e2e8f0;">Account Holder</td><td style="text-align:right;font-weight:700;color:#1e293b;font-size:13px;">Indexify</td></tr>
+              <tr><td style="color:#64748b;font-size:13px;padding:5px 0;border-top:1px solid #e2e8f0;">Account Number</td><td style="text-align:right;font-weight:900;color:#0ea5c8;font-size:14px;">63139187181</td></tr>
+              <tr><td style="color:#64748b;font-size:13px;padding:5px 0;border-top:1px solid #e2e8f0;">Branch Code</td><td style="text-align:right;font-weight:700;color:#1e293b;font-size:13px;">254005</td></tr>
+              <tr><td style="color:#64748b;font-size:13px;padding:5px 0;border-top:1px solid #e2e8f0;">Account Type</td><td style="text-align:right;font-weight:700;color:#1e293b;font-size:13px;">Cheque</td></tr>
+              <tr><td style="color:#64748b;font-size:13px;padding:5px 0;border-top:1px solid #e2e8f0;">Reference</td><td style="text-align:right;font-weight:700;color:#1e293b;font-size:13px;">${opts.invoiceNumber}</td></tr>
+            </table>
+          </div>
+          <p style="color:#64748b;font-size:13px;">Please use your invoice number <strong>${opts.invoiceNumber}</strong> as the payment reference. For queries contact us via WhatsApp at <a href="https://wa.me/27602988295" style="color:#0ea5c8;">+27 60 298 8295</a>.</p>
           <p style="color:#64748b;font-size:13px;margin-top:32px;">Regards,<br/><strong style="color:#1e293b;">The Indexify Team</strong><br/>Powered by Fortune Design · fortunedesign.co.za</p>
         </td></tr>
       </table>
