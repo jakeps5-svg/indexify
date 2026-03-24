@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useSEO } from "@/hooks/useSEO";
 import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 import {
   Search, CheckCircle2, XCircle, AlertTriangle,
   ExternalLink, Zap, Globe, Image, Link2, Share2,
@@ -401,304 +402,155 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages, topBackli
   );
 }
 
-function downloadAuditPDF(result: AuditResult) {
-  const doc = new jsPDF({ unit: "mm", format: "a4" });
-  const W = 210;
-  const H = 297;
-  const margin = 14;
-  const contentW = W - margin * 2;
-  // Safe zone: content must stay between compactHeaderH+padding and footerStart-padding
-  const compactHeaderH = 15;   // height of compact header on pages 2+
-  const footerStart    = 282;  // where footer band begins (H=297, footer=12mm)
-  const contentTopNew  = compactHeaderH + 5; // y-start on pages 2+
-  let y = 0;
-
-  const grade = scoreToGrade(result.overallScore);
-  const passes = result.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "pass").length, 0);
-  const warns  = result.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "warn").length, 0);
-  const fails  = result.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "fail").length, 0);
-  const date   = new Date().toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" });
-
-  // ── Adds a new page and resets y below the compact header ─────────────────
-  function checkPage(needed = 20) {
-    if (y + needed > footerStart - 4) {
-      doc.addPage();
-      y = contentTopNew;
-    }
-  }
-
-  function hline(color = [226, 232, 240] as [number,number,number]) {
-    doc.setDrawColor(...color);
-    doc.line(margin, y, W - margin, y);
-    y += 5;
-  }
-
-  // ── PAGE 1: LARGE TEAL HEADER ─────────────────────────────────────────────
-  doc.setFillColor(14, 165, 200);
-  doc.rect(0, 0, W, 28, "F");
-  doc.setFillColor(124, 77, 255);
-  doc.rect(0, 24, W, 4, "F");
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(20);
-  doc.setTextColor(255, 255, 255);
-  doc.text("indexify.", margin, 13);
-
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(200, 240, 255);
-  doc.text("Powered by Fortune Design · fortunedesign.co.za", margin, 20);
-
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(255, 255, 255);
-  doc.text("SEO AUDIT REPORT", W - margin, 13, { align: "right" });
-  doc.setFontSize(8);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(200, 240, 255);
-  doc.text(date, W - margin, 20, { align: "right" });
-
-  y = 38;
-
-  // ── URL + TITLE ───────────────────────────────────────────────────────────
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(13);
-  doc.setTextColor(15, 23, 42);
-  const titleText = doc.splitTextToSize(result.pageTitle || result.finalUrl, contentW);
-  doc.text(titleText, margin, y);
-  y += titleText.length * 6 + 1;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.setTextColor(100, 116, 139);
-  doc.text(result.finalUrl, margin, y);
-  y += 8;
-
-  hline();
-
-  // ── OVERALL SCORE ─────────────────────────────────────────────────────────
-  const scoreColors: Record<string, [number,number,number]> = {
-    "A+": [34,197,94], A: [34,197,94], "B+": [14,165,200], B: [14,165,200],
-    "C+": [245,158,11], C: [245,158,11], D: [249,115,22], F: [239,68,68],
-  };
-  const sc = scoreColors[grade.grade] ?? [239,68,68];
-
-  doc.setFillColor(...sc);
-  doc.roundedRect(margin, y, 36, 22, 3, 3, "F");
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
-  doc.setTextColor(255, 255, 255);
-  doc.text(grade.grade, margin + 18, y + 15, { align: "center" });
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  doc.setTextColor(15, 23, 42);
-  doc.text(`Score: ${result.overallScore}/100`, margin + 44, y + 7);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.setTextColor(100, 116, 139);
-  doc.text(grade.label, margin + 44, y + 13);
-  doc.text(`Load time: ${result.loadTimeMs}ms`, margin + 44, y + 19);
-  y += 28;
-
-  // ── STATS ROW ─────────────────────────────────────────────────────────────
-  const stats = [
-    { label: "Passed",   value: String(passes), color: [34,197,94]  as [number,number,number] },
-    { label: "Warnings", value: String(warns),  color: [245,158,11] as [number,number,number] },
-    { label: "Failed",   value: String(fails),  color: [239,68,68]  as [number,number,number] },
-    { label: "Load ms",  value: String(result.loadTimeMs), color: [14,165,200] as [number,number,number] },
-  ];
-  const cellW = contentW / 4;
-  stats.forEach((st, i) => {
-    const x = margin + i * cellW;
-    doc.setFillColor(248, 250, 252);
-    doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(x, y, cellW - 2, 14, 2, 2, "FD");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(...st.color);
-    doc.text(st.value, x + cellW / 2 - 1, y + 8, { align: "center" });
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7);
-    doc.setTextColor(100, 116, 139);
-    doc.text(st.label, x + cellW / 2 - 1, y + 12.5, { align: "center" });
+/** Load an image URL and return a base64 data-URL (for embedding in jsPDF). */
+function loadImageAsDataURL(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const c = document.createElement("canvas");
+      c.width  = img.naturalWidth  || img.width;
+      c.height = img.naturalHeight || img.height;
+      c.getContext("2d")!.drawImage(img, 0, 0);
+      resolve(c.toDataURL("image/png"));
+    };
+    img.onerror = reject;
+    // Cache-bust to avoid CORS issues with cached responses
+    img.src = url + "?v=1";
   });
-  y += 20;
+}
 
-  // ── CATEGORY GRADES ───────────────────────────────────────────────────────
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.setTextColor(100, 116, 139);
-  doc.text("CATEGORY GRADES", margin, y);
-  y += 5;
+async function downloadAuditPDF(result: AuditResult, reportEl: HTMLElement, setGenerating: (v: boolean) => void) {
+  setGenerating(true);
+  try {
+    // ── 1. Load both logos ─────────────────────────────────────────────────
+    const base = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
+    const [indexifyLogo, fdLogo] = await Promise.all([
+      loadImageAsDataURL(`${base}/indexify-logo.png`),
+      loadImageAsDataURL(`${base}/fortune-design-logo.png`),
+    ]);
 
-  const catW = contentW / result.sections.length;
-  result.sections.forEach((sec, i) => {
-    const g = scoreToGrade(sec.score);
-    const gc = scoreColors[g.grade] ?? [239,68,68];
-    const x = margin + i * catW;
-    doc.setFillColor(248, 250, 252);
-    doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(x, y, catW - 2, 16, 2, 2, "FD");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(13);
-    doc.setTextColor(...gc);
-    doc.text(g.grade, x + catW / 2 - 1, y + 8, { align: "center" });
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(6);
-    doc.setTextColor(100, 116, 139);
-    const label = sec.title.length > 12 ? sec.title.slice(0, 11) + "…" : sec.title;
-    doc.text(label, x + catW / 2 - 1, y + 13.5, { align: "center" });
-  });
-  y += 22;
-
-  // ── RECOMMENDATIONS ───────────────────────────────────────────────────────
-  const allRecs = result.recommendations;
-  if (allRecs.length > 0) {
-    checkPage(20);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.setTextColor(15, 23, 42);
-    doc.text("RECOMMENDATIONS", margin, y);
-    y += 5;
-    hline();
-
-    const recGroups = [
-      { prefix: "[Critical]", label: "Critical", color: [239, 68, 68] as [number,number,number] },
-      { prefix: "[Improve]",  label: "Improve",  color: [245,158,11] as [number,number,number] },
-      { prefix: "[Backlinks]",label: "Backlinks",color: [14,165,200] as [number,number,number] },
-    ];
-
-    recGroups.forEach(({ prefix, label, color }) => {
-      const recs = allRecs.filter(r => r.startsWith(prefix));
-      if (recs.length === 0) return;
-
-      checkPage(12);
-      doc.setFillColor(...color);
-      doc.roundedRect(margin, y, 22, 5, 1, 1, "F");
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(7);
-      doc.setTextColor(255, 255, 255);
-      doc.text(label.toUpperCase(), margin + 11, y + 3.5, { align: "center" });
-      y += 7;
-
-      recs.forEach(rec => {
-        const clean = rec.replace(prefix, "").trim();
-        const lines = doc.splitTextToSize(`• ${clean}`, contentW - 4);
-        checkPage(lines.length * 4.5 + 2);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8);
-        doc.setTextColor(51, 65, 85);
-        doc.text(lines, margin + 2, y);
-        y += lines.length * 4.5 + 1;
-      });
-      y += 3;
+    // ── 2. Screenshot the report element ──────────────────────────────────
+    const canvas = await html2canvas(reportEl, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: "#f8fafc",
+      logging: false,
+      // Expand to full scrollable height
+      windowWidth:  reportEl.scrollWidth,
+      windowHeight: reportEl.scrollHeight,
     });
-  }
 
-  // ── DETAILED SECTIONS ─────────────────────────────────────────────────────
-  doc.addPage();
-  y = contentTopNew;
+    // ── 3. Build PDF ───────────────────────────────────────────────────────
+    const A4_W      = 210;  // mm
+    const A4_H      = 297;  // mm
+    const HEADER_H  = 26;   // mm  — teal band with logos
+    const ACCENT_H  = 3;    // mm  — purple accent strip
+    const FOOTER_H  = 10;   // mm
+    const CONTENT_H = A4_H - HEADER_H - ACCENT_H - FOOTER_H; // mm available per page
 
-  result.sections.forEach(sec => {
-    const g = scoreToGrade(sec.score);
-    const gc = scoreColors[g.grade] ?? [239,68,68];
+    // Scale screenshot to fill page width
+    const pxPerMM   = canvas.width / A4_W;
+    const pageHpx   = Math.round(CONTENT_H * pxPerMM);
+    const pageCount = Math.max(1, Math.ceil(canvas.height / pageHpx));
 
-    checkPage(18);
-    doc.setFillColor(248, 250, 252);
-    doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(margin, y, contentW, 10, 2, 2, "FD");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.setTextColor(15, 23, 42);
-    doc.text(sec.title, margin + 3, y + 6.5);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.setTextColor(...gc);
-    doc.text(`${g.grade} (${sec.score}/100)`, W - margin - 2, y + 6.5, { align: "right" });
-    y += 13;
+    const pdf  = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+    const date = new Date().toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" });
 
-    sec.checks.forEach(check => {
-      const statusColors: Record<string, [number,number,number]> = {
-        pass: [34,197,94], warn: [245,158,11], fail: [239,68,68],
-      };
-      const sc2 = statusColors[check.status] ?? [148,163,184];
-      const icon = check.status === "pass" ? "✓" : check.status === "warn" ? "!" : "✗";
+    const drawHeader = (isFirst: boolean) => {
+      // Teal background
+      pdf.setFillColor(14, 165, 200);
+      pdf.rect(0, 0, A4_W, HEADER_H, "F");
+      // Purple accent
+      pdf.setFillColor(124, 77, 255);
+      pdf.rect(0, HEADER_H, A4_W, ACCENT_H, "F");
 
-      const lines = doc.splitTextToSize(check.name, contentW - 22);
-      checkPage(lines.length * 4.5 + 4);
+      // ── Indexify logo (left) ──
+      // Fit logo to ~32mm wide, proportional height
+      const idxLogoW = 32;
+      const idxLogoH = 10; // approx — jsPDF scales proportionally
+      pdf.addImage(indexifyLogo, "PNG", 10, (HEADER_H - idxLogoH) / 2, idxLogoW, idxLogoH);
 
-      doc.setFillColor(...sc2);
-      doc.circle(margin + 3, y + 2, 2.5, "F");
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(7);
-      doc.setTextColor(255, 255, 255);
-      doc.text(icon, margin + 3, y + 2.8, { align: "center" });
+      // ── Right side: "Powered by Fortune Design" + FD logo ──
+      const fdLogoW  = 28;
+      const fdLogoH  = 9;
+      const fdLogoX  = A4_W - 10 - fdLogoW;
+      const fdLogoY  = (HEADER_H - fdLogoH) / 2 + 2;
 
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(8);
-      doc.setTextColor(51, 65, 85);
-      doc.text(lines, margin + 8, y + 2.5);
-      y += lines.length * 4.5 + 2;
+      // "Powered by" text above FD logo
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(6);
+      pdf.setTextColor(200, 240, 255);
+      pdf.text("Powered by", A4_W - 10 - fdLogoW / 2, fdLogoY - 3, { align: "center" });
+      pdf.addImage(fdLogo, "PNG", fdLogoX, fdLogoY, fdLogoW, fdLogoH);
 
-      if (check.description) {
-        const dlines = doc.splitTextToSize(check.description, contentW - 14);
-        checkPage(dlines.length * 3.8 + 2);
-        doc.setFont("helvetica", "italic");
-        doc.setFontSize(7);
-        doc.setTextColor(100, 116, 139);
-        doc.text(dlines, margin + 10, y);
-        y += dlines.length * 3.8 + 1;
+      // ── Centre label (pages 2+) or report title (page 1) ──
+      if (isFirst) {
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(9);
+        pdf.setTextColor(255, 255, 255);
+        pdf.text("SEO AUDIT REPORT", A4_W / 2, HEADER_H / 2 - 2, { align: "center" });
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(7);
+        pdf.setTextColor(200, 240, 255);
+        pdf.text(date, A4_W / 2, HEADER_H / 2 + 4, { align: "center" });
+      } else {
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(8);
+        pdf.setTextColor(255, 255, 255);
+        pdf.text("SEO AUDIT REPORT", A4_W / 2, HEADER_H / 2 + 2, { align: "center" });
       }
-    });
-    y += 4;
-  });
+    };
 
-  // ── HEADERS & FOOTERS ON ALL PAGES ────────────────────────────────────────
-  const pageCount = doc.getNumberOfPages();
-  for (let p = 1; p <= pageCount; p++) {
-    doc.setPage(p);
+    const drawFooter = (pageNum: number, total: number) => {
+      const fy = A4_H - FOOTER_H;
+      pdf.setFillColor(241, 245, 249);
+      pdf.rect(0, fy, A4_W, FOOTER_H, "F");
+      pdf.setDrawColor(203, 213, 225);
+      pdf.line(0, fy, A4_W, fy);
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(6.5);
+      pdf.setTextColor(148, 163, 184);
+      pdf.text(
+        `Indexify · indexify.co.za · Powered by Fortune Design · fortunedesign.co.za`,
+        10, fy + 6,
+      );
+      pdf.text(`Page ${pageNum} of ${total}`, A4_W - 10, fy + 6, { align: "right" });
+    };
 
-    // Compact header on pages 2+ (drawn over the top margin where no content sits)
-    if (p > 1) {
-      doc.setFillColor(14, 165, 200);
-      doc.rect(0, 0, W, compactHeaderH, "F");
-      doc.setFillColor(124, 77, 255);
-      doc.rect(0, compactHeaderH - 2, W, 2, "F");
+    for (let p = 0; p < pageCount; p++) {
+      if (p > 0) pdf.addPage();
 
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.setTextColor(255, 255, 255);
-      doc.text("indexify.", margin, 10);
+      drawHeader(p === 0);
 
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.5);
-      doc.setTextColor(200, 240, 255);
-      doc.text("SEO AUDIT REPORT", W / 2, 10, { align: "center" });
+      // Slice the screenshot for this page
+      const sliceY = p * pageHpx;
+      const sliceH = Math.min(pageHpx, canvas.height - sliceY);
 
-      doc.setFontSize(7);
-      doc.setTextColor(200, 240, 255);
-      const urlShort = result.finalUrl.length > 55 ? result.finalUrl.slice(0, 53) + "…" : result.finalUrl;
-      doc.text(urlShort, W - margin, 10, { align: "right" });
+      const slice = document.createElement("canvas");
+      slice.width  = canvas.width;
+      slice.height = sliceH;
+      slice.getContext("2d")!.drawImage(canvas, 0, sliceY, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+
+      const sliceHeightMM = (sliceH / pxPerMM);
+      pdf.addImage(
+        slice.toDataURL("image/jpeg", 0.92),
+        "JPEG",
+        0,
+        HEADER_H + ACCENT_H,
+        A4_W,
+        Math.min(sliceHeightMM, CONTENT_H),
+      );
+
+      drawFooter(p + 1, pageCount);
     }
 
-    // Footer on every page
-    doc.setFillColor(241, 245, 249);
-    doc.rect(0, footerStart, W, H - footerStart, "F");
-    doc.setDrawColor(203, 213, 225);
-    doc.line(0, footerStart, W, footerStart);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7);
-    doc.setTextColor(148, 163, 184);
-    doc.text(
-      "Indexify · indexify.co.za · Powered by Fortune Design · fortunedesign.co.za",
-      margin, footerStart + 7,
-    );
-    doc.text(`Page ${p} of ${pageCount}`, W - margin, footerStart + 7, { align: "right" });
+    const domain = new URL(result.finalUrl).hostname.replace("www.", "");
+    pdf.save(`indexify-seo-audit-${domain}.pdf`);
+  } finally {
+    setGenerating(false);
   }
-
-  const domain = new URL(result.finalUrl).hostname.replace("www.", "");
-  doc.save(`indexify-seo-audit-${domain}.pdf`);
 }
 
 export default function AuditPage() {
@@ -709,10 +561,12 @@ export default function AuditPage() {
     canonical: "https://indexify.co.za/audit",
   });
 
-  const [inputUrl, setInputUrl] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<AuditResult | null>(null);
+  const [inputUrl, setInputUrl]     = useState("");
+  const [loading, setLoading]       = useState(false);
+  const [error, setError]           = useState<string | null>(null);
+  const [result, setResult]         = useState<AuditResult | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
 
   async function runAudit(e: React.FormEvent) {
     e.preventDefault();
@@ -854,12 +708,21 @@ export default function AuditPage() {
             {/* ── Download PDF button ── */}
             <div className="flex justify-end">
               <button
-                onClick={() => downloadAuditPDF(result)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-all shadow-sm hover:-translate-y-0.5"
+                onClick={() => {
+                  if (reportRef.current) {
+                    downloadAuditPDF(result, reportRef.current, setGenerating);
+                  }
+                }}
+                disabled={generating}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-all shadow-sm hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-wait"
               >
-                <Download size={14} /> Download PDF Report
+                <Download size={14} />
+                {generating ? "Generating PDF…" : "Download PDF Report"}
               </button>
             </div>
+
+            {/* ── Report content (captured as screenshot) ── */}
+            <div ref={reportRef} className="space-y-5">
 
             {/* ── Overall Grade Card ── */}
             <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
@@ -1178,6 +1041,8 @@ export default function AuditPage() {
                 </a>
               </div>
             </motion.div>
+
+            </div>{/* ── end reportRef ── */}
           </motion.div>
         )}
 
