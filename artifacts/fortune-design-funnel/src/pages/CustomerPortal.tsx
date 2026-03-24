@@ -766,17 +766,57 @@ export default function CustomerPortal() {
             )}
 
             {/* Error */}
-            {!gadsLoading && gads?.status === "error" && (
-              <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center shadow-sm">
-                <AlertCircle size={28} className="text-red-400 mx-auto mb-3" />
-                <p className="text-red-700 font-semibold text-sm">Could not load Google Ads data</p>
-                <p className="text-red-400 text-xs mt-1">{gads.error}</p>
-                <div className="mt-4 flex items-center gap-2 justify-center">
-                  <button onClick={refreshGads} className="text-xs font-bold text-red-600 bg-red-50 border border-red-200 px-4 py-2 rounded-lg hover:bg-red-100 transition-all">Try Again</button>
-                  <button onClick={connectGoogleAds} disabled={gadsConnecting} className="text-xs font-bold text-violet-600 bg-violet-50 border border-violet-200 px-4 py-2 rounded-lg hover:bg-violet-100 transition-all">Reconnect Account</button>
+            {!gadsLoading && gads?.status === "error" && (() => {
+              const isSetupPending = gads.error?.toLowerCase().includes("unimplemented") ||
+                gads.error?.toLowerCase().includes("not implemented") ||
+                gads.error?.toLowerCase().includes("developer token") ||
+                gads.error?.toLowerCase().includes("unexpected response");
+
+              if (isSetupPending) {
+                return (
+                  <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+                    <div className="flex items-center gap-3 p-6 border-b border-gray-50">
+                      <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center shrink-0">
+                        <CheckCircle2 size={20} className="text-amber-500" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-bold text-gray-900">Google Ads Account Linked</h3>
+                        <p className="text-xs text-gray-400 mt-0.5">API access is being activated — your data will appear here shortly</p>
+                      </div>
+                    </div>
+                    <div className="p-6 space-y-4">
+                      <div className="bg-amber-50 border border-amber-100 rounded-xl p-4">
+                        <p className="text-sm font-semibold text-amber-800 mb-1">Setup in progress</p>
+                        <p className="text-sm text-amber-700">
+                          Your Google Ads account is connected and your Customer ID is saved. Our team is finalising API access — this typically takes 1–2 business days. You'll see your live campaign data here as soon as it's ready.
+                        </p>
+                      </div>
+                      {gads.customerId && (
+                        <p className="text-xs text-gray-400">
+                          Linked Customer ID: <span className="font-mono font-semibold text-gray-600">{gads.customerId}</span>
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 pt-1">
+                        <button onClick={refreshGads} className="text-xs font-bold text-gray-600 bg-white border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 transition-all">Check Again</button>
+                        <button onClick={disconnectGoogleAds} disabled={gadsDisconnecting} className="text-xs text-gray-300 hover:text-red-400 underline transition-colors">Disconnect</button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center shadow-sm">
+                  <AlertCircle size={28} className="text-red-400 mx-auto mb-3" />
+                  <p className="text-red-700 font-semibold text-sm">Could not load Google Ads data</p>
+                  <p className="text-red-400 text-xs mt-1">{gads.error}</p>
+                  <div className="mt-4 flex items-center gap-2 justify-center">
+                    <button onClick={refreshGads} className="text-xs font-bold text-red-600 bg-red-50 border border-red-200 px-4 py-2 rounded-lg hover:bg-red-100 transition-all">Try Again</button>
+                    <button onClick={connectGoogleAds} disabled={gadsConnecting} className="text-xs font-bold text-violet-600 bg-violet-50 border border-violet-200 px-4 py-2 rounded-lg hover:bg-violet-100 transition-all">Reconnect Account</button>
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Connected — show metrics */}
             {!gadsLoading && gads?.status === "connected" && gads.totals && (
