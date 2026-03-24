@@ -83,8 +83,9 @@ export default function AdminDashboard() {
   const [newUpdate, setNewUpdate] = useState({ title: "", content: "", subscriptionId: "" });
 
   useEffect(() => {
-    if (!loading && !user) navigate("/login");
-    if (!loading && user?.role !== "admin") navigate("/portal");
+    if (loading) return;
+    if (!user) { navigate("/login"); return; }
+    if (user.role !== "admin") { navigate("/portal"); return; }
   }, [user, loading]);
 
   const loadCustomers = async () => {

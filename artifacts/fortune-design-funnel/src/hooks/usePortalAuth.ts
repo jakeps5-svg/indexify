@@ -21,16 +21,22 @@ export function usePortalAuth() {
 
   const fetchMe = useCallback(async () => {
     const t = token();
-    if (!t) {
-      const cached = localStorage.getItem(USER_KEY);
-      if (cached) { try { setUser(JSON.parse(cached)); } catch {} }
-      setLoading(false); return;
-    }
+    const cached = localStorage.getItem(USER_KEY);
+
+    // Immediately restore from cache so pages don't flash a redirect
+    if (cached) { try { setUser(JSON.parse(cached)); } catch {} }
+    if (!t) { setLoading(false); return; }
+
+    // Set loading false right away (cached user prevents redirect)
+    setLoading(false);
+
+    // Validate token silently in the background
     try {
       const res = await fetch(`${BASE}/api/auth/me`, {
         headers: { Authorization: `Bearer ${t}` },
       });
       if (!res.ok) {
+        // Token is explicitly rejected — log out
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(USER_KEY);
         setUser(null);
@@ -39,8 +45,9 @@ export function usePortalAuth() {
         localStorage.setItem(USER_KEY, JSON.stringify(u));
         setUser(u);
       }
-    } catch { setUser(null); }
-    finally { setLoading(false); }
+    } catch {
+      // Network error — keep cached user, do not log out
+    }
   }, []);
 
   useEffect(() => { fetchMe(); }, [fetchMe]);

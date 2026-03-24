@@ -57,8 +57,9 @@ export default function CustomerPortal() {
   const [updates, setUpdates] = useState<ServiceUpdate[]>([]);
 
   useEffect(() => {
-    if (!loading && !user) navigate("/login");
-    if (!loading && user?.role === "admin") navigate("/admin");
+    if (loading) return;
+    if (!user) { navigate("/login"); return; }
+    if (user.role === "admin") { navigate("/admin"); return; }
   }, [user, loading]);
 
   useEffect(() => {
