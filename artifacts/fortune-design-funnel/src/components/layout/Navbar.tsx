@@ -90,11 +90,20 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Desktop: 3-column centred-logo layout */}
-        <div className="hidden md:grid md:grid-cols-3 md:items-center">
+        {/* Desktop: logo-left / menu-right layout */}
+        <div className="hidden md:flex md:items-center md:justify-between">
 
-          {/* LEFT — Services + Blog + Free Tools */}
-          <div className="flex items-center gap-7">
+          {/* LEFT — Logo */}
+          <a href={BASE} className="flex items-center cursor-pointer shrink-0">
+            <img
+              src={`${BASE}indexify-logo.png`}
+              alt="Indexify – Lead SEO & Google Ads Expert"
+              className="h-14 w-auto object-contain"
+            />
+          </a>
+
+          {/* RIGHT — Full menu */}
+          <div className="flex items-center gap-6">
             {/* Services dropdown */}
             <div ref={servicesRef} className="relative">
               <button
@@ -189,21 +198,6 @@ export function Navbar() {
                 )}
               </AnimatePresence>
             </div>
-          </div>
-
-          {/* CENTRE — Logo */}
-          <div className="flex justify-center">
-            <a href={BASE} className="flex items-center cursor-pointer">
-              <img
-                src={`${BASE}indexify-logo.png`}
-                alt="Indexify – Lead SEO & Google Ads Expert"
-                className="h-14 w-auto object-contain"
-              />
-            </a>
-          </div>
-
-          {/* RIGHT — Locations + Pricing + Contact + CTA */}
-          <div className="flex items-center justify-end gap-7">
 
             {/* Locations / Cities dropdown */}
             <div ref={citiesRef} className="relative">
