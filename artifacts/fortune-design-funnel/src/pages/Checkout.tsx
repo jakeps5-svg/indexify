@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, Lock, User, Mail, Phone, Building2, Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, Lock, User, Mail, Phone, Building2, Loader2, ArrowLeft, CheckCircle2, Eye, EyeOff, KeyRound } from "lucide-react";
 import { useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useYocoPopup } from "@/hooks/useYocoPopup";
+
+const API = import.meta.env.VITE_API_URL ?? "";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -65,8 +67,11 @@ export default function CheckoutPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [company, setCompany] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [formError, setFormError] = useState("");
   const [paid, setPaid] = useState(false);
+  const [portalCreated, setPortalCreated] = useState(false);
   const [unlockToken, setUnlockToken] = useState("");
 
   const { showPopup, loading: yocoLoading, error: yocoError, clearError } = useYocoPopup();
@@ -96,11 +101,21 @@ export default function CheckoutPage() {
         domain: domain || undefined,
         type,
       },
-      onSuccess: (chargeId, token) => {
+      onSuccess: async (chargeId, token) => {
         setUnlockToken(token ?? "");
         setPaid(true);
         if (type !== "proposal") {
-          window.location.href = `${window.location.origin}${BASE}/payment-success?type=${type}`;
+          if (password.trim().length >= 8) {
+            try {
+              const res = await fetch(`${API}/api/auth/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: name.trim(), email: email.trim(), password, phone: phone.trim() || undefined, company: company.trim() || undefined }),
+              });
+              if (res.ok) setPortalCreated(true);
+            } catch { }
+          }
+          window.location.href = `${window.location.origin}${BASE}/payment-success?type=${type}&portal=${password.trim().length >= 8 ? "1" : "0"}`;
         }
       },
     });
@@ -270,6 +285,30 @@ export default function CheckoutPage() {
                       />
                     </div>
                   </div>
+
+                  {/* Portal password — only for service purchases */}
+                  {type !== "proposal" && (
+                    <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <KeyRound size={14} className="text-primary" />
+                        <p className="text-sm font-bold text-gray-800">Create your client portal account</p>
+                      </div>
+                      <p className="text-xs text-gray-500 mb-3">Set a password to access your portal — track your services, view invoices & chat with your account manager. <span className="font-medium text-gray-600">(Optional — you can skip this)</span></p>
+                      <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1.5">Portal Password</label>
+                      <div className="relative">
+                        <input
+                          type={showPw ? "text" : "password"}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="Min. 8 characters (optional)"
+                          className="w-full pl-4 pr-10 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder-gray-400 transition-all"
+                        />
+                        <button type="button" onClick={() => setShowPw(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                          {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   {(formError || yocoError) && (
                     <p className="text-sm text-red-500 bg-red-50 border border-red-100 rounded-lg px-4 py-2.5">

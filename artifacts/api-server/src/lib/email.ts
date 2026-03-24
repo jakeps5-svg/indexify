@@ -654,3 +654,76 @@ export async function sendMeetingRequestFromPortal(opts: {
     html,
   });
 }
+
+export async function sendPasswordResetEmail(opts: { name: string; email: string; resetLink: string }) {
+  const subject = "Reset your Indexify portal password";
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="580" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07);">
+        <tr><td style="background:linear-gradient(135deg,#0ea5c8,#7c4dff);padding:32px 40px;text-align:center;">
+          <div style="font-size:28px;font-weight:900;color:#fff;letter-spacing:-1px;">indexify.</div>
+          <div style="color:rgba(255,255,255,0.7);font-size:13px;margin-top:4px;">Client Portal</div>
+        </td></tr>
+        <tr><td style="padding:40px;">
+          <p style="color:#64748b;font-size:15px;margin:0 0 12px;">Hi ${opts.name},</p>
+          <p style="color:#1e293b;font-size:15px;margin:0 0 24px;">We received a request to reset your Indexify portal password. Click the button below to set a new password. This link expires in <strong>1 hour</strong>.</p>
+          <div style="text-align:center;margin:32px 0;">
+            <a href="${opts.resetLink}" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#0ea5c8,#7c4dff);color:#fff;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;letter-spacing:0.2px;">Reset My Password</a>
+          </div>
+          <p style="color:#94a3b8;font-size:12px;margin:0 0 8px;">Or copy and paste this link into your browser:</p>
+          <p style="color:#0ea5c8;font-size:11px;word-break:break-all;margin:0 0 24px;"><a href="${opts.resetLink}" style="color:#0ea5c8;">${opts.resetLink}</a></p>
+          <p style="color:#94a3b8;font-size:13px;margin:0;">If you didn't request a password reset, you can safely ignore this email — your password won't change.</p>
+          <p style="color:#64748b;font-size:13px;margin-top:32px;">Regards,<br/><strong style="color:#1e293b;">The Indexify Team</strong><br/>Powered by Fortune Design · fortunedesign.co.za</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+  await sendEmail({ to: [{ email: opts.email, name: opts.name }], subject, html });
+}
+
+export async function sendWelcomeEmail(opts: { name: string; email: string }) {
+  const subject = "Welcome to Indexify — your portal is ready!";
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="580" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.07);">
+        <tr><td style="background:linear-gradient(135deg,#0ea5c8,#7c4dff);padding:32px 40px;text-align:center;">
+          <div style="font-size:28px;font-weight:900;color:#fff;letter-spacing:-1px;">indexify.</div>
+          <div style="color:rgba(255,255,255,0.7);font-size:13px;margin-top:4px;">Welcome aboard!</div>
+        </td></tr>
+        <tr><td style="padding:40px;">
+          <p style="color:#64748b;font-size:15px;margin:0 0 12px;">Hi ${opts.name},</p>
+          <p style="color:#1e293b;font-size:15px;margin:0 0 24px;">Your Indexify client portal account has been created. You can now log in to track your services, view invoices, book meetings, and chat with your account manager.</p>
+          <div style="text-align:center;margin:32px 0;">
+            <a href="https://indexify.co.za/login" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#0ea5c8,#7c4dff);color:#fff;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;">Go to My Portal</a>
+          </div>
+          <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:20px;margin-bottom:24px;">
+            <p style="color:#0369a1;font-size:13px;font-weight:700;margin:0 0 6px;">Your login details</p>
+            <p style="color:#1e293b;font-size:13px;margin:0;">Email: <strong>${opts.email}</strong></p>
+            <p style="color:#64748b;font-size:12px;margin:6px 0 0;">Use the password you set during checkout.</p>
+          </div>
+          <p style="color:#64748b;font-size:13px;margin-top:32px;">Regards,<br/><strong style="color:#1e293b;">The Indexify Team</strong><br/>Powered by Fortune Design · fortunedesign.co.za</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+  await sendEmail({
+    to: [{ email: opts.email, name: opts.name }],
+    cc: CC_EMAILS,
+    subject,
+    html,
+  });
+}

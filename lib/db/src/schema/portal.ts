@@ -16,6 +16,8 @@ export const usersTable = pgTable("portal_users", {
   company: text("company"),
   passwordHash: text("password_hash").notNull(),
   role: userRoleEnum("role").notNull().default("customer"),
+  resetToken: text("reset_token"),
+  resetTokenExpiry: timestamp("reset_token_expiry"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
