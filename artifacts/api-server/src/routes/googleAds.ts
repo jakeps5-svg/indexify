@@ -68,6 +68,23 @@ function getRedirectUri(req: Request): string {
   return process.env.GOOGLE_ADS_REDIRECT_URI ?? `${getBaseUrl(req)}/api/auth/google-ads/callback`;
 }
 
+/**
+ * After the OAuth callback completes we redirect the user's browser back to the
+ * portal/admin UI.  We derive the site origin from GOOGLE_ADS_REDIRECT_URI so
+ * the redirect always lands on the correct domain (e.g. indexify.co.za) even
+ * when the callback request arrives via Replit's internal proxy.
+ */
+function getSiteBaseUrl(req: Request): string {
+  const configuredUri = process.env.GOOGLE_ADS_REDIRECT_URI;
+  if (configuredUri) {
+    try {
+      const u = new URL(configuredUri);
+      return `${u.protocol}//${u.host}`;
+    } catch {}
+  }
+  return getBaseUrl(req);
+}
+
 async function exchangeCodeForTokens(
   code: string,
   redirectUri: string
@@ -324,7 +341,7 @@ router.get("/admin/google-ads/auth-url", requireAdmin, (req, res) => {
 
 // ── Shared OAuth callback (handles both admin and client flows) ──
 router.get("/auth/google-ads/callback", async (req, res) => {
-  const baseUrl = getBaseUrl(req);
+  const baseUrl = getSiteBaseUrl(req);
   const { code, state, error } = req.query as { code?: string; state?: string; error?: string };
 
   if (error || !code) {
