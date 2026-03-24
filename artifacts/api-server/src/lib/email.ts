@@ -1,7 +1,7 @@
 const BREVO_API_KEY = process.env.BREVO_API_KEY ?? "";
 const SENDER_NAME = "Indexify";
 const SENDER_EMAIL = "support@indexify.co.za";
-const CC_EMAIL = "info@fortunedesign.co.za";
+const CC_EMAILS = [{ email: "info@fortunedesign.co.za" }, { email: "support@indexify.co.za" }];
 
 async function sendEmail(opts: {
   to: { email: string; name?: string }[];
@@ -107,7 +107,7 @@ export async function sendProposalUnlockEmail(opts: {
 
   await sendEmail({
     to: [{ email: opts.to, name: opts.name }],
-    cc: [{ email: CC_EMAIL }],
+    cc: CC_EMAILS,
     subject,
     html,
   });
@@ -175,7 +175,7 @@ export async function sendServicePurchaseEmail(opts: {
 
   await sendEmail({
     to: [{ email: opts.to, name: opts.name }],
-    cc: [{ email: CC_EMAIL }],
+    cc: CC_EMAILS,
     subject,
     html,
   });
@@ -249,7 +249,7 @@ export async function sendContactEmail(opts: {
   // Internal notification to the team
   await sendEmail({
     to: [{ email: SENDER_EMAIL }],
-    cc: [{ email: CC_EMAIL }],
+    cc: CC_EMAILS,
     replyTo: { email: opts.email, name: opts.name },
     subject,
     html,
@@ -326,7 +326,7 @@ export async function sendContactEmail(opts: {
 
   await sendEmail({
     to: [{ email: opts.email, name: opts.name }],
-    cc: [{ email: CC_EMAIL }],
+    cc: CC_EMAILS,
     subject: `We received your message — Indexify`,
     html: confirmHtml,
   });
@@ -410,7 +410,7 @@ export async function sendMeetingRequestEmail(opts: {
 
   await sendEmail({
     to: [{ email: SENDER_EMAIL }],
-    cc: [{ email: CC_EMAIL }],
+    cc: CC_EMAILS,
     replyTo: { email: opts.email, name: opts.name },
     subject: `Meeting Request: ${opts.name} — ${opts.date} at ${opts.time} (${platformLabel})`,
     html: agencyHtml,
@@ -499,7 +499,7 @@ export async function sendMeetingRequestEmail(opts: {
 
   await sendEmail({
     to: [{ email: opts.email, name: opts.name }],
-    cc: [{ email: CC_EMAIL }],
+    cc: CC_EMAILS,
     subject: `Meeting Request Confirmed — ${platformLabel} on ${opts.date} at ${opts.time}`,
     html: confirmHtml,
   });
@@ -552,7 +552,7 @@ export async function sendInternalNotification(opts: {
 
   await sendEmail({
     to: [{ email: SENDER_EMAIL }],
-    cc: [{ email: CC_EMAIL }],
+    cc: CC_EMAILS,
     subject,
     html,
   });
@@ -607,7 +607,7 @@ export async function sendInvoiceEmail(opts: {
 </html>`;
   await sendEmail({
     to: [{ email: opts.to, name: opts.name }],
-    cc: [{ email: CC_EMAIL }],
+    cc: CC_EMAILS,
     subject,
     html,
   });
@@ -648,7 +648,7 @@ export async function sendMeetingRequestFromPortal(opts: {
 </body>
 </html>`;
   await sendEmail({
-    to: [{ email: CC_EMAIL }],
+    to: CC_EMAILS,
     replyTo: { email: opts.email, name: opts.name },
     subject,
     html,
