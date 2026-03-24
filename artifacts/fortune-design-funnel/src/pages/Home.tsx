@@ -261,18 +261,8 @@ export default function Home() {
       </section>
 
       {/* 3. SERVICES SECTION */}
-      <section id="services" className="py-24 relative overflow-hidden">
-        {/* Background image */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src={`${import.meta.env.BASE_URL}images/results-bg.png`}
-            alt=""
-            role="presentation"
-            aria-hidden="true"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, hsl(198 69% 18% / 0.93) 0%, hsl(220 40% 10% / 0.95) 100%)" }} />
-        </div>
+      <section id="services" className="py-24 relative overflow-hidden bg-slate-900">
+        <div className="absolute inset-0 z-0" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }} />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
