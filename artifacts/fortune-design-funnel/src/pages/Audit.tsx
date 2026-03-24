@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useSEO } from "@/hooks/useSEO";
 import { jsPDF } from "jspdf";
-import { toJpeg } from "html-to-image";
 import {
   Search, CheckCircle2, XCircle, AlertTriangle,
   ExternalLink, Zap, Globe, Image, Link2, Share2,
@@ -420,145 +419,335 @@ async function loadLogoDataURL(url: string): Promise<string> {
 }
 
 /**
- * Screenshot-based PDF using html-to-image (handles modern CSS incl. oklch natively)
- * + jsPDF for the branded header/footer wrapper.
+ * Fully programmatic PDF using jsPDF only.
+ * No DOM screenshot, no CORS dependencies — works reliably in all environments.
  */
-async function downloadAuditPDF(result: AuditResult, reportEl: HTMLElement, setGenerating: (v: boolean) => void) {
+async function downloadAuditPDF(result: AuditResult, _reportEl: HTMLElement, setGenerating: (v: boolean) => void) {
   setGenerating(true);
   try {
     // ── Layout constants ───────────────────────────────────────────────────
-    const A4_W     = 210;  // mm
-    const A4_H     = 297;  // mm
-    const HDR_H    = 28;   // mm — teal brand band
-    const ACCENT_H = 2.5;  // mm — purple strip
-    const FTR_H    = 10;   // mm
-    const CONTENT_H = A4_H - HDR_H - ACCENT_H - FTR_H;  // mm of screenshot per page
+    const A4_W  = 210;
+    const A4_H  = 297;
+    const HDR_H = 30;
+    const ACC_H = 2.5;
+    const FTR_H = 12;
+    const L     = 14;
+    const R     = 196;
+    const CW    = R - L;
+    const CTOP  = HDR_H + ACC_H + 8;
+    const CBOT  = A4_H - FTR_H - 4;
 
-    const C_TEAL   = [14, 165, 200]  as [number, number, number];
-    const C_PURPLE = [124, 77, 255]  as [number, number, number];
-    const C_WHITE  = [255, 255, 255] as [number, number, number];
-    const C_LIGHT  = [148, 163, 184] as [number, number, number];
-    const C_BG     = [248, 250, 252] as [number, number, number];
-    const C_LINE   = [226, 232, 240] as [number, number, number];
+    type RGB = [number, number, number];
+    const TEAL:   RGB = [14,  165, 200];
+    const PURPLE: RGB = [124,  77, 255];
+    const WHITE:  RGB = [255, 255, 255];
+    const DARK:   RGB = [15,   23,  42];
+    const MID:    RGB = [71,   85, 105];
+    const LIGHT:  RGB = [148, 163, 184];
+    const BGRAY:  RGB = [248, 250, 252];
+    const LINE:   RGB = [226, 232, 240];
+    const GREEN:  RGB = [16,  185, 129];
+    const AMBER:  RGB = [245, 158,  11];
+    const RED:    RGB = [239,  68,  68];
 
     // ── Load logos ─────────────────────────────────────────────────────────
-    const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
+    const BASE_URL = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
     const [indexifyLogo, fdLogo] = await Promise.all([
-      loadLogoDataURL(`${BASE}/indexify-logo.png`),
-      loadLogoDataURL(`${BASE}/images/fortune-design-logo.png`),
+      loadLogoDataURL(`${BASE_URL}/indexify-logo.png`),
+      loadLogoDataURL(`${BASE_URL}/images/fortune-design-logo.png`),
     ]);
 
-    // ── Screenshot the report element with html-to-image ──────────────────
-    // html-to-image renders via the browser's native SVG engine, so it handles
-    // modern CSS (oklch, lch, etc.) without any custom CSS parser.
-    const screenshotDataUrl = await toJpeg(reportEl, {
-      quality: 0.93,
-      backgroundColor: "#f8fafc",
-      pixelRatio: 2,
-      skipFonts: false,
-      fetchRequestInit: { cache: "force-cache" },
-    });
+    const pdf    = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+    const date   = new Date().toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" });
+    const domain = new URL(result.finalUrl).hostname.replace("www.", "");
 
-    // ── Build jsPDF ────────────────────────────────────────────────────────
-    const MARGIN  = 0;   // screenshot fills full width
-    const pdf     = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
-    const date    = new Date().toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" });
-    const domain  = new URL(result.finalUrl).hostname.replace("www.", "");
+    let currentPage = 1;
+    const addPage = () => { pdf.addPage(); currentPage++; };
 
-    // Work out how many pixels tall the content area is per page
-    // Note: use window.Image to avoid collision with the lucide-react <Image> icon import
-    const tempImg = new window.Image();
-    const imgDims = await new Promise<{ w: number; h: number }>((resolve) => {
-      tempImg.onload = () => resolve({ w: tempImg.width, h: tempImg.height });
-      tempImg.src = screenshotDataUrl;
-    });
+    // ── Helpers ────────────────────────────────────────────────────────────
+    const scoreRGB = (s: number): RGB => s >= 80 ? GREEN : s >= 60 ? AMBER : RED;
 
-    const pxPerMM    = imgDims.w / A4_W;
-    const contentHpx = Math.round(CONTENT_H * pxPerMM);
-    const pageCount  = Math.max(1, Math.ceil(imgDims.h / contentHpx));
+    const scoreGrade = (s: number) => {
+      if (s >= 95) return "A+"; if (s >= 90) return "A";  if (s >= 85) return "A−";
+      if (s >= 80) return "B+"; if (s >= 75) return "B";  if (s >= 70) return "B−";
+      if (s >= 65) return "C+"; if (s >= 60) return "C";  if (s >= 50) return "C−";
+      if (s >= 40) return "D";  return "F";
+    };
 
-    // ── Header drawer ──────────────────────────────────────────────────────
-    const drawHeader = (pg: number) => {
-      pdf.setFillColor(...C_TEAL);
-      pdf.rect(0, 0, A4_W, HDR_H, "F");
-      pdf.setFillColor(...C_PURPLE);
-      pdf.rect(0, HDR_H, A4_W, ACCENT_H, "F");
+    const scoreLabel = (s: number) => {
+      if (s >= 85) return "Excellent";
+      if (s >= 75) return "Good";
+      if (s >= 65) return "Average";
+      if (s >= 50) return "Below Average";
+      if (s >= 40) return "Poor";
+      return "Critical — Needs Urgent Attention";
+    };
 
-      // Indexify logo (left)
+    const wrap = (text: string, maxW: number, fs: number) => {
+      pdf.setFontSize(fs);
+      return pdf.splitTextToSize(text, maxW) as string[];
+    };
+
+    const drawScoreCircle = (cx: number, cy: number, r: number, score: number) => {
+      pdf.setDrawColor(...LINE); pdf.setLineWidth(3.5);
+      pdf.circle(cx, cy, r, "S");
+      const col = scoreRGB(score);
+      pdf.setDrawColor(...col); pdf.setLineWidth(3.5);
+      const steps = Math.round((score / 100) * 60);
+      const start = -Math.PI / 2;
+      for (let i = 0; i < steps; i++) {
+        const a1 = start + (i / 60) * 2 * Math.PI;
+        const a2 = start + ((i + 1) / 60) * 2 * Math.PI;
+        pdf.line(cx + r * Math.cos(a1), cy + r * Math.sin(a1), cx + r * Math.cos(a2), cy + r * Math.sin(a2));
+      }
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(22); pdf.setTextColor(...col);
+      pdf.text(`${score}`, cx, cy + 3, { align: "center" });
+      pdf.setFontSize(8); pdf.setTextColor(...MID);
+      pdf.text("/100", cx, cy + 9, { align: "center" });
+    };
+
+    const drawBar = (x: number, y: number, w: number, h: number, score: number) => {
+      pdf.setFillColor(...LINE); pdf.roundedRect(x, y, w, h, 1, 1, "F");
+      pdf.setFillColor(...scoreRGB(score)); pdf.roundedRect(x, y, Math.max(2, (score / 100) * w), h, 1, 1, "F");
+    };
+
+    const drawHeader = (title = "SEO AUDIT REPORT") => {
+      pdf.setFillColor(...TEAL);   pdf.rect(0, 0,     A4_W, HDR_H, "F");
+      pdf.setFillColor(...PURPLE); pdf.rect(0, HDR_H, A4_W, ACC_H, "F");
+
       if (indexifyLogo) {
-        try { pdf.addImage(indexifyLogo, "PNG", 10, (HDR_H - 11) / 2, 34, 11); } catch { /* skip */ }
+        try { pdf.addImage(indexifyLogo, "PNG", L, (HDR_H - 11) / 2, 34, 11); } catch { /**/ }
       } else {
-        pdf.setFont("helvetica", "bold"); pdf.setFontSize(15); pdf.setTextColor(...C_WHITE);
-        pdf.text("indexify.", 10, HDR_H / 2 + 4);
+        pdf.setFont("helvetica", "bold"); pdf.setFontSize(16); pdf.setTextColor(...WHITE);
+        pdf.text("indexify.", L, HDR_H / 2 + 4);
       }
 
-      // Centre label
-      pdf.setFont("helvetica", "bold"); pdf.setFontSize(10); pdf.setTextColor(...C_WHITE);
-      pdf.text("SEO AUDIT REPORT", A4_W / 2, pg === 1 ? HDR_H / 2 - 1 : HDR_H / 2 + 3, { align: "center" });
-      if (pg === 1) {
-        pdf.setFont("helvetica", "normal"); pdf.setFontSize(7); pdf.setTextColor(200, 235, 255);
-        pdf.text(date, A4_W / 2, HDR_H / 2 + 5, { align: "center" });
-      }
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(10); pdf.setTextColor(...WHITE);
+      pdf.text(title, A4_W / 2, HDR_H / 2, { align: "center" });
+      pdf.setFont("helvetica", "normal"); pdf.setFontSize(7); pdf.setTextColor(200, 235, 255);
+      pdf.text(date, A4_W / 2, HDR_H / 2 + 5.5, { align: "center" });
 
-      // Fortune Design logo (right)
       if (fdLogo) {
-        const fdW = 30; const fdH = 10;
-        const fdX = A4_W - 10 - fdW; const fdY = (HDR_H - fdH) / 2 + 1;
-        pdf.setFont("helvetica", "normal"); pdf.setFontSize(5.5); pdf.setTextColor(180, 225, 250);
+        const fdW = 28; const fdH = 9; const fdX = R - fdW; const fdY = (HDR_H - fdH) / 2 + 1;
+        pdf.setFontSize(5.5); pdf.setTextColor(180, 225, 250);
         pdf.text("Powered by", fdX + fdW / 2, fdY - 1.5, { align: "center" });
-        try { pdf.addImage(fdLogo, "PNG", fdX, fdY, fdW, fdH); } catch { /* skip */ }
+        try { pdf.addImage(fdLogo, "PNG", fdX, fdY, fdW, fdH); } catch { /**/ }
       } else {
-        pdf.setFont("helvetica", "bold"); pdf.setFontSize(7); pdf.setTextColor(...C_WHITE);
-        pdf.text("Fortune Design", A4_W - 10, HDR_H / 2 + 3, { align: "right" });
+        pdf.setFont("helvetica", "normal"); pdf.setFontSize(7); pdf.setTextColor(...WHITE);
+        pdf.text("Powered by Fortune Design", R, HDR_H / 2 + 3, { align: "right" });
       }
     };
 
-    // ── Footer drawer ──────────────────────────────────────────────────────
-    const drawFooter = (pg: number) => {
+    const drawFooter = (pg: number, total: number) => {
       const fy = A4_H - FTR_H;
-      pdf.setFillColor(...C_BG); pdf.rect(0, fy, A4_W, FTR_H, "F");
-      pdf.setDrawColor(...C_LINE); pdf.line(0, fy, A4_W, fy);
-      pdf.setFont("helvetica", "normal"); pdf.setFontSize(6.5); pdf.setTextColor(...C_LIGHT);
-      pdf.text(
-        "Indexify · indexify.co.za · Powered by Fortune Design · fortunedesign.co.za",
-        10, fy + 6.5,
-      );
-      pdf.text(`Page ${pg} of ${pageCount}`, A4_W - 10, fy + 6.5, { align: "right" });
+      pdf.setFillColor(...BGRAY); pdf.rect(0, fy, A4_W, FTR_H, "F");
+      pdf.setDrawColor(...LINE);  pdf.line(0, fy, A4_W, fy);
+      pdf.setFont("helvetica", "normal"); pdf.setFontSize(6.5); pdf.setTextColor(...LIGHT);
+      pdf.text("Indexify · indexify.co.za · Powered by Fortune Design · fortunedesign.co.za", L, fy + 7.5);
+      pdf.text(`Page ${pg} of ${total}`, R, fy + 7.5, { align: "right" });
     };
 
-    // ── Slice screenshot across pages ──────────────────────────────────────
-    for (let p = 0; p < pageCount; p++) {
-      if (p > 0) pdf.addPage();
-      drawHeader(p + 1);
+    // ══════════════════════════════════════════════════════════════════════
+    // PAGE 1 — Summary
+    // ══════════════════════════════════════════════════════════════════════
+    drawHeader();
+    let y = CTOP;
 
-      // Cut a horizontal strip from the full screenshot for this page
-      const sliceY = p * contentHpx;
-      const sliceH = Math.min(contentHpx, imgDims.h - sliceY);
+    // Website URL bar
+    pdf.setFillColor(241, 245, 249); pdf.rect(0, y - 2, A4_W, 14, "F");
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(11); pdf.setTextColor(...DARK);
+    pdf.text(domain, L, y + 6);
+    pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5); pdf.setTextColor(...MID);
+    const urlText = result.finalUrl.length > 70 ? result.finalUrl.slice(0, 67) + "…" : result.finalUrl;
+    pdf.text(urlText, R, y + 6, { align: "right" });
+    y += 20;
 
-      const canvas = document.createElement("canvas");
-      canvas.width  = imgDims.w;
-      canvas.height = sliceH;
-      const ctx = canvas.getContext("2d")!;
-      const img = new window.Image();
-      await new Promise<void>((resolve) => {
-        img.onload = () => {
-          ctx.drawImage(img, 0, sliceY, imgDims.w, sliceH, 0, 0, imgDims.w, sliceH);
-          resolve();
-        };
-        img.src = screenshotDataUrl;
+    // Score circle
+    const cx = L + 22; const cy = y + 20; const cr = 17;
+    drawScoreCircle(cx, cy, cr, result.overallScore);
+
+    // Grade pill
+    const gx = cx + cr + 6; const gw = 14; const gh = 14;
+    pdf.setFillColor(...scoreRGB(result.overallScore));
+    pdf.roundedRect(gx, cy - gh / 2, gw, gh, 2, 2, "F");
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(9); pdf.setTextColor(...WHITE);
+    pdf.text(scoreGrade(result.overallScore), gx + gw / 2, cy + 2.5, { align: "center" });
+
+    // Label + summary
+    const sx = gx + gw + 7;
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(13); pdf.setTextColor(...DARK);
+    pdf.text(scoreLabel(result.overallScore), sx, cy - 4);
+    pdf.setFont("helvetica", "normal"); pdf.setFontSize(8); pdf.setTextColor(...MID);
+    const totalChecks = result.sections.reduce((a, s) => a + s.checks.length, 0);
+    const summaryTxt  = `This audit analysed ${totalChecks} SEO checks across ${result.sections.length} categories. ${result.recommendations.length} improvements were identified.`;
+    pdf.text(wrap(summaryTxt, R - sx, 8), sx, cy + 3);
+    y = cy + cr + 10;
+
+    // Stats row
+    const statItems = [
+      { label: "Overall Score",  val: `${result.overallScore}/100` },
+      { label: "Load Time",      val: result.loadTimeMs < 1000 ? `${result.loadTimeMs}ms` : `${(result.loadTimeMs / 1000).toFixed(1)}s` },
+      { label: "Issues Found",   val: `${result.sections.reduce((a, s) => a + s.checks.filter(c => c.status !== "pass").length, 0)}` },
+      { label: "Recommendations", val: `${result.recommendations.length}` },
+    ];
+    const sw = CW / statItems.length;
+    statItems.forEach((s, i) => {
+      const bx = L + i * sw;
+      pdf.setFillColor(...BGRAY); pdf.roundedRect(bx, y, sw - 2, 17, 2, 2, "F");
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(12); pdf.setTextColor(...TEAL);
+      pdf.text(s.val, bx + (sw - 2) / 2, y + 7.5, { align: "center" });
+      pdf.setFont("helvetica", "normal"); pdf.setFontSize(6.5); pdf.setTextColor(...MID);
+      pdf.text(s.label, bx + (sw - 2) / 2, y + 13, { align: "center" });
+    });
+    y += 23;
+
+    // Section scores
+    pdf.setFont("helvetica", "bold"); pdf.setFontSize(9); pdf.setTextColor(...DARK);
+    pdf.text("SECTION SCORES", L, y);
+    pdf.setDrawColor(...LINE); pdf.setLineWidth(0.3);
+    pdf.line(L + 37, y - 1, R, y - 1);
+    y += 6;
+
+    result.sections.forEach(sec => {
+      const pass = sec.checks.filter(c => c.status === "pass").length;
+      const warn = sec.checks.filter(c => c.status === "warn").length;
+      const fail = sec.checks.filter(c => c.status === "fail").length;
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(8); pdf.setTextColor(...DARK);
+      pdf.text(sec.title, L, y + 4);
+      drawBar(L + 58, y, 76, 5, sec.score);
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(8); pdf.setTextColor(...scoreRGB(sec.score));
+      pdf.text(`${sec.score}%`, L + 137, y + 4.5);
+      pdf.setFontSize(6.5);
+      pdf.setTextColor(...GREEN); pdf.text(`✓${pass}`, L + 150, y + 4.5);
+      pdf.setTextColor(...AMBER); pdf.text(`!${warn}`,  L + 161, y + 4.5);
+      pdf.setTextColor(...RED);   pdf.text(`✗${fail}`,  L + 172, y + 4.5);
+      y += 9;
+    });
+    y += 4;
+
+    // Page title + meta
+    if (result.pageTitle && y + 22 < CBOT) {
+      pdf.setFillColor(...BGRAY); pdf.rect(L, y, CW, 22, "F");
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(6.5); pdf.setTextColor(...TEAL);
+      pdf.text("PAGE TITLE", L + 3, y + 5.5);
+      pdf.setFont("helvetica", "normal"); pdf.setFontSize(8); pdf.setTextColor(...DARK);
+      pdf.text(wrap(result.pageTitle, CW - 6, 8).slice(0, 1), L + 3, y + 10.5);
+      if (result.metaDescription) {
+        pdf.setFont("helvetica", "bold"); pdf.setFontSize(6.5); pdf.setTextColor(...TEAL);
+        pdf.text("META DESCRIPTION", L + 3, y + 15.5);
+        pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5); pdf.setTextColor(...MID);
+        pdf.text(wrap(result.metaDescription, CW - 6, 7.5).slice(0, 1), L + 3, y + 20);
+      }
+      y += 26;
+    }
+
+    drawFooter(1, 99);
+
+    // ══════════════════════════════════════════════════════════════════════
+    // PAGES 2+ — Per-section detailed checks
+    // ══════════════════════════════════════════════════════════════════════
+    for (const sec of result.sections) {
+      addPage();
+      drawHeader(`SEO AUDIT — ${sec.title.toUpperCase()}`);
+      y = CTOP;
+
+      // Section heading
+      pdf.setFillColor(...TEAL); pdf.rect(L, y, 3, 12, "F");
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(13); pdf.setTextColor(...DARK);
+      pdf.text(sec.title, L + 6, y + 8.5);
+      pdf.setFontSize(10); pdf.setTextColor(...scoreRGB(sec.score));
+      pdf.text(`${sec.score}%`, R, y + 8.5, { align: "right" });
+      drawBar(R - 50, y + 3, 46, 5, sec.score);
+      y += 18;
+
+      for (const chk of sec.checks) {
+        const rowH = chk.description ? 20 : 12;
+        if (y + rowH > CBOT) {
+          drawFooter(currentPage, 99);
+          addPage();
+          drawHeader(`SEO AUDIT — ${sec.title.toUpperCase()}`);
+          y = CTOP;
+        }
+
+        const statusRGB: RGB = chk.status === "pass" ? GREEN : chk.status === "warn" ? AMBER : RED;
+        const statusLbl = chk.status === "pass" ? "PASS" : chk.status === "warn" ? "WARN" : "FAIL";
+
+        pdf.setFillColor(...statusRGB); pdf.roundedRect(L, y, 11, 6, 1, 1, "F");
+        pdf.setFont("helvetica", "bold"); pdf.setFontSize(5.5); pdf.setTextColor(...WHITE);
+        pdf.text(statusLbl, L + 5.5, y + 4.2, { align: "center" });
+
+        pdf.setFont("helvetica", "bold"); pdf.setFontSize(8.5); pdf.setTextColor(...DARK);
+        pdf.text(chk.name, L + 14, y + 4.5);
+
+        const valText = chk.value.length > 45 ? chk.value.slice(0, 42) + "…" : chk.value;
+        pdf.setFont("helvetica", "normal"); pdf.setFontSize(7.5); pdf.setTextColor(...statusRGB);
+        pdf.text(valText, R, y + 4.5, { align: "right" });
+        y += 8;
+
+        if (chk.description) {
+          pdf.setFont("helvetica", "normal"); pdf.setFontSize(7); pdf.setTextColor(...MID);
+          const lines = wrap(chk.description, CW - 14, 7).slice(0, 2);
+          pdf.text(lines, L + 14, y);
+          y += lines.length * 4 + 2;
+        }
+
+        pdf.setDrawColor(...LINE); pdf.setLineWidth(0.2); pdf.line(L, y, R, y);
+        y += 3;
+      }
+      drawFooter(currentPage, 99);
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // LAST PAGE — Recommendations
+    // ══════════════════════════════════════════════════════════════════════
+    if (result.recommendations.length > 0) {
+      addPage();
+      drawHeader("SEO AUDIT — RECOMMENDATIONS");
+      y = CTOP;
+
+      pdf.setFillColor(...TEAL); pdf.rect(L, y, 3, 12, "F");
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(13); pdf.setTextColor(...DARK);
+      pdf.text("Top Recommendations", L + 6, y + 8.5);
+      y += 18;
+
+      result.recommendations.slice(0, 20).forEach((rec, i) => {
+        const lines = wrap(rec, CW - 14, 8.5).slice(0, 3);
+        const rh = lines.length * 5.5 + 6;
+        if (y + rh > CBOT) {
+          drawFooter(currentPage, 99);
+          addPage();
+          drawHeader("SEO AUDIT — RECOMMENDATIONS");
+          y = CTOP;
+        }
+        pdf.setFillColor(...TEAL); pdf.circle(L + 4, y + 3.5, 4, "F");
+        pdf.setFont("helvetica", "bold"); pdf.setFontSize(7); pdf.setTextColor(...WHITE);
+        pdf.text(`${i + 1}`, L + 4, y + 5.5, { align: "center" });
+        pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5); pdf.setTextColor(...DARK);
+        pdf.text(lines, L + 12, y + 4.5);
+        y += rh;
       });
 
-      const sliceHeightMM = sliceH / pxPerMM;
-      pdf.addImage(
-        canvas.toDataURL("image/jpeg", 0.92),
-        "JPEG",
-        MARGIN,
-        HDR_H + ACCENT_H,
-        A4_W - MARGIN * 2,
-        Math.min(sliceHeightMM, CONTENT_H),
-      );
+      // CTA box
+      if (y + 30 < CBOT) {
+        y += 6;
+        pdf.setFillColor(240, 249, 255); pdf.roundedRect(L, y, CW, 28, 3, 3, "F");
+        pdf.setDrawColor(...TEAL); pdf.setLineWidth(0.5); pdf.roundedRect(L, y, CW, 28, 3, 3, "S");
+        pdf.setFont("helvetica", "bold"); pdf.setFontSize(11); pdf.setTextColor(...TEAL);
+        pdf.text("Ready to Fix These Issues?", A4_W / 2, y + 9, { align: "center" });
+        pdf.setFont("helvetica", "normal"); pdf.setFontSize(8.5); pdf.setTextColor(...MID);
+        pdf.text("Our SEO experts will implement every recommendation above.", A4_W / 2, y + 16, { align: "center" });
+        pdf.setFont("helvetica", "bold"); pdf.setFontSize(9); pdf.setTextColor(...TEAL);
+        pdf.text("Book a free strategy call → indexify.co.za/contact", A4_W / 2, y + 23, { align: "center" });
+      }
 
-      drawFooter(p + 1);
+      drawFooter(currentPage, 99);
+    }
+
+    // ── Re-render footers with correct total page count ────────────────────
+    const totalPages = currentPage;
+    for (let p = 1; p <= totalPages; p++) {
+      pdf.setPage(p);
+      drawFooter(p, totalPages);
     }
 
     pdf.save(`indexify-seo-audit-${domain}.pdf`);
