@@ -54,6 +54,9 @@ export const chatMessagesTable = pgTable("portal_chat_messages", {
   message: text("message").notNull(),
   sender: chatSenderEnum("sender").notNull(),
   read: boolean("read").notNull().default(false),
+  attachmentUrl: text("attachment_url"),
+  attachmentName: text("attachment_name"),
+  attachmentMime: text("attachment_mime"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -63,6 +66,9 @@ export const serviceUpdatesTable = pgTable("portal_service_updates", {
   subscriptionId: integer("subscription_id").references(() => subscriptionsTable.id),
   title: text("title").notNull(),
   content: text("content").notNull(),
+  attachmentUrl: text("attachment_url"),
+  attachmentName: text("attachment_name"),
+  attachmentMime: text("attachment_mime"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

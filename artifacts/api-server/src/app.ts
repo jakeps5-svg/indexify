@@ -1,6 +1,11 @@
 import express, { type Express, type Request, type Response } from "express";
 import cors from "cors";
 import router from "./routes";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const UPLOADS_DIR = path.join(__dirname, "../../uploads");
 
 const app: Express = express();
 
@@ -104,6 +109,7 @@ Sitemap: ${base}/sitemap.xml`;
   res.send(txt);
 });
 
+app.use("/api/uploads", express.static(UPLOADS_DIR, { maxAge: "7d" }));
 app.use("/api", router);
 
 export default app;

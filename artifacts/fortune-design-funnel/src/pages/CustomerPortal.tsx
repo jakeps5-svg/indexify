@@ -5,7 +5,7 @@ import {
   LayoutDashboard, FileText, MessageSquare, Calendar,
   LogOut, CheckCircle2, Clock, AlertCircle, Send,
   TrendingUp, Package, BadgeCheck, Video, Wifi,
-  ChevronRight, ExternalLink, Bell,
+  ChevronRight, ExternalLink, Bell, Download,
 } from "lucide-react";
 import { usePortalAuth } from "@/hooks/usePortalAuth";
 import { cn } from "@/lib/utils";
@@ -16,6 +16,7 @@ type Tab = "dashboard" | "services" | "invoices" | "meeting" | "chat" | "updates
 interface ServiceUpdate {
   id: number; title: string; content: string; createdAt: string;
   serviceName?: string; subscriptionId?: number;
+  attachmentUrl?: string | null; attachmentName?: string | null; attachmentMime?: string | null;
 }
 interface Subscription {
   id: number; serviceName: string; serviceSlug: string;
@@ -25,7 +26,10 @@ interface Invoice {
   id: number; invoiceNumber: string; amountRands: string;
   description: string; status: string; dueDate: string; sentAt?: string; paidAt?: string;
 }
-interface ChatMsg { id: number; message: string; sender: "customer" | "admin"; createdAt: string; }
+interface ChatMsg {
+  id: number; message: string; sender: "customer" | "admin"; createdAt: string;
+  attachmentUrl?: string | null; attachmentName?: string | null; attachmentMime?: string | null;
+}
 
 const STATUS_COLORS: Record<string, string> = {
   active: "text-emerald-600 bg-emerald-50 border-emerald-200",
@@ -463,6 +467,21 @@ export default function CustomerPortal() {
                         </div>
                         <h3 className="font-bold text-gray-900 text-base">{u.title}</h3>
                         <p className="text-gray-600 text-sm mt-2 leading-relaxed whitespace-pre-wrap">{u.content}</p>
+                        {u.attachmentUrl && (() => {
+                          const isImg = u.attachmentMime?.startsWith("image/") || /\.(png|jpe?g|gif|webp)$/i.test(u.attachmentName ?? "");
+                          return isImg ? (
+                            <a href={u.attachmentUrl} target="_blank" rel="noopener noreferrer" className="block mt-3">
+                              <img src={u.attachmentUrl} alt={u.attachmentName ?? "Attachment"} className="max-w-full max-h-[200px] rounded-xl object-cover border border-gray-100" />
+                            </a>
+                          ) : (
+                            <a href={u.attachmentUrl} target="_blank" rel="noopener noreferrer"
+                              className="mt-3 flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100 text-gray-700 text-xs font-medium transition-colors w-fit">
+                              <FileText size={14} className="text-primary shrink-0" />
+                              <span className="truncate max-w-[200px]">{u.attachmentName ?? "Download Attachment"}</span>
+                              <Download size={12} className="shrink-0 opacity-60" />
+                            </a>
+                          );
+                        })()}
                       </div>
                       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                         <Bell size={14} className="text-primary" />
@@ -503,16 +522,33 @@ export default function CustomerPortal() {
                     <p>Start a conversation with your account manager</p>
                   </div>
                 )}
-                {chatMessages.map(msg => (
-                  <div key={msg.id} className={cn("flex", msg.sender === "customer" ? "justify-end" : "justify-start")}>
-                    <div className={cn("max-w-[75%] rounded-2xl px-4 py-2.5 text-sm shadow-sm", msg.sender === "customer" ? "bg-primary text-white rounded-br-sm" : "bg-white text-gray-800 border border-gray-100 rounded-bl-sm")}>
-                      <p>{msg.message}</p>
-                      <p className={cn("text-[10px] mt-1", msg.sender === "customer" ? "text-white/60" : "text-gray-400")}>
-                        {new Date(msg.createdAt).toLocaleTimeString("en-ZA", { hour: "2-digit", minute: "2-digit" })}
-                      </p>
+                {chatMessages.map(msg => {
+                  const isImg = msg.attachmentMime?.startsWith("image/") || /\.(png|jpe?g|gif|webp)$/i.test(msg.attachmentName ?? "");
+                  return (
+                    <div key={msg.id} className={cn("flex", msg.sender === "customer" ? "justify-end" : "justify-start")}>
+                      <div className={cn("max-w-[75%] rounded-2xl px-4 py-2.5 text-sm shadow-sm", msg.sender === "customer" ? "bg-primary text-white rounded-br-sm" : "bg-white text-gray-800 border border-gray-100 rounded-bl-sm")}>
+                        {msg.message && <p>{msg.message}</p>}
+                        {msg.attachmentUrl && (
+                          isImg ? (
+                            <a href={msg.attachmentUrl} target="_blank" rel="noopener noreferrer" className="block mt-2">
+                              <img src={msg.attachmentUrl} alt={msg.attachmentName ?? "Image"} className="max-w-[200px] max-h-[140px] rounded-lg object-cover" />
+                            </a>
+                          ) : (
+                            <a href={msg.attachmentUrl} target="_blank" rel="noopener noreferrer"
+                              className={cn("mt-2 flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-colors", msg.sender === "customer" ? "bg-white/15 hover:bg-white/25 text-white" : "bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-100")}>
+                              <FileText size={13} className="shrink-0" />
+                              <span className="truncate max-w-[140px]">{msg.attachmentName ?? "Attachment"}</span>
+                              <Download size={11} className="shrink-0 opacity-70" />
+                            </a>
+                          )
+                        )}
+                        <p className={cn("text-[10px] mt-1", msg.sender === "customer" ? "text-white/60" : "text-gray-400")}>
+                          {new Date(msg.createdAt).toLocaleTimeString("en-ZA", { hour: "2-digit", minute: "2-digit" })}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 <div ref={chatEndRef} />
               </div>
 

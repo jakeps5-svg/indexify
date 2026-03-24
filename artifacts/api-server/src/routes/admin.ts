@@ -8,18 +8,26 @@ import {
 import { eq, and, desc, ne } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/auth.js";
 import { sendInvoiceEmail } from "../lib/email.js";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const UPLOADS_DIR = path.join(__dirname, "../../../uploads");
 
 const router = Router();
+
+// ── Customers ──────────────────────────────────────────────────────────────
 
 router.get("/admin/customers", requireAdmin, async (req, res) => {
   try {
     const customers = await db.select().from(usersTable).where(ne(usersTable.role, "admin")).orderBy(desc(usersTable.createdAt));
     const result = await Promise.all(customers.map(async (c) => {
       const subs = await db.select().from(subscriptionsTable).where(eq(subscriptionsTable.userId, c.id));
-      const invoices = await db.select().from(invoicesTable).where(eq(invoicesTable.userId, c.id));
+      const invoiceList = await db.select().from(invoicesTable).where(eq(invoicesTable.userId, c.id));
       const unread = await db.select().from(chatMessagesTable)
         .where(and(eq(chatMessagesTable.userId, c.id), eq(chatMessagesTable.sender, "customer"), eq(chatMessagesTable.read, false)));
-      return { ...c, subscriptions: subs, invoices, unreadMessages: unread.length };
+      return { ...c, subscriptions: subs, invoices: invoiceList, unreadMessages: unread.length };
     }));
     res.json(result);
   } catch (err) {
@@ -47,6 +55,25 @@ router.post("/admin/customers", requireAdmin, async (req, res) => {
   }
 });
 
+router.delete("/admin/customers/:id", requireAdmin, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    // Cascade: chat → meetings → service updates → invoices → subscriptions → user
+    await db.delete(chatMessagesTable).where(eq(chatMessagesTable.userId, id));
+    await db.delete(meetingRequestsTable).where(eq(meetingRequestsTable.userId, id));
+    await db.delete(serviceUpdatesTable).where(eq(serviceUpdatesTable.userId, id));
+    await db.delete(invoicesTable).where(eq(invoicesTable.userId, id));
+    await db.delete(subscriptionsTable).where(eq(subscriptionsTable.userId, id));
+    await db.delete(usersTable).where(eq(usersTable.id, id));
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete customer" });
+  }
+});
+
+// ── Subscriptions ──────────────────────────────────────────────────────────
+
 router.post("/admin/subscriptions", requireAdmin, async (req, res) => {
   try {
     const { userId, serviceName, serviceSlug, priceRands, notes } = req.body as {
@@ -68,13 +95,37 @@ router.post("/admin/subscriptions", requireAdmin, async (req, res) => {
 router.patch("/admin/subscriptions/:id", requireAdmin, async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const { status } = req.body as { status: "active" | "paused" | "cancelled" };
-    const [sub] = await db.update(subscriptionsTable).set({ status }).where(eq(subscriptionsTable.id, id)).returning();
+    const { status, serviceName, serviceSlug, priceRands, notes } = req.body as {
+      status?: "active" | "paused" | "cancelled";
+      serviceName?: string; serviceSlug?: string; priceRands?: string; notes?: string;
+    };
+    const updates: Record<string, unknown> = {};
+    if (status !== undefined) updates.status = status;
+    if (serviceName !== undefined) updates.serviceName = serviceName;
+    if (serviceSlug !== undefined) updates.serviceSlug = serviceSlug;
+    if (priceRands !== undefined) updates.priceRands = priceRands;
+    if (notes !== undefined) updates.notes = notes;
+    const [sub] = await db.update(subscriptionsTable).set(updates).where(eq(subscriptionsTable.id, id)).returning();
     res.json(sub);
   } catch (err) {
     res.status(500).json({ error: "Failed to update subscription" });
   }
 });
+
+router.delete("/admin/subscriptions/:id", requireAdmin, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    await db.delete(serviceUpdatesTable).where(eq(serviceUpdatesTable.subscriptionId, id));
+    await db.delete(invoicesTable).where(eq(invoicesTable.subscriptionId, id));
+    await db.delete(subscriptionsTable).where(eq(subscriptionsTable.id, id));
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete subscription" });
+  }
+});
+
+// ── Invoices ───────────────────────────────────────────────────────────────
 
 router.get("/admin/invoices", requireAdmin, async (req, res) => {
   try {
@@ -156,6 +207,8 @@ router.patch("/admin/invoices/:id/paid", requireAdmin, async (req, res) => {
   }
 });
 
+// ── Chat ───────────────────────────────────────────────────────────────────
+
 router.get("/admin/chat/:userId", requireAdmin, async (req, res) => {
   try {
     const uid = Number(req.params.userId);
@@ -174,16 +227,48 @@ router.get("/admin/chat/:userId", requireAdmin, async (req, res) => {
 router.post("/admin/chat/:userId", requireAdmin, async (req, res) => {
   try {
     const uid = Number(req.params.userId);
-    const { message } = req.body as { message: string };
-    if (!message?.trim()) return res.status(400).json({ error: "Message required" });
+    const { message, attachmentUrl, attachmentName, attachmentMime } = req.body as {
+      message: string; attachmentUrl?: string; attachmentName?: string; attachmentMime?: string;
+    };
+    if (!message?.trim() && !attachmentUrl) return res.status(400).json({ error: "Message or attachment required" });
     const [msg] = await db.insert(chatMessagesTable).values({
-      userId: uid, message: message.trim(), sender: "admin", read: false,
+      userId: uid,
+      message: message?.trim() || "",
+      sender: "admin",
+      read: false,
+      attachmentUrl: attachmentUrl ?? null,
+      attachmentName: attachmentName ?? null,
+      attachmentMime: attachmentMime ?? null,
     }).returning();
     res.json(msg);
   } catch (err) {
     res.status(500).json({ error: "Failed to send message" });
   }
 });
+
+// ── File Uploads ───────────────────────────────────────────────────────────
+
+router.post("/admin/uploads", requireAdmin, async (req, res) => {
+  try {
+    const { attachmentBase64, attachmentName, attachmentMime } = req.body as {
+      attachmentBase64: string; attachmentName: string; attachmentMime?: string;
+    };
+    if (!attachmentBase64 || !attachmentName) {
+      return res.status(400).json({ error: "attachmentBase64 and attachmentName required" });
+    }
+    const buf = Buffer.from(attachmentBase64, "base64");
+    const ext = attachmentName.split(".").pop()?.toLowerCase() ?? "bin";
+    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    await fs.mkdir(UPLOADS_DIR, { recursive: true });
+    await fs.writeFile(path.join(UPLOADS_DIR, safeName), buf);
+    res.json({ url: `/api/uploads/${safeName}`, name: attachmentName, mime: attachmentMime ?? "" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to upload file" });
+  }
+});
+
+// ── Meetings ───────────────────────────────────────────────────────────────
 
 router.get("/admin/meetings", requireAdmin, async (req, res) => {
   try {
@@ -221,6 +306,8 @@ router.patch("/admin/meetings/:id", requireAdmin, async (req, res) => {
   }
 });
 
+// ── Service Updates ────────────────────────────────────────────────────────
+
 router.get("/admin/updates", requireAdmin, async (req, res) => {
   try {
     const userId = req.query.userId ? Number(req.query.userId) : undefined;
@@ -230,6 +317,9 @@ router.get("/admin/updates", requireAdmin, async (req, res) => {
       subscriptionId: serviceUpdatesTable.subscriptionId,
       title: serviceUpdatesTable.title,
       content: serviceUpdatesTable.content,
+      attachmentUrl: serviceUpdatesTable.attachmentUrl,
+      attachmentName: serviceUpdatesTable.attachmentName,
+      attachmentMime: serviceUpdatesTable.attachmentMime,
       createdAt: serviceUpdatesTable.createdAt,
       serviceName: subscriptionsTable.serviceName,
       customerName: usersTable.name,
@@ -248,12 +338,16 @@ router.get("/admin/updates", requireAdmin, async (req, res) => {
 
 router.post("/admin/updates", requireAdmin, async (req, res) => {
   try {
-    const { userId, subscriptionId, title, content } = req.body as {
+    const { userId, subscriptionId, title, content, attachmentUrl, attachmentName, attachmentMime } = req.body as {
       userId: number; subscriptionId?: number; title: string; content: string;
+      attachmentUrl?: string; attachmentName?: string; attachmentMime?: string;
     };
     if (!userId || !title || !content) return res.status(400).json({ error: "userId, title and content required" });
     const [update] = await db.insert(serviceUpdatesTable).values({
       userId, subscriptionId: subscriptionId ?? null, title, content,
+      attachmentUrl: attachmentUrl ?? null,
+      attachmentName: attachmentName ?? null,
+      attachmentMime: attachmentMime ?? null,
     }).returning();
     res.status(201).json(update);
   } catch (err) {
