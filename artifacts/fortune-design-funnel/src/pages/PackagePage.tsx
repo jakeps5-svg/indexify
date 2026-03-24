@@ -29,6 +29,7 @@ interface PackageData {
   badgeText: string;
   badgeBg: string;
   icon: React.ComponentType<{ size?: number; className?: string }>;
+  heroImage: string;
   summary: string;
   whoFor: string[];
   features: PackageFeature[];
@@ -53,6 +54,7 @@ const PACKAGES: Record<string, PackageData> = {
     badgeText: "SEO Package",
     badgeBg: "bg-primary/10 text-primary",
     icon: Search,
+    heroImage: "/images/packages/basic-seo.png",
     summary: "Our Basic SEO package is designed for small South African businesses that want to rank in their local area — whether it's your suburb, city, or region. We handle everything from the technical foundation to keyword targeting, so your business shows up when customers nearby are searching.",
     whoFor: [
       "Local service businesses (plumbers, electricians, doctors, lawyers)",
@@ -98,6 +100,7 @@ const PACKAGES: Record<string, PackageData> = {
     badgeText: "SEO Package",
     badgeBg: "bg-primary/10 text-primary",
     icon: TrendingUp,
+    heroImage: "/images/packages/advanced-seo.png",
     summary: "The Advanced SEO package is built for businesses competing beyond their local area — targeting competitive, nationwide keywords and e-commerce lead generation. We layer on off-site link building and a more aggressive content strategy to push you past competitors.",
     whoFor: [
       "E-commerce stores targeting South Africa-wide customers",
@@ -146,6 +149,7 @@ const PACKAGES: Record<string, PackageData> = {
     badgeText: "Most Popular",
     badgeBg: "bg-accent/10 text-accent",
     icon: Award,
+    heroImage: "/images/packages/premium-seo.png",
     popular: true,
     summary: "Premium SEO is our flagship package — the complete, all-in SEO solution for businesses serious about owning the first page. From DA 90+ backlinks to press releases and a full backlink indexing strategy, this is everything you need to outrank any competitor in South Africa.",
     whoFor: [
@@ -200,6 +204,7 @@ const PACKAGES: Record<string, PackageData> = {
     badgeText: "Google Ads",
     badgeBg: "bg-accent/10 text-accent",
     icon: MousePointerClick,
+    heroImage: "/images/packages/google-ads.png",
     summary: "Our Google Ads management service puts your business in front of customers who are actively searching for what you sell — right now. We handle every aspect of your campaigns so you can focus on closing leads, not managing bids.",
     whoFor: [
       "Businesses that need leads immediately (not in 3–6 months)",
@@ -251,6 +256,7 @@ const PACKAGES: Record<string, PackageData> = {
     badgeText: "Best Value Bundle",
     badgeBg: "bg-primary/10 text-primary",
     icon: Zap,
+    heroImage: "/images/packages/market-leader.png",
     summary: "The Market Leader Bundle combines our Advanced SEO and Google Ads Management into one cohesive strategy — at a significant saving over buying them separately. When SEO and paid search work together, you show up everywhere: organic results, local pack, and paid ads simultaneously. This is how you own your market.",
     whoFor: [
       "Businesses serious about total search dominance",
@@ -354,6 +360,18 @@ export default function PackagePage() {
                   <span className="text-white/70 text-sm ml-1">{pkg.period}</span>
                 </div>
                 {pkg.extra && <p className="text-white/60 text-sm mt-1">{pkg.extra}</p>}
+              </motion.div>
+
+              {/* Hero image */}
+              <motion.div
+                initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                className="mt-8 rounded-2xl overflow-hidden shadow-2xl shadow-black/30 ring-1 ring-white/20"
+              >
+                <img
+                  src={pkg.heroImage}
+                  alt={`${pkg.name} illustration`}
+                  className="w-full object-cover max-h-52 lg:max-h-60"
+                />
               </motion.div>
             </div>
             <div className="flex-shrink-0 w-full lg:w-96">
