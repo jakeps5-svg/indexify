@@ -587,8 +587,8 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <a href={`${BASE}/pricing`} className="block w-full py-3 rounded-xl bg-primary text-white font-bold text-sm text-center hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md shadow-primary/20">
-                View Full Packages →
+              <a href={`${BASE}/packages/basic-seo`} className="block w-full py-3 rounded-xl bg-primary text-white font-bold text-sm text-center hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md shadow-primary/20">
+                Get Started →
               </a>
             </motion.div>
 
@@ -613,8 +613,8 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <a href={`${BASE}/pricing`} className="block w-full py-3 rounded-xl bg-primary text-white font-bold text-sm text-center hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md">
-                View Full Packages →
+              <a href={`${BASE}/packages/market-leader`} className="block w-full py-3 rounded-xl bg-primary text-white font-bold text-sm text-center hover:bg-primary/90 hover:-translate-y-0.5 transition-all shadow-md">
+                Get Started →
               </a>
             </motion.div>
 
@@ -635,8 +635,8 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <a href={`${BASE}/pricing`} className="block w-full py-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 font-semibold text-sm text-center transition-colors">
-                View Full Packages →
+              <a href={`${BASE}/contact`} className="block w-full py-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 font-semibold text-sm text-center transition-colors">
+                Get Started →
               </a>
             </motion.div>
           </div>
