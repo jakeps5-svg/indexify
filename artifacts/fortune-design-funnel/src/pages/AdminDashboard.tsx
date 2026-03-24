@@ -164,6 +164,21 @@ export default function AdminDashboard() {
     }
   };
 
+  const connectAgencyGoogleAds = async () => {
+    try {
+      const r = await authFetch("/api/admin/google-ads/auth-url");
+      if (!r.ok) {
+        const d = await r.json();
+        toast({ title: "Error", description: d.error ?? "Could not get authorisation URL.", variant: "destructive" });
+        return;
+      }
+      const { url } = await r.json();
+      window.location.href = url;
+    } catch {
+      toast({ title: "Error", description: "Failed to initiate Google Ads connection.", variant: "destructive" });
+    }
+  };
+
   useEffect(() => {
     if (!user) return;
     loadCustomers();
@@ -472,12 +487,12 @@ export default function AdminDashboard() {
               </div>
               <div className="flex-shrink-0 flex flex-col items-end gap-2">
                 {gadsConnected === false && (
-                  <a
-                    href="/api/auth/google-ads"
+                  <button
+                    onClick={connectAgencyGoogleAds}
                     className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors"
                   >
                     <ExternalLink size={13} /> Connect Google Ads
-                  </a>
+                  </button>
                 )}
                 {gadsConnected === true && (
                   <span className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-full">

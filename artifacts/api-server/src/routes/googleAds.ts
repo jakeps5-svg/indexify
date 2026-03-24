@@ -306,10 +306,10 @@ router.get("/admin/google-ads/status", requireAdmin, async (_req, res) => {
   }
 });
 
-// ── Admin: initiate agency-level OAuth ──
-router.get("/auth/google-ads", requireAdmin, (req, res) => {
+// ── Admin: get agency-level OAuth URL (returns JSON, dashboard then redirects) ──
+router.get("/admin/google-ads/auth-url", requireAdmin, (req, res) => {
   const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
-  if (!clientId) return res.status(400).send("GOOGLE_ADS_CLIENT_ID not set.");
+  if (!clientId) return res.status(503).json({ error: "GOOGLE_ADS_CLIENT_ID not configured." });
   const redirectUri = getRedirectUri(req);
   const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
   url.searchParams.set("client_id", clientId);
@@ -319,7 +319,7 @@ router.get("/auth/google-ads", requireAdmin, (req, res) => {
   url.searchParams.set("access_type", "offline");
   url.searchParams.set("prompt", "consent");
   url.searchParams.set("state", "admin");
-  res.redirect(url.toString());
+  res.json({ url: url.toString() });
 });
 
 // ── Shared OAuth callback (handles both admin and client flows) ──
