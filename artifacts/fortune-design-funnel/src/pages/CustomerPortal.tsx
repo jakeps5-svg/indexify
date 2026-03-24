@@ -72,11 +72,28 @@ export default function CustomerPortal() {
   const [updates, setUpdates] = useState<ServiceUpdate[]>([]);
   const [gads, setGads] = useState<GadsMetrics | null>(null);
   const [gadsLoading, setGadsLoading] = useState(false);
+  const [gadsConnecting, setGadsConnecting] = useState(false);
+  const [gadsToast, setGadsToast] = useState<{ type: "success" | "error"; msg: string } | null>(null);
+  const [gadsDisconnecting, setGadsDisconnecting] = useState(false);
 
   useEffect(() => {
     if (loading) return;
     if (!user) { navigate("/login"); return; }
     if (user.role === "admin") { navigate("/admin"); return; }
+
+    const params = new URLSearchParams(window.location.search);
+    const gadsParam = params.get("gads");
+    const msg = params.get("msg");
+    if (gadsParam === "connected") {
+      setGadsToast({ type: "success", msg: "Google Ads connected! Your campaign data will appear shortly." });
+      setTab("google-ads");
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (gadsParam === "error") {
+      setGadsToast({ type: "error", msg: msg ? decodeURIComponent(msg) : "Failed to connect Google Ads." });
+      setTab("google-ads");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+    setTimeout(() => setGadsToast(null), 7000);
   }, [user, loading]);
 
   useEffect(() => {
@@ -126,6 +143,41 @@ export default function CustomerPortal() {
     } finally { setSendingMsg(false); }
   }
 
+  async function connectGoogleAds() {
+    setGadsConnecting(true);
+    try {
+      const r = await authFetch("/api/portal/google-ads/auth-url");
+      if (!r.ok) {
+        const d = await r.json();
+        setGadsToast({ type: "error", msg: d.error ?? "Could not start connection." });
+        setTimeout(() => setGadsToast(null), 7000);
+        return;
+      }
+      const { url } = await r.json();
+      window.location.href = url;
+    } catch {
+      setGadsConnecting(false);
+      setGadsToast({ type: "error", msg: "Connection failed. Please try again." });
+      setTimeout(() => setGadsToast(null), 7000);
+    }
+  }
+
+  async function disconnectGoogleAds() {
+    if (!confirm("Disconnect your Google Ads account? Your data will no longer appear in the portal.")) return;
+    setGadsDisconnecting(true);
+    try {
+      await authFetch("/api/portal/google-ads", { method: "DELETE" });
+      setGads({ status: "not_linked" });
+      setGadsToast({ type: "success", msg: "Google Ads account disconnected." });
+      setTimeout(() => setGadsToast(null), 5000);
+    } catch {
+      setGadsToast({ type: "error", msg: "Could not disconnect. Try again." });
+      setTimeout(() => setGadsToast(null), 5000);
+    } finally {
+      setGadsDisconnecting(false);
+    }
+  }
+
   async function submitMeeting(e: React.FormEvent) {
     e.preventDefault();
     setMeetingLoading(true);
@@ -163,6 +215,18 @@ export default function CustomerPortal() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* Google Ads toast */}
+      {gadsToast && (
+        <div className={cn(
+          "fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl border text-sm font-semibold",
+          gadsToast.type === "success" ? "bg-emerald-600 border-emerald-500 text-white" : "bg-red-600 border-red-500 text-white"
+        )}>
+          {gadsToast.type === "success" ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+          {gadsToast.msg}
+          <button onClick={() => setGadsToast(null)} className="ml-2 opacity-70 hover:opacity-100"><span className="text-lg leading-none">×</span></button>
+        </div>
+      )}
+
       {/* Top nav */}
       <nav className="bg-slate-900 border-b border-slate-800 px-4 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto flex items-center justify-between h-14">
@@ -536,9 +600,17 @@ export default function CustomerPortal() {
                 </h2>
                 {gads?.dateRange && <p className="text-xs text-gray-400 mt-0.5 ml-9">{gads.dateRange}</p>}
               </div>
-              <button onClick={refreshGads} disabled={gadsLoading} className="flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-white border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all disabled:opacity-40">
-                <RefreshCw size={12} className={gadsLoading ? "animate-spin" : ""} /> Refresh
-              </button>
+              <div className="flex items-center gap-2">
+                <button onClick={refreshGads} disabled={gadsLoading} className="flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-white border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all disabled:opacity-40">
+                  <RefreshCw size={12} className={gadsLoading ? "animate-spin" : ""} /> Refresh
+                </button>
+                {gads?.status === "connected" && (
+                  <button onClick={disconnectGoogleAds} disabled={gadsDisconnecting} className="flex items-center gap-1.5 text-xs font-bold text-red-500 bg-white border border-red-200 px-3 py-2 rounded-lg hover:bg-red-50 transition-all disabled:opacity-40">
+                    {gadsDisconnecting ? <div className="w-3 h-3 border border-red-400 border-t-transparent rounded-full animate-spin" /> : null}
+                    Disconnect
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Loading */}
@@ -549,33 +621,27 @@ export default function CustomerPortal() {
               </div>
             )}
 
-            {/* Not linked */}
-            {!gadsLoading && gads?.status === "not_linked" && (
+            {/* Not linked — self-serve connect */}
+            {!gadsLoading && (gads?.status === "not_linked" || gads?.status === "pending_oauth") && (
               <div className="bg-white border border-gray-100 rounded-2xl p-10 text-center shadow-sm">
                 <div className="w-16 h-16 rounded-2xl bg-violet-50 border border-violet-200 flex items-center justify-center mx-auto mb-4">
                   <Link2 size={28} className="text-violet-400" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Google Ads Not Linked Yet</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Connect Your Google Ads Account</h3>
                 <p className="text-gray-400 text-sm max-w-sm mx-auto">
-                  Your Google Ads account hasn't been connected to your portal yet. Your account manager will link it shortly — you'll see your live campaign performance here once it's set up.
+                  Link your Google Ads account to see live campaign performance — impressions, clicks, spend, and conversions — right here in your portal.
                 </p>
-                <p className="mt-4 text-xs text-gray-300">Need it faster? Send us a message in the Chat tab.</p>
-              </div>
-            )}
-
-            {/* Pending OAuth — same as not linked from client perspective */}
-            {!gadsLoading && gads?.status === "pending_oauth" && (
-              <div className="bg-white border border-gray-100 rounded-2xl p-10 text-center shadow-sm">
-                <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto mb-4">
-                  <Zap size={28} className="text-amber-400" />
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Integration Being Configured</h3>
-                <p className="text-gray-400 text-sm max-w-sm mx-auto">
-                  Your Google Ads account has been identified and our team is completing the API connection. You'll see live data here soon.
-                </p>
-                <div className="mt-5 flex items-center justify-center gap-2 text-xs text-amber-600 bg-amber-50 border border-amber-200 px-4 py-2.5 rounded-xl w-fit mx-auto">
-                  <Clock size={12} /> Account ID: {gads.customerId}
-                </div>
+                <button
+                  onClick={connectGoogleAds}
+                  disabled={gadsConnecting}
+                  className="mt-6 inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-700 disabled:opacity-60 text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm"
+                >
+                  {gadsConnecting
+                    ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Connecting…</>
+                    : <><ExternalLink size={15} /> Connect Google Ads</>
+                  }
+                </button>
+                <p className="mt-4 text-xs text-gray-300">You'll be taken to Google to approve access. No payment info is shared.</p>
               </div>
             )}
 
@@ -585,7 +651,10 @@ export default function CustomerPortal() {
                 <AlertCircle size={28} className="text-red-400 mx-auto mb-3" />
                 <p className="text-red-700 font-semibold text-sm">Could not load Google Ads data</p>
                 <p className="text-red-400 text-xs mt-1">{gads.error}</p>
-                <button onClick={refreshGads} className="mt-4 text-xs font-bold text-red-600 bg-red-50 border border-red-200 px-4 py-2 rounded-lg hover:bg-red-100 transition-all">Try Again</button>
+                <div className="mt-4 flex items-center gap-2 justify-center">
+                  <button onClick={refreshGads} className="text-xs font-bold text-red-600 bg-red-50 border border-red-200 px-4 py-2 rounded-lg hover:bg-red-100 transition-all">Try Again</button>
+                  <button onClick={connectGoogleAds} disabled={gadsConnecting} className="text-xs font-bold text-violet-600 bg-violet-50 border border-violet-200 px-4 py-2 rounded-lg hover:bg-violet-100 transition-all">Reconnect Account</button>
+                </div>
               </div>
             )}
 

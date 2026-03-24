@@ -1,4 +1,5 @@
 import { Router, type Request } from "express";
+import { randomBytes } from "crypto";
 import { db, pool } from "@workspace/db";
 import { usersTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
@@ -53,6 +54,10 @@ async function setSetting(key: string, value: string): Promise<void> {
   `, [key, value]);
 }
 
+async function deleteSetting(key: string): Promise<void> {
+  await pool.query("DELETE FROM portal_settings WHERE key = $1", [key]);
+}
+
 function getBaseUrl(req: Request): string {
   const domain = process.env.REPLIT_DEV_DOMAIN;
   return domain ? `https://${domain}` : `${req.protocol}://${req.get("host")}`;
@@ -62,109 +67,165 @@ function getRedirectUri(req: Request): string {
   return `${getBaseUrl(req)}/api/auth/google-ads/callback`;
 }
 
-async function fetchGoogleAdsMetrics(customerId: string, req?: Request): Promise<GadsMetrics> {
+async function exchangeCodeForTokens(
+  code: string,
+  redirectUri: string
+): Promise<{ access_token?: string; refresh_token?: string; error?: string; error_description?: string }> {
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      code,
+      client_id: process.env.GOOGLE_ADS_CLIENT_ID!,
+      client_secret: process.env.GOOGLE_ADS_CLIENT_SECRET!,
+      redirect_uri: redirectUri,
+      grant_type: "authorization_code",
+    }),
+  });
+  return res.json();
+}
+
+async function refreshAccessToken(refreshToken: string): Promise<string | null> {
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: process.env.GOOGLE_ADS_CLIENT_ID!,
+      client_secret: process.env.GOOGLE_ADS_CLIENT_SECRET!,
+      refresh_token: refreshToken,
+      grant_type: "refresh_token",
+    }),
+  });
+  const data = await res.json() as { access_token?: string };
+  return data.access_token ?? null;
+}
+
+async function listFirstCustomerId(accessToken: string): Promise<string | null> {
   const devToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
-  const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_ADS_CLIENT_SECRET;
-  const managerId = process.env.GOOGLE_ADS_MANAGER_CUSTOMER_ID;
-
-  const refreshToken = process.env.GOOGLE_ADS_REFRESH_TOKEN || await getSetting("google_ads_refresh_token");
-
-  if (!devToken || !clientId || !clientSecret || !refreshToken) {
-    return { status: "pending_oauth", customerId };
-  }
-
+  if (!devToken) return null;
   try {
-    const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        client_id: clientId,
-        client_secret: clientSecret,
-        refresh_token: refreshToken,
-        grant_type: "refresh_token",
-      }),
+    const res = await fetch("https://googleads.googleapis.com/v17/customers:listAccessibleCustomers", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "developer-token": devToken,
+      },
     });
-    const tokenData = await tokenRes.json() as { access_token?: string; error?: string };
-    if (!tokenData.access_token) {
-      return { status: "error", customerId, error: "OAuth token refresh failed" };
-    }
-
-    const cleanId = customerId.replace(/-/g, "");
-    const headers: Record<string, string> = {
-      Authorization: `Bearer ${tokenData.access_token}`,
-      "developer-token": devToken,
-      "Content-Type": "application/json",
-    };
-    if (managerId) headers["login-customer-id"] = managerId.replace(/-/g, "");
-
-    const query = `
-      SELECT
-        campaign.name,
-        campaign.status,
-        metrics.impressions,
-        metrics.clicks,
-        metrics.ctr,
-        metrics.average_cpc,
-        metrics.conversions,
-        metrics.cost_micros
-      FROM campaign
-      WHERE segments.date DURING LAST_30_DAYS
-        AND campaign.status != 'REMOVED'
-      ORDER BY metrics.cost_micros DESC
-      LIMIT 20
-    `;
-
-    const gadsRes = await fetch(
-      `https://googleads.googleapis.com/v17/customers/${cleanId}/googleAds:search`,
-      { method: "POST", headers, body: JSON.stringify({ query }) }
-    );
-    const gadsData = await gadsRes.json() as { results?: any[]; error?: any };
-
-    if (gadsData.error) {
-      return { status: "error", customerId, error: JSON.stringify(gadsData.error?.message ?? gadsData.error) };
-    }
-
-    const rows = gadsData.results ?? [];
-    const campaigns: CampaignRow[] = rows.map((r: any) => ({
-      name: r.campaign?.name ?? "Unknown",
-      status: r.campaign?.status ?? "UNKNOWN",
-      impressions: Number(r.metrics?.impressions ?? 0),
-      clicks: Number(r.metrics?.clicks ?? 0),
-      ctr: Number((r.metrics?.ctr ?? 0) * 100),
-      avgCpc: Number((r.metrics?.average_cpc ?? 0)) / 1_000_000,
-      conversions: Number(r.metrics?.conversions ?? 0),
-      costMicros: Number(r.metrics?.cost_micros ?? 0),
-    }));
-
-    const totals: Totals = campaigns.reduce(
-      (acc, c) => ({
-        impressions: acc.impressions + c.impressions,
-        clicks: acc.clicks + c.clicks,
-        ctr: 0,
-        avgCpc: 0,
-        conversions: acc.conversions + c.conversions,
-        costZar: acc.costZar + c.costMicros / 1_000_000,
-        roas: 0,
-      }),
-      { impressions: 0, clicks: 0, ctr: 0, avgCpc: 0, conversions: 0, costZar: 0, roas: 0 }
-    );
-    totals.ctr = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0;
-    totals.avgCpc = totals.clicks > 0 ? totals.costZar / totals.clicks : 0;
-    totals.roas = totals.costZar > 0 ? (totals.conversions * 500) / totals.costZar : 0;
-
-    return { status: "connected", customerId, dateRange: "Last 30 days", campaigns, totals };
-  } catch (err: any) {
-    return { status: "error", customerId, error: err?.message ?? "Unknown error" };
+    const data = await res.json() as { resourceNames?: string[] };
+    const first = data.resourceNames?.[0];
+    return first ? first.replace("customers/", "") : null;
+  } catch {
+    return null;
   }
 }
 
+async function fetchMetricsWithToken(
+  accessToken: string,
+  customerId: string,
+  managerId?: string
+): Promise<GadsMetrics> {
+  const devToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
+  if (!devToken) return { status: "error", error: "Developer token not configured" };
+
+  const cleanId = customerId.replace(/-/g, "");
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${accessToken}`,
+    "developer-token": devToken,
+    "Content-Type": "application/json",
+  };
+  if (managerId) headers["login-customer-id"] = managerId.replace(/-/g, "");
+
+  const query = `
+    SELECT
+      campaign.name,
+      campaign.status,
+      metrics.impressions,
+      metrics.clicks,
+      metrics.ctr,
+      metrics.average_cpc,
+      metrics.conversions,
+      metrics.cost_micros
+    FROM campaign
+    WHERE segments.date DURING LAST_30_DAYS
+      AND campaign.status != 'REMOVED'
+    ORDER BY metrics.cost_micros DESC
+    LIMIT 20
+  `;
+
+  const gadsRes = await fetch(
+    `https://googleads.googleapis.com/v17/customers/${cleanId}/googleAds:search`,
+    { method: "POST", headers, body: JSON.stringify({ query }) }
+  );
+  const gadsData = await gadsRes.json() as { results?: any[]; error?: any };
+
+  if (gadsData.error) {
+    return { status: "error", customerId, error: String(gadsData.error?.message ?? JSON.stringify(gadsData.error)) };
+  }
+
+  const rows = gadsData.results ?? [];
+  const campaigns: CampaignRow[] = rows.map((r: any) => ({
+    name: r.campaign?.name ?? "Unknown",
+    status: r.campaign?.status ?? "UNKNOWN",
+    impressions: Number(r.metrics?.impressions ?? 0),
+    clicks: Number(r.metrics?.clicks ?? 0),
+    ctr: Number((r.metrics?.ctr ?? 0) * 100),
+    avgCpc: Number((r.metrics?.average_cpc ?? 0)) / 1_000_000,
+    conversions: Number(r.metrics?.conversions ?? 0),
+    costMicros: Number(r.metrics?.cost_micros ?? 0),
+  }));
+
+  const totals: Totals = campaigns.reduce(
+    (acc, c) => ({
+      impressions: acc.impressions + c.impressions,
+      clicks: acc.clicks + c.clicks,
+      ctr: 0,
+      avgCpc: 0,
+      conversions: acc.conversions + c.conversions,
+      costZar: acc.costZar + c.costMicros / 1_000_000,
+      roas: 0,
+    }),
+    { impressions: 0, clicks: 0, ctr: 0, avgCpc: 0, conversions: 0, costZar: 0, roas: 0 }
+  );
+  totals.ctr = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0;
+  totals.avgCpc = totals.clicks > 0 ? totals.costZar / totals.clicks : 0;
+  totals.roas = totals.costZar > 0 ? (totals.conversions * 500) / totals.costZar : 0;
+
+  return { status: "connected", customerId, dateRange: "Last 30 days", campaigns, totals };
+}
+
+async function fetchGoogleAdsMetrics(user: { id: number; googleAdsCustomerId: string | null; googleAdsRefreshToken: string | null }): Promise<GadsMetrics> {
+  const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_ADS_CLIENT_SECRET;
+
+  // ── Client has their own connected account ──
+  if (user.googleAdsRefreshToken && user.googleAdsCustomerId) {
+    if (!clientId || !clientSecret) return { status: "pending_oauth" };
+    const accessToken = await refreshAccessToken(user.googleAdsRefreshToken);
+    if (!accessToken) return { status: "error", error: "Could not refresh your Google Ads token. Try reconnecting." };
+    return fetchMetricsWithToken(accessToken, user.googleAdsCustomerId);
+  }
+
+  // ── Client has a Customer ID set by admin but no personal refresh token ──
+  if (user.googleAdsCustomerId && !user.googleAdsRefreshToken) {
+    // Fall back to agency-level credentials
+    const agencyRefresh = process.env.GOOGLE_ADS_REFRESH_TOKEN ?? await getSetting("google_ads_refresh_token");
+    const managerId = process.env.GOOGLE_ADS_MANAGER_CUSTOMER_ID;
+    if (!clientId || !clientSecret || !agencyRefresh) return { status: "pending_oauth", customerId: user.googleAdsCustomerId };
+    const accessToken = await refreshAccessToken(agencyRefresh);
+    if (!accessToken) return { status: "error", error: "Agency token refresh failed" };
+    return fetchMetricsWithToken(accessToken, user.googleAdsCustomerId, managerId);
+  }
+
+  // ── Nothing linked ──
+  return { status: "not_linked" };
+}
+
+// ── Client portal: get metrics ──
 router.get("/portal/google-ads", requireAuth, async (req, res) => {
   try {
     const uid = req.auth!.userId;
     const [user] = await db.select().from(usersTable).where(eq(usersTable.id, uid));
-    if (!user?.googleAdsCustomerId) return res.json({ status: "not_linked" });
-    const data = await fetchGoogleAdsMetrics(user.googleAdsCustomerId, req);
+    if (!user) return res.status(404).json({ status: "error", error: "User not found" });
+    const data = await fetchGoogleAdsMetrics(user);
     res.json(data);
   } catch (err) {
     console.error(err);
@@ -172,6 +233,45 @@ router.get("/portal/google-ads", requireAuth, async (req, res) => {
   }
 });
 
+// ── Client portal: get OAuth URL (returns JSON, client then redirects) ──
+router.get("/portal/google-ads/auth-url", requireAuth, (req, res) => {
+  const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
+  if (!clientId) {
+    return res.status(503).json({ error: "Google Ads integration not configured yet. Contact your account manager." });
+  }
+  const nonce = randomBytes(20).toString("hex");
+  const userId = req.auth!.userId;
+  // Store nonce→userId with 15-min expiry encoded in value
+  const expiry = Date.now() + 15 * 60 * 1000;
+  setSetting(`gads_nonce_${nonce}`, `${expiry}:${userId}`).catch(console.error);
+
+  const redirectUri = getRedirectUri(req);
+  const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+  url.searchParams.set("client_id", clientId);
+  url.searchParams.set("redirect_uri", redirectUri);
+  url.searchParams.set("response_type", "code");
+  url.searchParams.set("scope", "https://www.googleapis.com/auth/adwords");
+  url.searchParams.set("access_type", "offline");
+  url.searchParams.set("prompt", "consent");
+  url.searchParams.set("state", `client_${nonce}`);
+  res.json({ url: url.toString() });
+});
+
+// ── Client portal: disconnect Google Ads ──
+router.delete("/portal/google-ads", requireAuth, async (req, res) => {
+  try {
+    const uid = req.auth!.userId;
+    await db.update(usersTable)
+      .set({ googleAdsRefreshToken: null, googleAdsCustomerId: null })
+      .where(eq(usersTable.id, uid));
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to disconnect" });
+  }
+});
+
+// ── Admin: set Google Ads Customer ID for a client ──
 router.patch("/admin/customers/:id/google-ads", requireAdmin, async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -188,6 +288,7 @@ router.patch("/admin/customers/:id/google-ads", requireAdmin, async (req, res) =
   }
 });
 
+// ── Admin: agency-level connection status ──
 router.get("/admin/google-ads/status", requireAdmin, async (_req, res) => {
   try {
     const hasEnvToken = !!process.env.GOOGLE_ADS_REFRESH_TOKEN;
@@ -196,24 +297,17 @@ router.get("/admin/google-ads/status", requireAdmin, async (_req, res) => {
     const hasClientSecret = !!process.env.GOOGLE_ADS_CLIENT_SECRET;
     const hasDevToken = !!process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
     const connected = (hasEnvToken || hasDbToken) && hasClientId && hasClientSecret && hasDevToken;
-    res.json({
-      connected,
-      source: hasEnvToken ? "env" : hasDbToken ? "db" : "none",
-      hasClientId,
-      hasClientSecret,
-      hasDevToken,
-    });
+    res.json({ connected, source: hasEnvToken ? "env" : hasDbToken ? "db" : "none", hasClientId, hasClientSecret, hasDevToken });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to get status" });
   }
 });
 
+// ── Admin: initiate agency-level OAuth ──
 router.get("/auth/google-ads", requireAdmin, (req, res) => {
   const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
-  if (!clientId) {
-    return res.status(400).send("GOOGLE_ADS_CLIENT_ID environment variable is not set. Please add it first.");
-  }
+  if (!clientId) return res.status(400).send("GOOGLE_ADS_CLIENT_ID not set.");
   const redirectUri = getRedirectUri(req);
   const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
   url.searchParams.set("client_id", clientId);
@@ -222,48 +316,78 @@ router.get("/auth/google-ads", requireAdmin, (req, res) => {
   url.searchParams.set("scope", "https://www.googleapis.com/auth/adwords");
   url.searchParams.set("access_type", "offline");
   url.searchParams.set("prompt", "consent");
+  url.searchParams.set("state", "admin");
   res.redirect(url.toString());
 });
 
+// ── Shared OAuth callback (handles both admin and client flows) ──
 router.get("/auth/google-ads/callback", async (req, res) => {
   const baseUrl = getBaseUrl(req);
-  const { code, error } = req.query as { code?: string; error?: string };
+  const { code, state, error } = req.query as { code?: string; state?: string; error?: string };
 
   if (error || !code) {
-    return res.redirect(`${baseUrl}/admin?gads=error&msg=${encodeURIComponent(error ?? "No authorisation code received")}`);
+    const msg = encodeURIComponent(error ?? "No authorisation code received");
+    const dest = state?.startsWith("client_") ? "portal" : "admin";
+    return res.redirect(`${baseUrl}/${dest}?gads=error&msg=${msg}`);
   }
 
   const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_ADS_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
-    return res.redirect(`${baseUrl}/admin?gads=error&msg=${encodeURIComponent("Client credentials not configured")}`);
+    const dest = state?.startsWith("client_") ? "portal" : "admin";
+    return res.redirect(`${baseUrl}/${dest}?gads=error&msg=${encodeURIComponent("OAuth credentials not configured")}`);
   }
 
-  try {
-    const redirectUri = getRedirectUri(req);
-    const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        code,
-        client_id: clientId,
-        client_secret: clientSecret,
-        redirect_uri: redirectUri,
-        grant_type: "authorization_code",
-      }),
-    });
+  const redirectUri = getRedirectUri(req);
 
-    const tokenData = await tokenRes.json() as { refresh_token?: string; error?: string; error_description?: string };
+  // ── CLIENT FLOW ──
+  if (state?.startsWith("client_")) {
+    const nonce = state.slice("client_".length);
+    const stored = await getSetting(`gads_nonce_${nonce}`);
+    await deleteSetting(`gads_nonce_${nonce}`);
 
-    if (!tokenData.refresh_token) {
-      const msg = tokenData.error_description ?? tokenData.error ?? "No refresh token returned";
-      return res.redirect(`${baseUrl}/admin?gads=error&msg=${encodeURIComponent(msg)}`);
+    if (!stored) {
+      return res.redirect(`${baseUrl}/portal?gads=error&msg=${encodeURIComponent("Session expired. Please try again.")}`);
     }
 
-    await setSetting("google_ads_refresh_token", tokenData.refresh_token);
+    const [expiryStr, userIdStr] = stored.split(":");
+    if (Date.now() > Number(expiryStr)) {
+      return res.redirect(`${baseUrl}/portal?gads=error&msg=${encodeURIComponent("Session expired. Please try again.")}`);
+    }
+    const userId = Number(userIdStr);
+
+    try {
+      const tokens = await exchangeCodeForTokens(code, redirectUri);
+      if (!tokens.access_token || !tokens.refresh_token) {
+        const msg = tokens.error_description ?? tokens.error ?? "No tokens returned";
+        return res.redirect(`${baseUrl}/portal?gads=error&msg=${encodeURIComponent(msg)}`);
+      }
+
+      // Auto-discover the first accessible customer account
+      const customerId = await listFirstCustomerId(tokens.access_token);
+
+      await db.update(usersTable)
+        .set({ googleAdsRefreshToken: tokens.refresh_token, googleAdsCustomerId: customerId })
+        .where(eq(usersTable.id, userId));
+
+      return res.redirect(`${baseUrl}/portal?gads=connected`);
+    } catch (err: any) {
+      console.error("[gads-client-callback]", err);
+      return res.redirect(`${baseUrl}/portal?gads=error&msg=${encodeURIComponent(err?.message ?? "Unexpected error")}`);
+    }
+  }
+
+  // ── ADMIN FLOW ──
+  try {
+    const tokens = await exchangeCodeForTokens(code, redirectUri);
+    if (!tokens.refresh_token) {
+      const msg = tokens.error_description ?? tokens.error ?? "No refresh token returned";
+      return res.redirect(`${baseUrl}/admin?gads=error&msg=${encodeURIComponent(msg)}`);
+    }
+    await setSetting("google_ads_refresh_token", tokens.refresh_token);
     res.redirect(`${baseUrl}/admin?gads=connected`);
   } catch (err: any) {
-    console.error("[gads-callback]", err);
+    console.error("[gads-admin-callback]", err);
     res.redirect(`${baseUrl}/admin?gads=error&msg=${encodeURIComponent(err?.message ?? "Unexpected error")}`);
   }
 });

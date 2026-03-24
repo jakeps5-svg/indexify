@@ -103,6 +103,7 @@ export async function runStartupSeed(): Promise<void> {
       );
 
       ALTER TABLE portal_users ADD COLUMN IF NOT EXISTS google_ads_customer_id TEXT;
+      ALTER TABLE portal_users ADD COLUMN IF NOT EXISTS google_ads_refresh_token TEXT;
 
       CREATE TABLE IF NOT EXISTS portal_settings (
         key        TEXT PRIMARY KEY,
