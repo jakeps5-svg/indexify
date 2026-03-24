@@ -125,16 +125,24 @@ async function listFirstCustomerId(accessToken: string): Promise<string | null> 
     return null;
   }
   try {
-    const res = await fetch("https://googleads.googleapis.com/v17/customers:listAccessibleCustomers", {
+    const apiVer = process.env.GOOGLE_ADS_API_VERSION ?? "v19";
+    const res = await fetch(`https://googleads.googleapis.com/${apiVer}/customers:listAccessibleCustomers`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "developer-token": devToken,
       },
     });
-    const data = await res.json() as { resourceNames?: string[]; error?: any };
-    console.log("[gads] listAccessibleCustomers response:", JSON.stringify(data));
+    const rawText = await res.text();
+    console.log(`[gads] listAccessibleCustomers status=${res.status} body_preview=${rawText.slice(0, 500)}`);
+    let data: { resourceNames?: string[]; error?: any };
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      console.error("[gads] listAccessibleCustomers returned non-JSON (HTML?). Developer token may need production approval.");
+      return null;
+    }
     if (data.error) {
-      console.error("[gads] listAccessibleCustomers error:", data.error);
+      console.error("[gads] listAccessibleCustomers error:", JSON.stringify(data.error));
       return null;
     }
     const first = data.resourceNames?.[0];
@@ -178,14 +186,31 @@ async function fetchMetricsWithToken(
     LIMIT 20
   `;
 
+  const apiVer = process.env.GOOGLE_ADS_API_VERSION ?? "v19";
   const gadsRes = await fetch(
-    `https://googleads.googleapis.com/v17/customers/${cleanId}/googleAds:search`,
+    `https://googleads.googleapis.com/${apiVer}/customers/${cleanId}/googleAds:search`,
     { method: "POST", headers, body: JSON.stringify({ query }) }
   );
-  const gadsData = await gadsRes.json() as { results?: any[]; error?: any };
+
+  const rawText = await gadsRes.text();
+  console.log(`[gads] GAQL response status=${gadsRes.status} body_preview=${rawText.slice(0, 500)}`);
+
+  let gadsData: { results?: any[]; error?: any };
+  try {
+    gadsData = JSON.parse(rawText);
+  } catch {
+    // Google returned non-JSON (HTML error page) — likely a developer token issue
+    return {
+      status: "error",
+      customerId,
+      error: `Google Ads API returned an unexpected response (HTTP ${gadsRes.status}). This usually means the developer token needs production approval. Contact your account manager.`,
+    };
+  }
 
   if (gadsData.error) {
-    return { status: "error", customerId, error: String(gadsData.error?.message ?? JSON.stringify(gadsData.error)) };
+    const msg = gadsData.error?.message ?? gadsData.error?.details?.[0]?.errors?.[0]?.message ?? JSON.stringify(gadsData.error);
+    console.error("[gads] GAQL error:", JSON.stringify(gadsData.error));
+    return { status: "error", customerId, error: String(msg) };
   }
 
   const rows = gadsData.results ?? [];
