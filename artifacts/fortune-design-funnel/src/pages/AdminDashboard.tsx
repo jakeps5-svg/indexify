@@ -119,11 +119,26 @@ export default function AdminDashboard() {
   const [uploadingFile, setUploadingFile] = useState(false);
   const [editingGadsId, setEditingGadsId] = useState<number | null>(null);
   const [gadsIdInput, setGadsIdInput] = useState("");
+  const [gadsConnected, setGadsConnected] = useState<boolean | null>(null);
+  const [gadsToast, setGadsToast] = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
   useEffect(() => {
     if (loading) return;
     if (!user) { navigate("/admin-login"); return; }
     if (user.role !== "admin") { navigate("/portal"); return; }
+
+    const params = new URLSearchParams(window.location.search);
+    const gads = params.get("gads");
+    const msg = params.get("msg");
+    if (gads === "connected") {
+      setGadsToast({ type: "success", msg: "Google Ads account connected successfully!" });
+      setGadsConnected(true);
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (gads === "error") {
+      setGadsToast({ type: "error", msg: msg ? decodeURIComponent(msg) : "Failed to connect Google Ads" });
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+    setTimeout(() => setGadsToast(null), 6000);
   }, [user, loading]);
 
   const loadCustomers = async () => {
@@ -139,11 +154,22 @@ export default function AdminDashboard() {
     setMeetings(await r.json());
   };
 
+  const loadGadsStatus = async () => {
+    try {
+      const r = await authFetch("/api/admin/google-ads/status");
+      const d = await r.json();
+      setGadsConnected(d.connected ?? false);
+    } catch {
+      setGadsConnected(false);
+    }
+  };
+
   useEffect(() => {
     if (!user) return;
     loadCustomers();
     loadInvoices();
     loadMeetings();
+    loadGadsStatus();
   }, [user]);
 
   useEffect(() => {
@@ -353,6 +379,20 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* Google Ads OAuth toast */}
+      {gadsToast && (
+        <div className={cn(
+          "fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl border text-sm font-semibold transition-all",
+          gadsToast.type === "success"
+            ? "bg-emerald-600 border-emerald-500 text-white"
+            : "bg-red-600 border-red-500 text-white"
+        )}>
+          {gadsToast.type === "success" ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+          {gadsToast.msg}
+          <button onClick={() => setGadsToast(null)} className="ml-2 opacity-70 hover:opacity-100"><X size={14} /></button>
+        </div>
+      )}
+
       {/* Nav */}
       <nav className="bg-slate-900 border-b border-slate-800 px-4 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between h-14">
@@ -407,6 +447,47 @@ export default function AdminDashboard() {
                   <p className="text-xs text-gray-400 mt-0.5">{label}</p>
                 </div>
               ))}
+            </div>
+
+            {/* Google Ads Integration Status */}
+            <div className={cn(
+              "rounded-2xl p-5 border flex items-center gap-4",
+              gadsConnected === null ? "bg-gray-50 border-gray-200" :
+              gadsConnected ? "bg-emerald-50 border-emerald-200" : "bg-violet-50 border-violet-200"
+            )}>
+              <div className={cn(
+                "w-10 h-10 rounded-xl border flex items-center justify-center flex-shrink-0",
+                gadsConnected === null ? "bg-gray-100 border-gray-200 text-gray-400" :
+                gadsConnected ? "bg-emerald-100 border-emerald-200 text-emerald-600" : "bg-violet-100 border-violet-200 text-violet-600"
+              )}>
+                <BarChart3 size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-sm text-gray-900">Google Ads Integration</p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {gadsConnected === null ? "Checking connection status…" :
+                   gadsConnected ? "Agency Google Ads account is connected. Client portals can display live campaign data." :
+                   "Not connected. Authorise your agency Google Ads account so client portals can display live data."}
+                </p>
+              </div>
+              <div className="flex-shrink-0 flex flex-col items-end gap-2">
+                {gadsConnected === false && (
+                  <a
+                    href="/api/auth/google-ads"
+                    className="flex items-center gap-2 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors"
+                  >
+                    <ExternalLink size={13} /> Connect Google Ads
+                  </a>
+                )}
+                {gadsConnected === true && (
+                  <span className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-full">
+                    <CheckCircle2 size={12} /> Connected
+                  </span>
+                )}
+                <span className="text-[10px] text-gray-400 font-mono break-all text-right max-w-[220px]">
+                  Callback URL: {window.location.origin}/api/auth/google-ads/callback
+                </span>
+              </div>
             </div>
 
             {/* Active subscriptions summary */}
