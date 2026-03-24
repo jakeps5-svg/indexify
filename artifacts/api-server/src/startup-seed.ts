@@ -102,6 +102,8 @@ export async function runStartupSeed(): Promise<void> {
         created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
 
+      ALTER TABLE portal_users ADD COLUMN IF NOT EXISTS google_ads_customer_id TEXT;
+
       CREATE TABLE IF NOT EXISTS portal_service_updates (
         id              SERIAL PRIMARY KEY,
         user_id         INTEGER NOT NULL REFERENCES portal_users(id),

@@ -18,6 +18,7 @@ export const usersTable = pgTable("portal_users", {
   role: userRoleEnum("role").notNull().default("customer"),
   resetToken: text("reset_token"),
   resetTokenExpiry: timestamp("reset_token_expiry"),
+  googleAdsCustomerId: text("google_ads_customer_id"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

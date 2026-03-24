@@ -21,8 +21,8 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 | `/blog` | Blog listing |
 | `/checkout` | Yoco payment checkout |
 | `/login` | Client portal login (JWT auth) |
-| `/portal` | Customer dashboard — services, invoices, meeting booking, live chat |
-| `/admin` | Admin dashboard — client management, invoices, chat, meetings, file uploads |
+| `/portal` | Customer dashboard — services, invoices, meeting booking, live chat, Google Ads performance |
+| `/admin` | Admin dashboard — client management, Google Ads ID linking, invoices, chat, meetings, file uploads |
 
 ## Stack
 

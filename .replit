@@ -29,3 +29,4 @@ timeoutMs = 20000
 
 [userenv.shared]
 VITE_YOCO_PUBLIC_KEY = "pk_live_8941c7f9Kb392Mye4414"
+GOOGLE_ADS_DEVELOPER_TOKEN = "moTW7_1O5zvo1bVo_L74qw"

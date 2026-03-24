@@ -7,6 +7,7 @@ import {
   X, ChevronDown, AlertCircle, Clock, Search,
   Package, RefreshCw, BarChart3, Bell,
   Trash2, Pencil, Paperclip, ImagePlus, Download, ExternalLink,
+  MousePointerClick,
 } from "lucide-react";
 import { usePortalAuth } from "@/hooks/usePortalAuth";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,7 @@ type Tab = "overview" | "customers" | "invoices" | "chat" | "meetings";
 interface Customer {
   id: number; name: string; email: string; phone?: string; company?: string;
   createdAt: string; subscriptions: Subscription[]; invoices: Invoice[]; unreadMessages: number;
+  googleAdsCustomerId?: string | null;
 }
 interface Subscription {
   id: number; userId: number; serviceName: string; serviceSlug: string;
@@ -115,6 +117,8 @@ export default function AdminDashboard() {
   const [updateAttachment, setUpdateAttachment] = useState<Attachment | null>(null);
   const [chatAttachment, setChatAttachment] = useState<Attachment | null>(null);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [editingGadsId, setEditingGadsId] = useState<number | null>(null);
+  const [gadsIdInput, setGadsIdInput] = useState("");
 
   useEffect(() => {
     if (loading) return;
@@ -313,6 +317,15 @@ export default function AdminDashboard() {
     await loadMeetings();
   }
 
+  async function saveGadsId(customerId: number) {
+    await authFetch(`/api/admin/customers/${customerId}/google-ads`, {
+      method: "PATCH",
+      body: JSON.stringify({ googleAdsCustomerId: gadsIdInput.trim() || null }),
+    });
+    setEditingGadsId(null);
+    await loadCustomers();
+  }
+
   if (loading) return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center">
       <div className="w-10 h-10 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
@@ -480,6 +493,35 @@ export default function AdminDashboard() {
                           {c.unreadMessages > 0 && <span className="text-xs font-bold text-white bg-red-500 px-2 py-0.5 rounded-full">{c.unreadMessages} new</span>}
                         </div>
                         <p className="text-xs text-gray-400 mt-0.5">{c.email}{c.phone ? ` · ${c.phone}` : ""}</p>
+
+                        {/* Google Ads Customer ID */}
+                        <div className="mt-2">
+                          {editingGadsId === c.id ? (
+                            <form onSubmit={e => { e.preventDefault(); saveGadsId(c.id); }} className="flex items-center gap-2">
+                              <input
+                                autoFocus
+                                value={gadsIdInput}
+                                onChange={e => setGadsIdInput(e.target.value)}
+                                placeholder="e.g. 123-456-7890"
+                                className="text-xs border border-violet-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-violet-500 w-40"
+                              />
+                              <button type="submit" className="text-[10px] font-bold text-violet-600 bg-violet-50 border border-violet-200 px-2.5 py-1.5 rounded-lg hover:bg-violet-100 transition-colors">Save</button>
+                              <button type="button" onClick={() => setEditingGadsId(null)} className="text-[10px] text-gray-400 hover:text-gray-600 transition-colors">Cancel</button>
+                            </form>
+                          ) : (
+                            <button
+                              onClick={() => { setEditingGadsId(c.id); setGadsIdInput(c.googleAdsCustomerId ?? ""); }}
+                              className={cn("flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-colors",
+                                c.googleAdsCustomerId
+                                  ? "text-violet-600 bg-violet-50 border-violet-200 hover:bg-violet-100"
+                                  : "text-gray-400 bg-gray-50 border-gray-200 hover:bg-gray-100"
+                              )}
+                            >
+                              <MousePointerClick size={10} />
+                              {c.googleAdsCustomerId ? `Ads ID: ${c.googleAdsCustomerId}` : "Link Google Ads ID"}
+                            </button>
+                          )}
+                        </div>
 
                         {/* Subscriptions with edit/delete */}
                         {c.subscriptions.length > 0 && (

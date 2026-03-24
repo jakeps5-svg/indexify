@@ -10,6 +10,7 @@ import bookingRouter from "./booking";
 import authRouter from "./auth";
 import portalRouter from "./portal";
 import adminRouter from "./admin";
+import googleAdsRouter from "./googleAds";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(bookingRouter);
 router.use(authRouter);
 router.use(portalRouter);
 router.use(adminRouter);
+router.use(googleAdsRouter);
 
 export default router;

@@ -6,12 +6,23 @@ import {
   LogOut, CheckCircle2, Clock, AlertCircle, Send,
   TrendingUp, Package, BadgeCheck, Video, Wifi,
   ChevronRight, ExternalLink, Bell, Download,
+  MousePointerClick, BarChart3, Eye, Target, RefreshCw,
+  Link2, Zap,
 } from "lucide-react";
 import { usePortalAuth } from "@/hooks/usePortalAuth";
 import { cn } from "@/lib/utils";
 import { useSEO } from "@/hooks/useSEO";
 
-type Tab = "dashboard" | "services" | "invoices" | "meeting" | "chat" | "updates";
+type Tab = "dashboard" | "services" | "invoices" | "meeting" | "chat" | "updates" | "google-ads";
+
+interface GadsMetrics {
+  status: "connected" | "not_linked" | "pending_oauth" | "error";
+  customerId?: string;
+  dateRange?: string;
+  campaigns?: { name: string; status: string; impressions: number; clicks: number; ctr: number; avgCpc: number; conversions: number; costMicros: number }[];
+  totals?: { impressions: number; clicks: number; ctr: number; avgCpc: number; conversions: number; costZar: number; roas: number };
+  error?: string;
+}
 
 interface ServiceUpdate {
   id: number; title: string; content: string; createdAt: string;
@@ -59,6 +70,8 @@ export default function CustomerPortal() {
   const [meetingLoading, setMeetingLoading] = useState(false);
   const [meetingSuccess, setMeetingSuccess] = useState(false);
   const [updates, setUpdates] = useState<ServiceUpdate[]>([]);
+  const [gads, setGads] = useState<GadsMetrics | null>(null);
+  const [gadsLoading, setGadsLoading] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -78,6 +91,10 @@ export default function CustomerPortal() {
     if (tab === "chat" && user) loadChat();
     if (tab === "updates" && user) {
       authFetch("/api/portal/updates").then(r => r.json()).then(setUpdates);
+    }
+    if (tab === "google-ads" && user && !gads) {
+      setGadsLoading(true);
+      authFetch("/api/portal/google-ads").then(r => r.json()).then(d => { setGads(d); setGadsLoading(false); }).catch(() => setGadsLoading(false));
     }
   }, [tab, user]);
 
@@ -124,8 +141,19 @@ export default function CustomerPortal() {
     </div>
   );
 
+  async function refreshGads() {
+    if (!user) return;
+    setGadsLoading(true);
+    setGads(null);
+    try {
+      const d = await authFetch("/api/portal/google-ads").then(r => r.json());
+      setGads(d);
+    } finally { setGadsLoading(false); }
+  }
+
   const TABS = [
     { id: "dashboard" as Tab, label: "Dashboard", icon: LayoutDashboard },
+    { id: "google-ads" as Tab, label: "Google Ads", icon: MousePointerClick },
     { id: "services" as Tab, label: "Services", icon: Package },
     { id: "invoices" as Tab, label: "Invoices", icon: FileText },
     { id: "updates" as Tab, label: "Updates", icon: Bell },
@@ -493,6 +521,142 @@ export default function CustomerPortal() {
                   </div>
                 ))}
               </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* ── Google Ads Tab ── */}
+        {tab === "google-ads" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center"><MousePointerClick size={14} className="text-white" /></span>
+                  Google Ads Performance
+                </h2>
+                {gads?.dateRange && <p className="text-xs text-gray-400 mt-0.5 ml-9">{gads.dateRange}</p>}
+              </div>
+              <button onClick={refreshGads} disabled={gadsLoading} className="flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-white border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all disabled:opacity-40">
+                <RefreshCw size={12} className={gadsLoading ? "animate-spin" : ""} /> Refresh
+              </button>
+            </div>
+
+            {/* Loading */}
+            {gadsLoading && (
+              <div className="bg-white border border-gray-100 rounded-2xl p-12 flex flex-col items-center gap-3 shadow-sm">
+                <div className="w-10 h-10 border-2 border-violet-200 border-t-violet-600 rounded-full animate-spin" />
+                <p className="text-gray-400 text-sm">Fetching your campaign data…</p>
+              </div>
+            )}
+
+            {/* Not linked */}
+            {!gadsLoading && gads?.status === "not_linked" && (
+              <div className="bg-white border border-gray-100 rounded-2xl p-10 text-center shadow-sm">
+                <div className="w-16 h-16 rounded-2xl bg-violet-50 border border-violet-200 flex items-center justify-center mx-auto mb-4">
+                  <Link2 size={28} className="text-violet-400" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Google Ads Not Linked Yet</h3>
+                <p className="text-gray-400 text-sm max-w-sm mx-auto">
+                  Your Google Ads account hasn't been connected to your portal yet. Your account manager will link it shortly — you'll see your live campaign performance here once it's set up.
+                </p>
+                <p className="mt-4 text-xs text-gray-300">Need it faster? Send us a message in the Chat tab.</p>
+              </div>
+            )}
+
+            {/* Pending OAuth — same as not linked from client perspective */}
+            {!gadsLoading && gads?.status === "pending_oauth" && (
+              <div className="bg-white border border-gray-100 rounded-2xl p-10 text-center shadow-sm">
+                <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto mb-4">
+                  <Zap size={28} className="text-amber-400" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Integration Being Configured</h3>
+                <p className="text-gray-400 text-sm max-w-sm mx-auto">
+                  Your Google Ads account has been identified and our team is completing the API connection. You'll see live data here soon.
+                </p>
+                <div className="mt-5 flex items-center justify-center gap-2 text-xs text-amber-600 bg-amber-50 border border-amber-200 px-4 py-2.5 rounded-xl w-fit mx-auto">
+                  <Clock size={12} /> Account ID: {gads.customerId}
+                </div>
+              </div>
+            )}
+
+            {/* Error */}
+            {!gadsLoading && gads?.status === "error" && (
+              <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center shadow-sm">
+                <AlertCircle size={28} className="text-red-400 mx-auto mb-3" />
+                <p className="text-red-700 font-semibold text-sm">Could not load Google Ads data</p>
+                <p className="text-red-400 text-xs mt-1">{gads.error}</p>
+                <button onClick={refreshGads} className="mt-4 text-xs font-bold text-red-600 bg-red-50 border border-red-200 px-4 py-2 rounded-lg hover:bg-red-100 transition-all">Try Again</button>
+              </div>
+            )}
+
+            {/* Connected — show metrics */}
+            {!gadsLoading && gads?.status === "connected" && gads.totals && (
+              <>
+                {/* KPI cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                  {[
+                    { label: "Impressions", value: gads.totals.impressions.toLocaleString(), icon: Eye, color: "text-sky-600 bg-sky-50 border-sky-200" },
+                    { label: "Clicks", value: gads.totals.clicks.toLocaleString(), icon: MousePointerClick, color: "text-violet-600 bg-violet-50 border-violet-200" },
+                    { label: "CTR", value: `${gads.totals.ctr.toFixed(2)}%`, icon: Target, color: "text-emerald-600 bg-emerald-50 border-emerald-200" },
+                    { label: "Avg CPC", value: `R${gads.totals.avgCpc.toFixed(2)}`, icon: BarChart3, color: "text-amber-600 bg-amber-50 border-amber-200" },
+                    { label: "Conversions", value: gads.totals.conversions.toFixed(1), icon: CheckCircle2, color: "text-emerald-600 bg-emerald-50 border-emerald-200" },
+                    { label: "Ad Spend", value: `R${gads.totals.costZar.toLocaleString("en-ZA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: TrendingUp, color: "text-rose-600 bg-rose-50 border-rose-200" },
+                  ].map(({ label, value, icon: Icon, color }) => (
+                    <div key={label} className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+                      <div className={cn("w-8 h-8 rounded-lg border flex items-center justify-center mb-2", color)}>
+                        <Icon size={14} />
+                      </div>
+                      <p className="text-lg font-black text-gray-900 leading-tight">{value}</p>
+                      <p className="text-[11px] text-gray-400 mt-0.5">{label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Campaign table */}
+                {gads.campaigns && gads.campaigns.length > 0 && (
+                  <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+                    <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
+                      <BarChart3 size={15} className="text-violet-600" />
+                      <h3 className="font-bold text-gray-900 text-sm">Campaign Breakdown</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-gray-50 bg-gray-50/50">
+                            <th className="text-left px-5 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wide">Campaign</th>
+                            <th className="text-right px-4 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wide">Impr.</th>
+                            <th className="text-right px-4 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wide">Clicks</th>
+                            <th className="text-right px-4 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wide">CTR</th>
+                            <th className="text-right px-4 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wide">Avg CPC</th>
+                            <th className="text-right px-4 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wide">Conv.</th>
+                            <th className="text-right px-5 py-3 text-[11px] font-bold text-gray-400 uppercase tracking-wide">Spend</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50">
+                          {gads.campaigns.map((c, i) => (
+                            <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                              <td className="px-5 py-3.5">
+                                <div className="flex items-center gap-2">
+                                  <span className={cn("w-2 h-2 rounded-full shrink-0", c.status === "ENABLED" ? "bg-emerald-400" : "bg-gray-300")} />
+                                  <span className="font-medium text-gray-800 truncate max-w-[180px]">{c.name}</span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3.5 text-right text-gray-600">{c.impressions.toLocaleString()}</td>
+                              <td className="px-4 py-3.5 text-right text-gray-600">{c.clicks.toLocaleString()}</td>
+                              <td className="px-4 py-3.5 text-right text-gray-600">{c.ctr.toFixed(2)}%</td>
+                              <td className="px-4 py-3.5 text-right text-gray-600">R{c.avgCpc.toFixed(2)}</td>
+                              <td className="px-4 py-3.5 text-right text-gray-600">{c.conversions.toFixed(1)}</td>
+                              <td className="px-5 py-3.5 text-right font-semibold text-gray-900">R{(c.costMicros / 1_000_000).toFixed(2)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                <p className="text-[11px] text-gray-400 text-center">Data synced from Google Ads API · Account {gads.customerId}</p>
+              </>
             )}
           </motion.div>
         )}
