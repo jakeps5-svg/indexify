@@ -336,23 +336,111 @@ function generateProposalHTML(result: ProposalResult): string {
   .guide-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; }
   .guide-title { font-size: 12px; font-weight: 800; color: #78350f; margin-bottom: 8px; }
   .guide-item { font-size: 12px; color: #92400e; margin-bottom: 4px; }
-  .footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #9ca3af; text-align: center; }
+  .doc-footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 11px; color: #9ca3af; text-align: center; }
+
+  /* ── PRINT HEADER & FOOTER (hidden on screen, visible on every printed page) ── */
+  .print-header, .print-footer { display: none; }
+
   @media print {
-    body { padding: 24px; margin: 0; }
+    /* Zero-margin page so we control full bleed */
+    @page { size: A4; margin: 0; }
+
+    html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    body {
+      padding: 22mm 14mm 18mm 14mm; /* top clears header, bottom clears footer */
+      max-width: 100%;
+      margin: 0;
+    }
+
+    .no-print { display: none !important; }
+    .doc-footer { display: none !important; } /* replaced by .print-footer */
     .campaign { page-break-inside: avoid; }
     .section { page-break-inside: avoid; }
-    .no-print { display: none !important; }
-    @page { margin: 18mm 14mm; size: A4; }
+
+    /* ── Printed header – repeats on every page ── */
+    .print-header {
+      display: flex;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 18mm;
+      background: #0ea5c8;
+      color: #fff;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14mm;
+      z-index: 1000;
+    }
+    .print-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: #7c4dff;
+    }
+    .ph-logo {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      color: #fff;
+    }
+    .ph-center {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.85);
+      text-align: center;
+    }
+    .ph-date {
+      font-size: 9px;
+      color: rgba(255,255,255,0.75);
+      text-align: right;
+    }
+
+    /* ── Printed footer – repeats on every page ── */
+    .print-footer {
+      display: flex;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 14mm;
+      background: #f1f5f9;
+      border-top: 1px solid #e2e8f0;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14mm;
+      z-index: 1000;
+    }
+    .pf-left {
+      font-size: 8px;
+      color: #94a3b8;
+    }
+    .pf-right {
+      font-size: 8px;
+      color: #94a3b8;
+      text-align: right;
+    }
   }
 </style>
 <script>
   window.onload = function() {
-    // small delay so fonts/styles render first
-    setTimeout(function() { window.print(); }, 400);
+    setTimeout(function() { window.print(); }, 500);
   };
 </script>
 </head>
 <body>
+<!-- Print-only header (appears on every page when printed) -->
+<div class="print-header">
+  <div class="ph-logo">indexify.</div>
+  <div class="ph-center">Google Ads Proposal &nbsp;·&nbsp; ${result.businessName}</div>
+  <div class="ph-date">Prepared by Indexify &amp; Fortune Design<br/>${now}</div>
+</div>
+<!-- Print-only footer (appears on every page when printed) -->
+<div class="print-footer">
+  <div class="pf-left">Indexify · indexify.co.za · info@indexify.co.za · +27 60 298 8295 · Powered by Fortune Design</div>
+  <div class="pf-right">Confidential · Valid 30 days · Generated ${now}</div>
+</div>
+
 <div class="no-print" style="background:#1e1b4b;color:#fff;padding:12px 20px;font-size:13px;font-weight:600;text-align:center;letter-spacing:0.01em;margin-bottom:32px;border-radius:10px;">
   📄 Use your browser's <strong>Print → Save as PDF</strong> option to download this proposal. Close this tab when done.
 </div>
@@ -447,7 +535,7 @@ function generateProposalHTML(result: ProposalResult): string {
   <div class="neg-kws">${result.negativeKeywords.map(k => `<span class="neg-kw">−${k}</span>`).join("")}</div>
 </div>
 
-<div class="footer">
+<div class="doc-footer">
   <p>Prepared by Indexify · indexify.co.za · info@indexify.co.za · WhatsApp: +27 60 298 8295</p>
   <p style="margin-top:6px;">This proposal is confidential and prepared exclusively for ${result.businessName}. Valid for 30 days.</p>
 </div>

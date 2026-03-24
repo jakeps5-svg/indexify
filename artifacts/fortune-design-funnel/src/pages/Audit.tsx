@@ -404,8 +404,13 @@ function SectionCard({ section, index, backlinkRecs, missingAltImages, topBackli
 function downloadAuditPDF(result: AuditResult) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const W = 210;
+  const H = 297;
   const margin = 14;
   const contentW = W - margin * 2;
+  // Safe zone: content must stay between compactHeaderH+padding and footerStart-padding
+  const compactHeaderH = 15;   // height of compact header on pages 2+
+  const footerStart    = 282;  // where footer band begins (H=297, footer=12mm)
+  const contentTopNew  = compactHeaderH + 5; // y-start on pages 2+
   let y = 0;
 
   const grade = scoreToGrade(result.overallScore);
@@ -414,17 +419,21 @@ function downloadAuditPDF(result: AuditResult) {
   const fails  = result.sections.reduce((s, sec) => s + sec.checks.filter(c => c.status === "fail").length, 0);
   const date   = new Date().toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" });
 
+  // ── Adds a new page and resets y below the compact header ─────────────────
   function checkPage(needed = 20) {
-    if (y + needed > 280) { doc.addPage(); y = 20; }
+    if (y + needed > footerStart - 4) {
+      doc.addPage();
+      y = contentTopNew;
+    }
   }
 
   function hline(color = [226, 232, 240] as [number,number,number]) {
     doc.setDrawColor(...color);
     doc.line(margin, y, W - margin, y);
-    y += 4;
+    y += 5;
   }
 
-  // ── HEADER ────────────────────────────────────────────────────────────────
+  // ── PAGE 1: LARGE TEAL HEADER ─────────────────────────────────────────────
   doc.setFillColor(14, 165, 200);
   doc.rect(0, 0, W, 28, "F");
   doc.setFillColor(124, 77, 255);
@@ -438,7 +447,7 @@ function downloadAuditPDF(result: AuditResult) {
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(200, 240, 255);
-  doc.text("Powered by Fortune Design · fortunedesign.co.za", margin, 19);
+  doc.text("Powered by Fortune Design · fortunedesign.co.za", margin, 20);
 
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
@@ -447,9 +456,9 @@ function downloadAuditPDF(result: AuditResult) {
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(200, 240, 255);
-  doc.text(date, W - margin, 19, { align: "right" });
+  doc.text(date, W - margin, 20, { align: "right" });
 
-  y = 36;
+  y = 38;
 
   // ── URL + TITLE ───────────────────────────────────────────────────────────
   doc.setFont("helvetica", "bold");
@@ -589,18 +598,7 @@ function downloadAuditPDF(result: AuditResult) {
 
   // ── DETAILED SECTIONS ─────────────────────────────────────────────────────
   doc.addPage();
-  y = 20;
-
-  doc.setFillColor(15, 23, 42);
-  doc.rect(0, 0, W, 14, "F");
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);
-  doc.setTextColor(14, 165, 200);
-  doc.text("DETAILED BREAKDOWN", margin, 9);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.setTextColor(148, 163, 184);
-  doc.text(result.finalUrl, W - margin, 9, { align: "right" });
+  y = contentTopNew;
 
   result.sections.forEach(sec => {
     const g = scoreToGrade(sec.score);
@@ -656,17 +654,47 @@ function downloadAuditPDF(result: AuditResult) {
     y += 4;
   });
 
-  // ── FOOTER on last page ───────────────────────────────────────────────────
+  // ── HEADERS & FOOTERS ON ALL PAGES ────────────────────────────────────────
   const pageCount = doc.getNumberOfPages();
   for (let p = 1; p <= pageCount; p++) {
     doc.setPage(p);
+
+    // Compact header on pages 2+ (drawn over the top margin where no content sits)
+    if (p > 1) {
+      doc.setFillColor(14, 165, 200);
+      doc.rect(0, 0, W, compactHeaderH, "F");
+      doc.setFillColor(124, 77, 255);
+      doc.rect(0, compactHeaderH - 2, W, 2, "F");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.setTextColor(255, 255, 255);
+      doc.text("indexify.", margin, 10);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.setTextColor(200, 240, 255);
+      doc.text("SEO AUDIT REPORT", W / 2, 10, { align: "center" });
+
+      doc.setFontSize(7);
+      doc.setTextColor(200, 240, 255);
+      const urlShort = result.finalUrl.length > 55 ? result.finalUrl.slice(0, 53) + "…" : result.finalUrl;
+      doc.text(urlShort, W - margin, 10, { align: "right" });
+    }
+
+    // Footer on every page
     doc.setFillColor(241, 245, 249);
-    doc.rect(0, 287, W, 10, "F");
+    doc.rect(0, footerStart, W, H - footerStart, "F");
+    doc.setDrawColor(203, 213, 225);
+    doc.line(0, footerStart, W, footerStart);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
     doc.setTextColor(148, 163, 184);
-    doc.text("Indexify · indexify.co.za · Powered by Fortune Design · fortunedesign.co.za", margin, 293);
-    doc.text(`Page ${p} of ${pageCount}`, W - margin, 293, { align: "right" });
+    doc.text(
+      "Indexify · indexify.co.za · Powered by Fortune Design · fortunedesign.co.za",
+      margin, footerStart + 7,
+    );
+    doc.text(`Page ${p} of ${pageCount}`, W - margin, footerStart + 7, { align: "right" });
   }
 
   const domain = new URL(result.finalUrl).hostname.replace("www.", "");
