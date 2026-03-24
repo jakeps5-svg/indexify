@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown, BarChart3, TrendingUp, MapPin, LogIn, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, ChevronDown, Search, MousePointerClick, BarChart3, TrendingUp, MapPin, LogIn, LogOut, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface StoredUser { name: string; email: string; role: string; }
@@ -8,10 +8,12 @@ interface StoredUser { name: string; email: string; role: string; }
 export function Navbar() {
   const [isScrolled, setIsScrolled]         = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isServicesOpen, setIsServicesOpen]   = useState(false);
   const [isToolsOpen, setIsToolsOpen]         = useState(false);
   const [isCitiesOpen, setIsCitiesOpen]       = useState(false);
   const [isPortalOpen, setIsPortalOpen]       = useState(false);
   const [portalUser, setPortalUser]           = useState<StoredUser | null>(null);
+  const servicesRef = useRef<HTMLDivElement>(null);
   const toolsRef    = useRef<HTMLDivElement>(null);
   const citiesRef   = useRef<HTMLDivElement>(null);
   const portalRef   = useRef<HTMLDivElement>(null);
@@ -43,6 +45,7 @@ export function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
+      if (servicesRef.current && !servicesRef.current.contains(e.target as Node)) setIsServicesOpen(false);
       if (toolsRef.current   && !toolsRef.current.contains(e.target as Node))   setIsToolsOpen(false);
       if (citiesRef.current  && !citiesRef.current.contains(e.target as Node))  setIsCitiesOpen(false);
       if (portalRef.current  && !portalRef.current.contains(e.target as Node))  setIsPortalOpen(false);
@@ -52,6 +55,25 @@ export function Navbar() {
   }, []);
 
   const BASE = import.meta.env.BASE_URL;
+
+  const services = [
+    {
+      name: "Search Engine Optimisation",
+      desc: "Rank on page 1 organically",
+      href: `${BASE}services/seo`,
+      icon: Search,
+      color: "text-primary",
+      bg: "bg-primary/10",
+    },
+    {
+      name: "Google Ads Management",
+      desc: "Instant leads via paid search",
+      href: `${BASE}services/google-ads`,
+      icon: MousePointerClick,
+      color: "text-accent",
+      bg: "bg-accent/10",
+    },
+  ];
 
   const tools = [
     {
@@ -107,10 +129,54 @@ export function Navbar() {
 
           {/* RIGHT — Full menu */}
           <div className="flex items-center gap-6">
-            {/* Services — direct link */}
-            <a href={`${BASE}services`} className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
-              Services
-            </a>
+            {/* Services — link + dropdown */}
+            <div ref={servicesRef} className="relative flex items-center">
+              <a
+                href={`${BASE}services`}
+                className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Services
+              </a>
+              <button
+                onClick={() => setIsServicesOpen(!isServicesOpen)}
+                aria-label="Toggle services menu"
+                aria-expanded={isServicesOpen}
+                className="ml-0.5 p-0.5 text-gray-400 hover:text-gray-700 transition-colors"
+              >
+                <ChevronDown size={13} className={cn("transition-transform duration-200", isServicesOpen && "rotate-180")} />
+              </button>
+
+              <AnimatePresence>
+                {isServicesOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.97 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full left-0 mt-3 w-72 rounded-2xl bg-white border border-gray-200 shadow-xl overflow-hidden"
+                  >
+                    <div className="p-2">
+                      {services.map((service) => (
+                        <a
+                          key={service.name}
+                          href={service.href}
+                          onClick={() => setIsServicesOpen(false)}
+                          className="flex items-start gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                        >
+                          <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5", service.bg)}>
+                            <service.icon size={16} className={service.color} />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-900 text-sm group-hover:text-primary transition-colors">{service.name}</div>
+                            <div className="text-xs text-gray-400 mt-0.5">{service.desc}</div>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Free Tools dropdown */}
             <div ref={toolsRef} className="relative">
@@ -305,14 +371,49 @@ export function Navbar() {
           >
             <div className="px-4 pt-2 pb-6 flex flex-col gap-0.5">
 
-              {/* Direct link: Services */}
-              <a
-                href={`${BASE}services`}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center px-3 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-              >
-                Services
-              </a>
+              {/* Collapsible: Services */}
+              <div>
+                <div className="flex items-center rounded-xl hover:bg-gray-50 transition-colors">
+                  <a
+                    href={`${BASE}services`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex-1 px-3 py-3 text-sm font-semibold text-gray-700"
+                  >
+                    Services
+                  </a>
+                  <button
+                    onClick={() => setIsServicesOpen(v => !v)}
+                    className="px-3 py-3 text-gray-400"
+                    aria-label="Toggle services"
+                  >
+                    <ChevronDown size={15} className={cn("transition-transform duration-200", isServicesOpen && "rotate-180")} />
+                  </button>
+                </div>
+                <AnimatePresence>
+                  {isServicesOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden pl-3"
+                    >
+                      {services.map((service) => (
+                        <a
+                          key={service.name}
+                          href={service.href}
+                          onClick={() => { setIsMobileMenuOpen(false); setIsServicesOpen(false); }}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+                        >
+                          <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", service.bg)}>
+                            <service.icon size={13} className={service.color} />
+                          </div>
+                          {service.name}
+                        </a>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
               {/* Collapsible: Free Tools */}
               <div>
