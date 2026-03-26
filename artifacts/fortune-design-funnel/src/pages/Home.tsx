@@ -105,8 +105,6 @@ export default function Home() {
         {/* Centre deep glow */}
         <div className="absolute top-[40%] left-[35%] w-[400px] h-[200px] rounded-full blur-[80px] pointer-events-none" style={{ background: "rgba(14,165,200,0.08)" }} />
 
-        {/* Fade to white at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-36 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
