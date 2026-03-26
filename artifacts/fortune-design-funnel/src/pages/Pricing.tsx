@@ -119,6 +119,23 @@ export default function PricingPage() {
         </div>
       </section>
 
+      {/* Analytics image */}
+      <section className="py-10 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="rounded-2xl overflow-hidden shadow-xl border border-gray-100">
+            <img
+              src={`${BASE}/images/homepage-analytics.png`}
+              alt="Indexify client portal dashboard showing SEO keyword rankings, organic traffic growth and Google Ads performance metrics for South African businesses"
+              className="w-full h-auto"
+              loading="lazy"
+              width="1200"
+              height="630"
+            />
+          </div>
+          <p className="text-center text-sm text-gray-400 mt-3">Every client gets access to a live dashboard — track rankings, traffic, and ad performance in real time.</p>
+        </div>
+      </section>
+
       {/* Google Ads Proposal — quickest CTA */}
       <section className="py-10 bg-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto px-4">

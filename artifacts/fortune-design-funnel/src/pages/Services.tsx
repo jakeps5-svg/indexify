@@ -118,7 +118,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 export default function ServicesPage() {
   useSEO({
     title: "SEO & Google Ads Services South Africa | Indexify",
-    description: "Indexify offers expert SEO and Google Ads management for South African businesses. Rank on Google page 1 and generate immediate leads with transparent pricing from R5,900/month.",
+    description: "Expert SEO & Google Ads for South African businesses. Rank on Google page 1 and generate more leads. From R5,900/month. Transparent pricing, real results.",
     keywords: [
       "SEO and Google Ads South Africa", "digital marketing services South Africa",
       "SEO agency South Africa", "Google Ads management South Africa",

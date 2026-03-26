@@ -87,6 +87,23 @@ export default function PortElizabethPage() {
         </div>
       </section>
 
+      {/* Results image */}
+      <section className="py-12 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="rounded-2xl overflow-hidden shadow-xl border border-gray-100">
+            <img
+              src={`${BASE}/images/homepage-results.png`}
+              alt="Google search results showing a Gqeberha Port Elizabeth Eastern Cape business ranking on page 1 of Google after Indexify's SEO campaign"
+              className="w-full h-auto"
+              loading="lazy"
+              width="1200"
+              height="630"
+            />
+          </div>
+          <p className="text-center text-sm text-gray-400 mt-3">Real results from Indexify clients — Gqeberha businesses ranking on Google page 1.</p>
+        </div>
+      </section>
+
       {/* Services */}
       <section className="py-20 bg-slate-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">

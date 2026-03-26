@@ -173,6 +173,17 @@ export default function Contact() {
                   Already generated a Google Ads proposal? Reach out and we'll review your business and send you a personalised unlock code — sometimes at no charge for the right fit.
                 </p>
               </div>
+
+              <div className="rounded-2xl overflow-hidden shadow-md border border-gray-100">
+                <img
+                  src={`${BASE}/images/homepage-team.png`}
+                  alt="Indexify digital marketing team working on SEO and Google Ads campaigns for South African clients"
+                  className="w-full h-auto"
+                  loading="lazy"
+                  width="600"
+                  height="400"
+                />
+              </div>
             </div>
 
             {/* RIGHT — form */}
