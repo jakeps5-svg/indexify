@@ -76,36 +76,46 @@ export default function Home() {
       <Navbar />
 
       {/* 1. HERO SECTION */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-gradient-to-br from-sky-50 via-white to-blue-50">
-        <div className="absolute inset-0 z-0">
-          <img
-            src={`${import.meta.env.BASE_URL}images/hero-bg.png`}
-            alt="Abstract background"
-            className="w-full h-full object-cover opacity-20 mix-blend-multiply"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-sky-50/50 via-white/60 to-white" />
-        </div>
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-[#050d1a]">
+        {/* Grid pattern */}
+        <div
+          className="absolute inset-0 z-0 opacity-[0.15]"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(14,165,200,0.4) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(14,165,200,0.4) 1px, transparent 1px)
+            `,
+            backgroundSize: "60px 60px",
+          }}
+        />
 
-        {/* Decorative circles */}
-        <div className="absolute top-20 right-16 w-72 h-72 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-10 left-10 w-48 h-48 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+        {/* Radial fade — centre glow */}
+        <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(14,165,200,0.12) 0%, transparent 70%)" }} />
+
+        {/* Glow orbs */}
+        <div className="absolute top-16 right-[10%] w-96 h-96 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-[5%] w-72 h-72 bg-violet-600/20 rounded-full blur-[80px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
+
+        {/* Fade to white at bottom so next section blends */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-primary/20 shadow-sm mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-primary/30 shadow-sm mb-8 backdrop-blur-sm"
           >
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-sm font-medium text-gray-600">South Africa's Top-Rated Marketing Agency</span>
+            <span className="text-sm font-medium text-white/80">South Africa's Top-Rated Marketing Agency</span>
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[1.1] text-gray-900"
+            className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[1.1] text-white"
           >
             Dominate <span className="text-gradient">Google.</span><br />
             Get More Clients.
@@ -115,7 +125,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
             Stop losing customers to your competitors. We build high-converting SEO and Google Ads campaigns that turn clicks into predictable revenue.
           </motion.p>
@@ -128,117 +138,16 @@ export default function Home() {
           >
             <a
               href={`${import.meta.env.BASE_URL}audit`}
-              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-white font-bold text-lg hover:bg-primary/90 hover:-translate-y-1 transition-all duration-300 shadow-lg shadow-primary/25 flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-white font-bold text-lg hover:bg-primary/90 hover:-translate-y-1 transition-all duration-300 shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
             >
               Get Free Strategy Audit <ArrowRight size={20} />
             </a>
             <button
               onClick={() => scrollTo("services")}
-              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white text-gray-700 font-bold text-lg border border-gray-200 hover:border-primary hover:text-primary hover:-translate-y-1 transition-all duration-300 shadow-sm"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/10 text-white font-bold text-lg border border-white/20 hover:bg-white/20 hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm"
             >
               View Our Services
             </button>
-          </motion.div>
-
-          {/* ── Digital Dashboard Widget ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.45 }}
-            className="mt-14 max-w-4xl mx-auto"
-          >
-            <div className="relative bg-gray-950 rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-gray-900/50">
-              {/* Glow accent */}
-              <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-violet-600/15 rounded-full blur-3xl pointer-events-none" />
-
-              {/* Titlebar */}
-              <div className="relative flex items-center gap-2 px-5 py-3.5 border-b border-white/8">
-                <div className="flex gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-red-400/80" />
-                  <span className="w-3 h-3 rounded-full bg-yellow-400/80" />
-                  <span className="w-3 h-3 rounded-full bg-emerald-400/80" />
-                </div>
-                <span className="ml-2 text-xs text-gray-500 font-mono tracking-wide">indexify — campaign dashboard</span>
-                <div className="ml-auto flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs font-bold text-emerald-400 tracking-widest">LIVE</span>
-                </div>
-              </div>
-
-              {/* Dashboard body */}
-              <div className="relative p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Metric cards */}
-                <div className="space-y-3">
-                  {[
-                    { label: "Avg Traffic Growth", value: "+312%", sub: "within 6 months", color: "text-emerald-400", bg: "bg-emerald-400/10 border-emerald-400/20" },
-                    { label: "Google Ads ROAS", value: "4.8×", sub: "return on ad spend", color: "text-sky-400", bg: "bg-sky-400/10 border-sky-400/20" },
-                    { label: "Leads Generated", value: "12,400+", sub: "past 12 months", color: "text-violet-400", bg: "bg-violet-400/10 border-violet-400/20" },
-                  ].map(({ label, value, sub, color, bg }) => (
-                    <div key={label} className={`rounded-xl border p-3.5 ${bg}`}>
-                      <p className="text-[11px] text-gray-400 uppercase tracking-wider mb-1">{label}</p>
-                      <p className={`text-2xl font-black ${color} leading-tight`}>{value}</p>
-                      <p className="text-[11px] text-gray-500 mt-0.5">{sub}</p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Chart panel */}
-                <div className="md:col-span-2 bg-white/4 rounded-xl border border-white/8 p-4 flex flex-col">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <p className="text-xs font-bold text-white">Organic Traffic</p>
-                      <p className="text-[11px] text-gray-500">Last 6 months · avg across clients</p>
-                    </div>
-                    <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-full">↑ 312%</span>
-                  </div>
-
-                  {/* Bar chart */}
-                  <div className="flex-1 flex items-end gap-2 min-h-[80px]">
-                    {[
-                      { h: 28, mo: "Oct" },
-                      { h: 38, mo: "Nov" },
-                      { h: 45, mo: "Dec" },
-                      { h: 60, mo: "Jan" },
-                      { h: 78, mo: "Feb" },
-                      { h: 100, mo: "Mar" },
-                    ].map(({ h, mo }, i) => (
-                      <div key={mo} className="flex-1 flex flex-col items-center gap-1.5">
-                        <motion.div
-                          initial={{ scaleY: 0 }}
-                          animate={{ scaleY: 1 }}
-                          transition={{ duration: 0.6, delay: 0.7 + i * 0.08, ease: "easeOut" }}
-                          className="w-full origin-bottom rounded-t-lg"
-                          style={{
-                            height: `${h}%`,
-                            minHeight: 8,
-                            background: i === 5
-                              ? "linear-gradient(to top, #0ea5c8, #38bdf8)"
-                              : "linear-gradient(to top, #0ea5c820, #0ea5c850)",
-                          }}
-                        />
-                        <span className="text-[10px] text-gray-500 font-mono">{mo}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Conversion toast */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 1.4 }}
-                    className="mt-4 flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5"
-                  >
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
-                    <p className="text-xs text-gray-300 text-left">
-                      <span className="font-bold text-white">New lead</span> from Google Ads —{" "}
-                      <span className="text-emerald-400 font-semibold">Plumbing company, Cape Town</span>
-                      <span className="text-gray-500"> · just now</span>
-                    </p>
-                  </motion.div>
-                </div>
-              </div>
-            </div>
           </motion.div>
 
           <motion.div
@@ -247,17 +156,17 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.6 }}
             className="mt-10 flex items-center justify-center gap-3"
           >
-            <span className="text-base text-gray-500 uppercase tracking-widest font-semibold">Powered by</span>
+            <span className="text-base text-white/40 uppercase tracking-widest font-semibold">Powered by</span>
             <a
               href="https://fortunedesign.co.za"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity duration-300"
+              className="flex items-center gap-2 opacity-70 hover:opacity-100 transition-opacity duration-300"
             >
               <img
                 src={`${import.meta.env.BASE_URL}images/fortune-design-logo.png`}
                 alt="Fortune Design"
-                className="h-14 w-auto object-contain"
+                className="h-14 w-auto object-contain brightness-0 invert"
               />
             </a>
           </motion.div>
