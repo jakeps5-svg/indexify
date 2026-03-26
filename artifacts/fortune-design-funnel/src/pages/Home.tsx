@@ -140,6 +140,107 @@ export default function Home() {
             </button>
           </motion.div>
 
+          {/* ── Digital Dashboard Widget ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.45 }}
+            className="mt-14 max-w-4xl mx-auto"
+          >
+            <div className="relative bg-gray-950 rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-gray-900/50">
+              {/* Glow accent */}
+              <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-violet-600/15 rounded-full blur-3xl pointer-events-none" />
+
+              {/* Titlebar */}
+              <div className="relative flex items-center gap-2 px-5 py-3.5 border-b border-white/8">
+                <div className="flex gap-1.5">
+                  <span className="w-3 h-3 rounded-full bg-red-400/80" />
+                  <span className="w-3 h-3 rounded-full bg-yellow-400/80" />
+                  <span className="w-3 h-3 rounded-full bg-emerald-400/80" />
+                </div>
+                <span className="ml-2 text-xs text-gray-500 font-mono tracking-wide">indexify — campaign dashboard</span>
+                <div className="ml-auto flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-xs font-bold text-emerald-400 tracking-widest">LIVE</span>
+                </div>
+              </div>
+
+              {/* Dashboard body */}
+              <div className="relative p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Metric cards */}
+                <div className="space-y-3">
+                  {[
+                    { label: "Avg Traffic Growth", value: "+312%", sub: "within 6 months", color: "text-emerald-400", bg: "bg-emerald-400/10 border-emerald-400/20" },
+                    { label: "Google Ads ROAS", value: "4.8×", sub: "return on ad spend", color: "text-sky-400", bg: "bg-sky-400/10 border-sky-400/20" },
+                    { label: "Leads Generated", value: "12,400+", sub: "past 12 months", color: "text-violet-400", bg: "bg-violet-400/10 border-violet-400/20" },
+                  ].map(({ label, value, sub, color, bg }) => (
+                    <div key={label} className={`rounded-xl border p-3.5 ${bg}`}>
+                      <p className="text-[11px] text-gray-400 uppercase tracking-wider mb-1">{label}</p>
+                      <p className={`text-2xl font-black ${color} leading-tight`}>{value}</p>
+                      <p className="text-[11px] text-gray-500 mt-0.5">{sub}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Chart panel */}
+                <div className="md:col-span-2 bg-white/4 rounded-xl border border-white/8 p-4 flex flex-col">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="text-xs font-bold text-white">Organic Traffic</p>
+                      <p className="text-[11px] text-gray-500">Last 6 months · avg across clients</p>
+                    </div>
+                    <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-full">↑ 312%</span>
+                  </div>
+
+                  {/* Bar chart */}
+                  <div className="flex-1 flex items-end gap-2 min-h-[80px]">
+                    {[
+                      { h: 28, mo: "Oct" },
+                      { h: 38, mo: "Nov" },
+                      { h: 45, mo: "Dec" },
+                      { h: 60, mo: "Jan" },
+                      { h: 78, mo: "Feb" },
+                      { h: 100, mo: "Mar" },
+                    ].map(({ h, mo }, i) => (
+                      <div key={mo} className="flex-1 flex flex-col items-center gap-1.5">
+                        <motion.div
+                          initial={{ scaleY: 0 }}
+                          animate={{ scaleY: 1 }}
+                          transition={{ duration: 0.6, delay: 0.7 + i * 0.08, ease: "easeOut" }}
+                          className="w-full origin-bottom rounded-t-lg"
+                          style={{
+                            height: `${h}%`,
+                            minHeight: 8,
+                            background: i === 5
+                              ? "linear-gradient(to top, #0ea5c8, #38bdf8)"
+                              : "linear-gradient(to top, #0ea5c820, #0ea5c850)",
+                          }}
+                        />
+                        <span className="text-[10px] text-gray-500 font-mono">{mo}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Conversion toast */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 1.4 }}
+                    className="mt-4 flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5"
+                  >
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
+                    <p className="text-xs text-gray-300 text-left">
+                      <span className="font-bold text-white">New lead</span> from Google Ads —{" "}
+                      <span className="text-emerald-400 font-semibold">Plumbing company, Cape Town</span>
+                      <span className="text-gray-500"> · just now</span>
+                    </p>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
