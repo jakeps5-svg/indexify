@@ -438,7 +438,7 @@ function generateProposalHTML(result: ProposalResult): string {
 </div>
 <!-- Print-only footer (appears on every page when printed) -->
 <div class="print-footer">
-  <div class="pf-left">Indexify · indexify.co.za · info@indexify.co.za · +27 60 298 8295 · Powered by Fortune Design</div>
+  <div class="pf-left">Indexify · indexify.co.za · support@indexify.co.za · +27 60 298 8295 · Powered by Fortune Design</div>
   <div class="pf-right">Confidential · Valid 30 days · Generated ${now}</div>
 </div>
 
@@ -537,7 +537,7 @@ function generateProposalHTML(result: ProposalResult): string {
 </div>
 
 <div class="doc-footer">
-  <p>Prepared by Indexify · indexify.co.za · info@indexify.co.za · WhatsApp: +27 60 298 8295</p>
+  <p>Prepared by Indexify · indexify.co.za · support@indexify.co.za · WhatsApp: +27 60 298 8295</p>
   <p style="margin-top:6px;">This proposal is confidential and prepared exclusively for ${result.businessName}. Valid for 30 days.</p>
 </div>
 </body>
