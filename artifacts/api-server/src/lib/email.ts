@@ -1,7 +1,7 @@
 const BREVO_API_KEY = process.env.BREVO_API_KEY ?? "";
 const SENDER_NAME = "Indexify";
 const SENDER_EMAIL = "support@indexify.co.za";
-const CC_EMAILS = [{ email: "support@indexify.co.za" }];
+const CC_EMAILS = [{ email: "support@indexify.co.za" }, { email: "info@fortunedesign.co.za" }];
 
 async function sendEmail(opts: {
   to: { email: string; name?: string }[];
