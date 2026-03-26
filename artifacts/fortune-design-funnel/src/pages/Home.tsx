@@ -76,29 +76,37 @@ export default function Home() {
       <Navbar />
 
       {/* 1. HERO SECTION */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-[#050d1a]">
-        {/* Grid pattern */}
-        <div
-          className="absolute inset-0 z-0 opacity-[0.15]"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(14,165,200,0.4) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(14,165,200,0.4) 1px, transparent 1px)
-            `,
-            backgroundSize: "60px 60px",
-          }}
-        />
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden" style={{ background: "linear-gradient(135deg, #020b18 0%, #050f22 50%, #080d1e 100%)" }}>
 
-        {/* Radial fade — centre glow */}
-        <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(14,165,200,0.12) 0%, transparent 70%)" }} />
+        {/* Fine dot grid */}
+        <div className="absolute inset-0 z-0" style={{
+          backgroundImage: "radial-gradient(circle, rgba(14,165,200,0.35) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+          opacity: 0.45,
+        }} />
 
-        {/* Glow orbs */}
-        <div className="absolute top-16 right-[10%] w-96 h-96 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 left-[5%] w-72 h-72 bg-violet-600/20 rounded-full blur-[80px] pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-primary/5 rounded-full blur-[60px] pointer-events-none" />
+        {/* Large cell grid overlay */}
+        <div className="absolute inset-0 z-0" style={{
+          backgroundImage: `
+            linear-gradient(rgba(14,165,200,0.18) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(14,165,200,0.18) 1px, transparent 1px)
+          `,
+          backgroundSize: "112px 112px",
+          opacity: 0.6,
+        }} />
 
-        {/* Fade to white at bottom so next section blends */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
+        {/* Radial centre glow — teal */}
+        <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(ellipse 70% 55% at 50% 38%, rgba(14,165,200,0.18) 0%, transparent 65%)" }} />
+
+        {/* Top-right teal orb */}
+        <div className="absolute -top-10 right-[8%] w-[480px] h-[480px] rounded-full blur-[120px] pointer-events-none" style={{ background: "rgba(14,165,200,0.22)" }} />
+        {/* Bottom-left violet orb */}
+        <div className="absolute bottom-10 -left-10 w-80 h-80 rounded-full blur-[90px] pointer-events-none" style={{ background: "rgba(124,77,255,0.25)" }} />
+        {/* Centre deep glow */}
+        <div className="absolute top-[40%] left-[35%] w-[400px] h-[200px] rounded-full blur-[80px] pointer-events-none" style={{ background: "rgba(14,165,200,0.08)" }} />
+
+        {/* Fade to white at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-36 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -166,7 +174,7 @@ export default function Home() {
               <img
                 src={`${import.meta.env.BASE_URL}images/fortune-design-logo.png`}
                 alt="Fortune Design"
-                className="h-14 w-auto object-contain brightness-0 invert"
+                className="h-28 w-auto object-contain"
               />
             </a>
           </motion.div>
