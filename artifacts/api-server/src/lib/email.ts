@@ -727,3 +727,99 @@ export async function sendWelcomeEmail(opts: { name: string; email: string }) {
     html,
   });
 }
+
+export async function sendChatNotificationToAdmin(opts: {
+  clientName: string;
+  clientEmail: string;
+  userId: number;
+  messagePreview: string;
+}) {
+  const dashboardLink = `https://indexify.co.za/admin?tab=chat&clientId=${opts.userId}`;
+  const subject = `💬 New message from ${opts.clientName} — Indexify Portal`;
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:32px 20px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.07);max-width:560px;width:100%;">
+        <tr>
+          <td style="background:#0f172a;padding:24px 32px;">
+            <div style="font-size:13px;font-weight:700;color:#0ea5c8;text-transform:uppercase;letter-spacing:2px;">New Client Message</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px 32px;">
+            <p style="margin:0 0 16px;font-size:15px;color:#0f172a;">You have a new message from <strong>${opts.clientName}</strong> (${opts.clientEmail}) in the Indexify portal:</p>
+            <div style="background:#f1f5f9;border-left:4px solid #0ea5c8;border-radius:6px;padding:14px 18px;font-size:14px;color:#334155;font-style:italic;">"${opts.messagePreview}"</div>
+            <div style="margin-top:28px;text-align:center;">
+              <a href="${dashboardLink}" style="display:inline-block;background:#0ea5c8;color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;padding:13px 30px;border-radius:8px;">View Chat in Dashboard →</a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f8fafc;padding:16px 32px;border-top:1px solid #e2e8f0;">
+            <p style="margin:0;font-size:12px;color:#94a3b8;text-align:center;">Indexify · support@indexify.co.za · indexify.co.za</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  await sendEmail({
+    to: [{ email: SENDER_EMAIL }],
+    cc: CC_EMAILS,
+    subject,
+    html,
+  });
+}
+
+export async function sendChatNotificationToClient(opts: {
+  clientName: string;
+  clientEmail: string;
+  messagePreview: string;
+}) {
+  const portalLink = `https://indexify.co.za/portal?tab=chat`;
+  const subject = `💬 New reply from your Indexify team`;
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:32px 20px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.07);max-width:560px;width:100%;">
+        <tr>
+          <td style="background:#0f172a;padding:24px 32px;">
+            <div style="font-size:13px;font-weight:700;color:#0ea5c8;text-transform:uppercase;letter-spacing:2px;">Message from Indexify</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px 32px;">
+            <p style="margin:0 0 16px;font-size:15px;color:#0f172a;">Hi <strong>${opts.clientName}</strong>, your Indexify team has replied to your chat:</p>
+            <div style="background:#f1f5f9;border-left:4px solid #7c4dff;border-radius:6px;padding:14px 18px;font-size:14px;color:#334155;font-style:italic;">"${opts.messagePreview}"</div>
+            <div style="margin-top:28px;text-align:center;">
+              <a href="${portalLink}" style="display:inline-block;background:#7c4dff;color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;padding:13px 30px;border-radius:8px;">Go to Your Portal →</a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f8fafc;padding:16px 32px;border-top:1px solid #e2e8f0;">
+            <p style="margin:0;font-size:12px;color:#94a3b8;text-align:center;">Indexify · support@indexify.co.za · indexify.co.za</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  await sendEmail({
+    to: [{ email: opts.clientEmail, name: opts.clientName }],
+    subject,
+    html,
+  });
+}

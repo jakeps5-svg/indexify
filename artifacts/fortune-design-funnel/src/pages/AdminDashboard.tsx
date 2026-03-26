@@ -187,6 +187,22 @@ export default function AdminDashboard() {
     loadGadsStatus();
   }, [user]);
 
+  // Deep-link: ?tab=chat&clientId=X — auto-open the right client's chat
+  useEffect(() => {
+    if (customers.length === 0) return;
+    const params = new URLSearchParams(window.location.search);
+    const deepTab = params.get("tab");
+    const deepClientId = params.get("clientId");
+    if (deepTab === "chat" && deepClientId) {
+      const match = customers.find((c) => c.id === Number(deepClientId));
+      if (match) {
+        setSelectedCustomer(match);
+        setTab("chat");
+        window.history.replaceState({}, "", window.location.pathname);
+      }
+    }
+  }, [customers]);
+
   useEffect(() => {
     if (tab === "chat" && selectedCustomer) loadChat(selectedCustomer.id);
   }, [tab, selectedCustomer]);

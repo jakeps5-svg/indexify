@@ -6,7 +6,7 @@ import {
 } from "@workspace/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { requireAuth } from "../middlewares/auth.js";
-import { sendInvoiceEmail, sendMeetingRequestFromPortal } from "../lib/email.js";
+import { sendInvoiceEmail, sendMeetingRequestFromPortal, sendChatNotificationToAdmin } from "../lib/email.js";
 
 const router = Router();
 
@@ -67,6 +67,18 @@ router.post("/portal/chat", requireAuth, async (req, res) => {
       read: false,
     }).returning();
     res.json(msg);
+    // Fire-and-forget admin notification
+    db.select({ name: usersTable.name, email: usersTable.email })
+      .from(usersTable).where(eq(usersTable.id, uid)).then(([user]) => {
+        if (user) {
+          sendChatNotificationToAdmin({
+            clientName: user.name,
+            clientEmail: user.email,
+            userId: uid,
+            messagePreview: message.trim().slice(0, 200),
+          }).catch(() => {});
+        }
+      }).catch(() => {});
   } catch (err) {
     res.status(500).json({ error: "Failed to send message" });
   }

@@ -104,6 +104,7 @@ export default function CustomerPortal() {
     const params = new URLSearchParams(search);
     const gadsParam = params.get("gads");
     const msg = params.get("msg");
+    const tabParam = params.get("tab");
     if (gadsParam === "connected") {
       setGadsToast({ type: "success", msg: "Google Ads connected! Your campaign data will appear shortly." });
       setTab("google-ads");
@@ -111,6 +112,9 @@ export default function CustomerPortal() {
     } else if (gadsParam === "error") {
       setGadsToast({ type: "error", msg: msg ? decodeURIComponent(msg) : "Failed to connect Google Ads." });
       setTab("google-ads");
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (tabParam) {
+      setTab(tabParam as Tab);
       window.history.replaceState({}, "", window.location.pathname);
     }
     setTimeout(() => setGadsToast(null), 7000);

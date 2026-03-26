@@ -7,7 +7,7 @@ import {
 } from "@workspace/db/schema";
 import { eq, and, desc, ne } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/auth.js";
-import { sendInvoiceEmail } from "../lib/email.js";
+import { sendInvoiceEmail, sendChatNotificationToClient } from "../lib/email.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -247,6 +247,20 @@ router.post("/admin/chat/:userId", requireAdmin, async (req, res) => {
       attachmentMime: attachmentMime ?? null,
     }).returning();
     res.json(msg);
+    // Fire-and-forget client notification
+    db.select({ name: usersTable.name, email: usersTable.email })
+      .from(usersTable).where(eq(usersTable.id, uid)).then(([client]) => {
+        if (client) {
+          const preview = message?.trim()
+            ? message.trim().slice(0, 200)
+            : attachmentName ?? "an attachment";
+          sendChatNotificationToClient({
+            clientName: client.name,
+            clientEmail: client.email,
+            messagePreview: preview,
+          }).catch(() => {});
+        }
+      }).catch(() => {});
   } catch (err) {
     res.status(500).json({ error: "Failed to send message" });
   }
