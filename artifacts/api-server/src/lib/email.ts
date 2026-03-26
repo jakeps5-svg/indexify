@@ -1,7 +1,13 @@
 const BREVO_API_KEY = process.env.BREVO_API_KEY ?? "";
 const SENDER_NAME = "Indexify";
-const SENDER_EMAIL = "support@indexify.co.za";
-const CC_EMAILS = [{ email: "support@indexify.co.za" }, { email: "info@fortunedesign.co.za" }];
+// FROM address — must differ from recipients so Brevo delivers to support@ and info@
+const SENDER_EMAIL = "noreply@indexify.co.za";
+// Where clients can reply
+const REPLY_TO = { email: "support@indexify.co.za", name: "Indexify Support" };
+// Admin recipients for all internal/notification emails
+const ADMIN_EMAILS = [{ email: "support@indexify.co.za" }, { email: "info@fortunedesign.co.za" }];
+// CC for client-facing emails (invoices, welcome, etc.) so admins get a copy
+const CC_EMAILS = ADMIN_EMAILS;
 
 async function sendEmail(opts: {
   to: { email: string; name?: string }[];
@@ -20,7 +26,7 @@ async function sendEmail(opts: {
       sender: { name: SENDER_NAME, email: SENDER_EMAIL },
       to: opts.to,
       cc: opts.cc,
-      replyTo: opts.replyTo,
+      replyTo: opts.replyTo ?? REPLY_TO,
       subject: opts.subject,
       htmlContent: opts.html,
     }),
@@ -248,8 +254,7 @@ export async function sendContactEmail(opts: {
 
   // Internal notification to the team
   await sendEmail({
-    to: [{ email: SENDER_EMAIL }],
-    cc: CC_EMAILS,
+    to: ADMIN_EMAILS,
     replyTo: { email: opts.email, name: opts.name },
     subject,
     html,
@@ -409,8 +414,7 @@ export async function sendMeetingRequestEmail(opts: {
 </html>`;
 
   await sendEmail({
-    to: [{ email: SENDER_EMAIL }],
-    cc: CC_EMAILS,
+    to: ADMIN_EMAILS,
     replyTo: { email: opts.email, name: opts.name },
     subject: `Meeting Request: ${opts.name} — ${opts.date} at ${opts.time} (${platformLabel})`,
     html: agencyHtml,
@@ -551,8 +555,7 @@ export async function sendInternalNotification(opts: {
 </html>`;
 
   await sendEmail({
-    to: [{ email: SENDER_EMAIL }],
-    cc: CC_EMAILS,
+    to: ADMIN_EMAILS,
     subject,
     html,
   });
@@ -770,8 +773,7 @@ export async function sendChatNotificationToAdmin(opts: {
 </html>`;
 
   await sendEmail({
-    to: [{ email: SENDER_EMAIL }],
-    cc: CC_EMAILS,
+    to: ADMIN_EMAILS,
     subject,
     html,
   });
