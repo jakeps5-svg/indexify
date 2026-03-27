@@ -1,0 +1,204 @@
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\froman\fcharset0 Times New Roman;}
+{\f1\fswiss\fcharset0 Arial;}
+{\f2\fmodern\fcharset0 Courier New;}
+}
+{\colortbl;\red0\green0\blue0;\red0\green112\blue192;\red68\green114\blue196;\red70\green70\blue70;\red14\green165\blue200;}
+
+\paperw12240\paperh15840\margl1440\margr1440\margt1440\margb1440
+
+\f1\fs28\b\cf2 INDEXIFY \endash  Google Ads API Design Documentation\cf0\b0\fs20\par
+\f1\fs18\cf4 Prepared for: Google Ads API Access Application\par
+Prepared by: Fortune Design (Pty) Ltd\par
+Website: indexify.co.za\par
+Contact: support@indexify.co.za\par
+Date: March 2026\cf0\par
+\par
+\f1\fs22\b\cf3 1. Overview of the Application\cf0\b0\fs20\par
+\par
+\f1 Indexify is a South African digital marketing platform built and operated by Fortune Design (Pty) Ltd. It provides SEO and Google Ads management services to small and medium-sized businesses (SMEs) across South Africa.\par
+\par
+The platform includes a \b Client Portal\b0  that allows Indexify\rquote s clients to:\par
+\par
+\pard\li360\bullet  Connect their Google Ads account to the Indexify platform via secure OAuth 2.0\par
+\bullet  View real-time performance metrics for their Google Ads campaigns (impressions, clicks, spend, conversions)\par
+\bullet  Monitor campaign health and budget utilisation\par
+\bullet  Communicate with the Indexify team directly through the portal\par
+\pard\par
+\par
+The Google Ads API integration is used exclusively by Indexify as a \b manager/agency\b0  to access performance data on behalf of authenticated clients who have explicitly authorised access through OAuth 2.0. No data is shared with third parties.\par
+\par
+\par
+\f1\fs22\b\cf3 2. Use of the Google Ads API\cf0\b0\fs20\par
+\par
+\f1 The Indexify platform uses the Google Ads API (v19) for the following specific purposes:\par
+\par
+\pard\li360\b 2.1 Fetching Campaign Performance Metrics\b0\par
+\pard\li720\bullet  Retrieve campaign-level data: impressions, clicks, cost, conversions, CTR, average CPC\par
+\bullet  Report on ad group performance and keyword-level metrics\par
+\bullet  Display date-range comparison reports (last 7 days, last 30 days, this month)\par
+\pard\par
+\pard\li360\b 2.2 Account Discovery\b0\par
+\pard\li720\bullet  On first connection, the API is queried to list all accessible Google Ads customer accounts under the authenticated user\par
+\bullet  The client selects which account to link to their Indexify portal profile\par
+\pard\par
+\pard\li360\b 2.3 Account Health Monitoring\b0\par
+\pard\li720\bullet  Periodic background refresh (daily) to pull updated spend and conversion data for active client accounts\par
+\bullet  Alerts surfaced in the dashboard when budget is nearly exhausted or campaigns are paused unexpectedly\par
+\pard\par
+\par
+The API is accessed using the Google Ads Query Language (GAQL). Example query:\par
+\par
+\f2\fs18\cf4     SELECT campaign.name, campaign.status, metrics.impressions,\par
+           metrics.clicks, metrics.cost_micros, metrics.conversions\par
+    FROM campaign\par
+    WHERE segments.date DURING LAST_30_DAYS\cf0\par
+\f1\fs20\par
+\par
+\f1\fs22\b\cf3 3. Architecture & Technical Design\cf0\b0\fs20\par
+\par
+\f1\b 3.1 System Components\b0\par
+\par
+\pard\li360\bullet  \b Frontend:\b0  React + Vite SPA hosted at indexify.co.za (the Indexify Client Portal)\par
+\bullet  \b Backend API:\b0  Node.js / Express REST API (TypeScript) hosted on the same domain\par
+\bullet  \b Database:\b0  PostgreSQL \endash  stores encrypted OAuth tokens, linked Google Ads customer IDs, and cached metric snapshots\par
+\bullet  \b Google Ads API Client:\b0  google-ads-api npm package (Node.js) communicating with Google Ads API v19 endpoints\par
+\pard\par
+\par
+\b 3.2 OAuth 2.0 Flow (User-Level Access)\b0\par
+\par
+\pard\li360 1. The client logs in to the Indexify Client Portal at indexify.co.za/portal\par
+2. The client clicks \ldblquote Connect Google Ads Account\rdblquote  in the portal settings\par
+3. The backend generates a Google OAuth 2.0 authorisation URL with the following scope:\par
+\par
+\pard\li720\f2\fs18\cf4    https://www.googleapis.com/auth/adwords\cf0\f1\fs20\par
+\pard\par
+\pard\li360 4. The client is redirected to Google\rquote s OAuth consent screen and grants permission\par
+5. Google redirects back to our registered callback URL:\par
+\par
+\pard\li720\f2\fs18\cf4    https://indexify.co.za/api/auth/google-ads/callback\cf0\f1\fs20\par
+\pard\par
+\pard\li360 6. The backend exchanges the authorisation code for an access token + refresh token\par
+7. Both tokens are encrypted (AES-256) and stored in the PostgreSQL database against the client\rquote s user record\par
+8. The client selects which Google Ads Customer ID to link to their account\par
+9. All subsequent API calls use the stored refresh token to obtain short-lived access tokens automatically\par
+\pard\par
+\par
+\b 3.3 API Call Flow (Data Retrieval)\b0\par
+\par
+\pard\li360 1. Client navigates to the \ldblquote Google Ads\rdblquote  tab in the portal\par
+2. The frontend calls the Indexify backend: \f2\fs18\cf4 GET /api/google-ads/metrics\cf0\f1\fs20\par
+3. The backend retrieves the client\rquote s stored refresh token from the database\par
+4. A new access token is obtained via the Google OAuth token endpoint\par
+5. A GAQL query is executed against the linked Customer ID using the Google Ads API\par
+6. Results are returned to the frontend and displayed in the dashboard\par
+7. Metric snapshots are cached in the database for up to 24 hours to minimise API calls\par
+\pard\par
+\par
+\f1\fs22\b\cf3 4. Users of the Tool\cf0\b0\fs20\par
+\par
+\f1 The Indexify platform serves two categories of users:\par
+\par
+\pard\li360\bullet  \b Indexify Clients (End Users):\b0  SME business owners in South Africa who have hired Indexify (Fortune Design) to manage their Google Ads campaigns. These users log in to the portal to view performance data for their own Google Ads account. Each client only ever has access to their own account data.\par
+\par
+\bullet  \b Indexify Admin (Fortune Design Team):\b0  Agency staff who use the admin dashboard to review linked client accounts and monitor overall campaign performance across the client base.\par
+\pard\par
+\par
+As of the date of this document, the platform has fewer than 100 active client accounts connected. Growth is expected to scale gradually as Fortune Design acquires new clients.\par
+\par
+\par
+\f1\fs22\b\cf3 5. Data Handling & Security\cf0\b0\fs20\par
+\par
+\f1\b 5.1 Token Storage\b0\par
+\par
+\pard\li360\bullet  OAuth refresh tokens are encrypted using AES-256 before being written to the PostgreSQL database\par
+\bullet  Access tokens are never persisted; they are obtained on-demand from the refresh token and held only in server memory for the duration of the API request\par
+\bullet  Token records are associated with individual user rows and are not accessible cross-user\par
+\pard\par
+\par
+\b 5.2 Data Retention\b0\par
+\par
+\pard\li360\bullet  Metric data retrieved from the Google Ads API is cached in the database for up to 24 hours, then overwritten on the next refresh\par
+\bullet  Stored data includes only aggregated metrics (impressions, clicks, cost, conversions) at the campaign level \endash  no individual end-user (consumer) data is stored\par
+\bullet  When a client disconnects their Google Ads account, all stored tokens and cached metric data for that user are deleted immediately\par
+\pard\par
+\par
+\b 5.3 Access Control\b0\par
+\par
+\pard\li360\bullet  All API endpoints require a valid session token (JWT) issued at login\par
+\bullet  Each request verifies that the authenticated user\rquote s linked Customer ID matches the one being queried\par
+\bullet  Admin routes are protected by a separate admin role check\par
+\bullet  All traffic is served over HTTPS with TLS 1.2+\par
+\pard\par
+\par
+\b 5.4 Compliance\b0\par
+\par
+\pard\li360\bullet  The platform complies with the Google API Services User Data Policy\par
+\bullet  Clients are presented with a clear explanation of what data will be accessed before they authorise the OAuth connection\par
+\bullet  Clients may revoke access at any time from within the portal settings, which immediately deletes their stored tokens\par
+\pard\par
+\par
+\f1\fs22\b\cf3 6. Scope of API Usage\cf0\b0\fs20\par
+\par
+\f1 The application requests only the minimum necessary OAuth scope:\par
+\par
+\pard\li360\f2\fs18\cf4 https://www.googleapis.com/auth/adwords\cf0\f1\fs20\par
+\pard\par
+\par
+This scope is required to query campaign performance metrics using GAQL. Indexify does not use the API to:\par
+\par
+\pard\li360\bullet  Create, modify, or delete campaigns, ad groups, ads, or keywords\par
+\bullet  Manage billing or payment methods\par
+\bullet  Access Smart Campaign data or other restricted features\par
+\bullet  Access any other Google service outside of Google Ads\par
+\pard\par
+\par
+\f1\fs22\b\cf3 7. Google Ads Developer Token Usage\cf0\b0\fs20\par
+\par
+\f1 The developer token is stored as a secure server-side environment variable and is never exposed to the client-side application. All API calls are made server-to-server from the Indexify backend.\par
+\par
+The developer token is used:\par
+\pard\li360\bullet  Solely to authenticate the Indexify application with the Google Ads API\par
+\bullet  On behalf of clients who have explicitly granted OAuth consent\par
+\bullet  In production at indexify.co.za only\par
+\pard\par
+\par
+\f1\fs22\b\cf3 8. Application URLs & Endpoints\cf0\b0\fs20\par
+\par
+\f1\b Production Application URL:\b0\par
+\pard\li360\f2\fs18\cf4 https://indexify.co.za\cf0\f1\fs20\par
+\pard\par
+\b OAuth Redirect/Callback URI:\b0\par
+\pard\li360\f2\fs18\cf4 https://indexify.co.za/api/auth/google-ads/callback\cf0\f1\fs20\par
+\pard\par
+\b Client Portal (where users connect their account):\b0\par
+\pard\li360\f2\fs18\cf4 https://indexify.co.za/portal\cf0\f1\fs20\par
+\pard\par
+\par
+\f1\fs22\b\cf3 9. Company Information\cf0\b0\fs20\par
+\par
+\f1\b Company Name:\b0  Fortune Design (Pty) Ltd\par
+\b Trading As:\b0  Indexify\par
+\b Website:\b0  indexify.co.za\par
+\b Business Email:\b0  support@indexify.co.za\par
+\b Country:\b0  South Africa\par
+\b Industry:\b0  Digital Marketing \endash  SEO & Paid Search\par
+\b Primary Contact:\b0  support@indexify.co.za\par
+\par
+\par
+\f1\fs22\b\cf3 10. Summary\cf0\b0\fs20\par
+\par
+\f1 Indexify is a legitimate digital marketing agency tool that uses the Google Ads API strictly to retrieve performance data for clients who have explicitly authorised access. The integration is designed to:\par
+\par
+\pard\li360\bullet  Improve client transparency by surfacing campaign metrics in a branded client portal\par
+\bullet  Reduce manual reporting time for the Fortune Design team\par
+\bullet  Provide a single source of truth for campaign performance\par
+\pard\par
+\par
+The application operates entirely within Google\rquote s API Terms of Service and User Data Policy. No API data is monetised, sold, or shared outside the platform.\par
+\par
+\par
+\f1\fs16\cf4 \endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\endash\par
+This document was prepared by Fortune Design (Pty) Ltd for submission to Google as part of the Google Ads API Basic Access application. For questions, contact support@indexify.co.za.\cf0\par
+}

@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "40oJz9IhZyymkV4WUcwwe"
+uri = "file://docs/indexify-google-ads-api-design-documentation.rtf"
+type = "unspecified"
+title = "Indexify – Google Ads API Design Documentation"
