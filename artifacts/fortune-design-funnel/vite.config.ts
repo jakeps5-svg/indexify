@@ -62,6 +62,10 @@ export default defineConfig({
     port,
     host: "0.0.0.0",
     allowedHosts: true,
+    proxy: {
+      "/sitemap.xml": { target: "http://localhost:8080", changeOrigin: true },
+      "/robots.txt":  { target: "http://localhost:8080", changeOrigin: true },
+    },
     fs: {
       strict: true,
       deny: ["**/.*"],
