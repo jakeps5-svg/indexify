@@ -144,7 +144,7 @@ export default function SerpCheckerPage() {
     title: "Free Google SERP Rank Checker South Africa | Indexify",
     description: "Check where your website ranks on Google for any keyword — free, instant results. See your SERP position, top 50 results, and actionable tips to move up.",
     keywords: ["SERP rank checker South Africa", "Google ranking checker", "keyword rank checker free", "check website Google position", "SEO rank checker"],
-    canonical: "https://indexify.co.za/serp-checker/",
+
   });
 
   const [domain, setDomain]     = useState("");

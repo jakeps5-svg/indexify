@@ -565,7 +565,7 @@ export default function AdsAuditPage() {
     title: "Free Google Ads Proposal South Africa | Indexify",
     description: "Get a free, customised Google Ads proposal for your business in 30 seconds. See recommended budgets, keywords and expected results before you spend a cent.",
     keywords: ["free Google Ads proposal South Africa", "Google Ads audit South Africa", "PPC proposal South Africa", "Google Ads strategy South Africa", "free PPC audit"],
-    canonical: "https://indexify.co.za/ads-audit/",
+
   });
 
   const [inputUrl, setInputUrl] = useState("");

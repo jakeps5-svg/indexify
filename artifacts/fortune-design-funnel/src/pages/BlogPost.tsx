@@ -123,7 +123,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         canonical.setAttribute("rel", "canonical");
         document.head.appendChild(canonical);
       }
-      canonical.setAttribute("href", `https://indexify.co.za/blog/${post.slug}/`);
+      canonical.setAttribute("href", `${window.location.origin}/blog/${post.slug}/`);
     }
     return () => { document.title = "Indexify – Lead SEO & Google Ads Expert"; };
   }, [post]);

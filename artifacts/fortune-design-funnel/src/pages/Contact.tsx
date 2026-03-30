@@ -27,7 +27,7 @@ export default function Contact() {
     title: "Contact Indexify – SEO & Google Ads Agency South Africa",
     description: "Get in touch with Indexify for a free strategy consultation. We serve businesses across South Africa — Johannesburg, Cape Town, Durban and nationwide.",
     keywords: ["contact SEO agency South Africa", "hire Google Ads agency South Africa", "digital marketing consultation South Africa", "SEO quote South Africa"],
-    canonical: "https://indexify.co.za/contact/",
+
   });
 
   const [form, setForm] = useState({

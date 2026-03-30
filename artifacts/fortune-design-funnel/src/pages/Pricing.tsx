@@ -88,7 +88,7 @@ export default function PricingPage() {
       "SEO pricing Johannesburg", "SEO pricing Durban", "SEO pricing Pretoria",
       "Google Ads pricing Cape Town", "digital marketing cost South Africa",
     ],
-    canonical: "https://indexify.co.za/pricing/",
+
   });
 
   function openWhatsApp(_msg?: string) {

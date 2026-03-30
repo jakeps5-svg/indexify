@@ -9,7 +9,7 @@ export default function TermsOfUse() {
     title: "Terms of Use | Indexify SA",
     description: "Indexify's terms of use — the conditions governing use of our website and digital marketing services provided by Fortune Design (Pty) Ltd.",
     keywords: ["Indexify terms of use", "terms and conditions South Africa", "digital marketing agency terms"],
-    canonical: "https://indexify.co.za/terms-of-use/",
+
   });
 
   return (

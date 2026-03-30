@@ -44,7 +44,7 @@ export default function PortElizabethPage() {
       "digital marketing Gqeberha", "PPC Port Elizabeth", "Google Ads management Port Elizabeth",
       "SEO company Port Elizabeth", "affordable SEO Port Elizabeth",
     ],
-    canonical: "https://indexify.co.za/port-elizabeth/",
+
   });
 
   const [, navigate] = useLocation();

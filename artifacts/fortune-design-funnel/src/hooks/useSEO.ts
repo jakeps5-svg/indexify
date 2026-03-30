@@ -10,7 +10,7 @@ interface SEOProps {
 }
 
 const DEFAULT_TITLE = "Indexify – Lead SEO & Google Ads Expert";
-const SITE_URL      = "https://indexify.co.za";
+const OG_IMAGE      = "https://indexify.co.za/opengraph.jpg";
 
 function setMeta(selector: string, attr: string, value: string) {
   let tag = document.querySelector(selector);
@@ -37,16 +37,18 @@ export function useSEO({
   title,
   description,
   keywords = [],
-  ogImage = `${SITE_URL}/opengraph.jpg`,
-  ogType  = "website",
+  ogImage  = OG_IMAGE,
+  ogType   = "website",
   canonical,
 }: SEOProps) {
   useEffect(() => {
     document.title = title;
 
-    const rawPath = window.location.pathname.replace(/\/$/, "");
-    const path = rawPath ? `${rawPath}/` : "/";
-    const canonicalUrl = canonical ?? `${SITE_URL}${path}`;
+    // Always use the actual serving domain so each domain gets its own canonical.
+    const origin   = window.location.origin;
+    const rawPath  = window.location.pathname.replace(/\/$/, "");
+    const path     = rawPath ? `${rawPath}/` : "/";
+    const canonicalUrl = canonical ?? `${origin}${path}`;
 
     setMeta('meta[name="description"]',        "content", description);
     setMeta('meta[name="keywords"]',           "content", keywords.join(", "));

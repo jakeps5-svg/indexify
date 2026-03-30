@@ -45,7 +45,7 @@ export default function DurbanPage() {
       "affordable SEO Durban", "PPC services Durban",
       "Google Ads agency Durban", "online marketing Durban",
     ],
-    canonical: "https://indexify.co.za/durban/",
+
   });
 
   const [, navigate] = useLocation();

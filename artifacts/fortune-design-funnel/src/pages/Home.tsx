@@ -56,7 +56,7 @@ export default function Home() {
       "digital marketing Sandton", "SEO Centurion", "SEO Midrand", "SEO Stellenbosch",
       "SEO East London", "SEO Bloemfontein", "SEO Nelspruit", "SEO Polokwane",
     ],
-    canonical: "https://indexify.co.za/",
+
   });
 
   const scrollTo = (id: string) => {
