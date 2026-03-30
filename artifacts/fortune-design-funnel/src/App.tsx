@@ -1,4 +1,5 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -35,6 +36,18 @@ import ServicesPage from "@/pages/Services";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
+
+// Strips trailing slashes from the URL so /services/seo/ routes the same as
+// /services/seo. Runs inside the Router context so useLocation is safe here.
+function TrailingSlashRedirect() {
+  const [location, navigate] = useLocation();
+  useEffect(() => {
+    if (location !== "/" && location.endsWith("/")) {
+      navigate(location.slice(0, -1), { replace: true });
+    }
+  }, [location, navigate]);
+  return null;
+}
 
 function Router() {
   return (
@@ -77,6 +90,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <TrailingSlashRedirect />
           <Router />
           <WhatsAppModal />
           <BookingModal />

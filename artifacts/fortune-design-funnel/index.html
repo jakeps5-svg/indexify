@@ -13,6 +13,10 @@
       gtag('config', 'G-N530MRX3RQ');
       gtag('config', 'AW-365027353');
     </script>
+
+    <!-- Default meta (home page). The inline script below immediately overwrites
+         these with route-specific values so Googlebot sees the correct title and
+         description on EVERY page before JavaScript renders. -->
     <title>Indexify – Lead SEO &amp; Google Ads Expert</title>
     <meta name="description" content="South Africa's leading SEO & Google Ads agency. Rank on Google page 1, generate more leads and grow revenue. Transparent pricing, real results." />
     <meta name="keywords" content="SEO South Africa, Google Ads South Africa, digital marketing South Africa, SEO agency Johannesburg, Cape Town SEO, search engine optimisation South Africa" />
@@ -35,24 +39,74 @@
     <meta name="twitter:description" content="South Africa's leading SEO and Google Ads agency. Real rankings, real leads, real revenue." />
     <meta name="twitter:image" content="https://indexify.co.za/opengraph.jpg" />
 
-    <!-- Canonical: uses current domain so each domain (indexify.co.za, 2012seo.com, etc.)
-         gets its own canonical. Updated per route by this script + React. -->
+    <!-- Pre-render meta tags: runs synchronously before React loads so Googlebot
+         sees the correct title, description, and canonical for every route.
+         React's useSEO hook will update these again once JS hydrates. -->
     <link rel="canonical" href="https://indexify.co.za/" />
     <script>
       (function() {
         var origin = window.location.origin;
-        var path   = window.location.pathname;
-        var clean  = path === '/' ? '/' : (path.endsWith('/') ? path : path + '/');
+        var raw    = window.location.pathname.replace(/\/$/, '') || '/';
+        var clean  = raw === '/' ? '/' : raw + '/';
         var url    = origin + clean;
-        var link   = document.querySelector('link[rel="canonical"]');
+
+        // Route → [title, description]
+        var META = {
+          '/services/seo/':        ['SEO Services South Africa | SEO Agency | Indexify', 'Top-rated SEO agency helping SA businesses rank on Google page 1. Affordable SEO packages from R5,900/month. Cape Town, JHB, Durban & Pretoria.'],
+          '/services/google-ads/': ['Google Ads Management SA | PPC Agency | Indexify', 'Expert Google Ads management for SA businesses. Fixed fee from R7,300/month — no % of spend. Cape Town, JHB, Durban & Pretoria. Free proposal.'],
+          '/services/':            ['SEO & Google Ads Services South Africa | Indexify', 'Expert SEO & Google Ads for South African businesses. Rank on Google page 1 and generate more leads. Transparent pricing, real results.'],
+          '/pricing/':             ['SEO & Google Ads Pricing South Africa | Indexify', 'Transparent SEO and Google Ads pricing for SA businesses. SEO from R5,900/month. Google Ads management from R7,300/month. No hidden fees.'],
+          '/contact/':             ['Contact Indexify | SEO & Google Ads Agency South Africa', 'Get in touch with Indexify — South Africa\'s leading SEO & Google Ads agency. Free consultation. Cape Town, Johannesburg, Durban & Pretoria.'],
+          '/blog/':                ['SEO Blog | Tips & Guides for South African Businesses | Indexify', 'Free SEO tips, Google Ads guides, and digital marketing advice for South African businesses. Updated monthly by our expert team.'],
+          '/audit/':               ['Free SEO Audit Tool | Check Your Website\'s SEO | Indexify', 'Get a free instant SEO audit for your South African business website. Identify technical issues, on-page problems, and quick wins in seconds.'],
+          '/ads-audit/':           ['Free Google Ads Proposal | Indexify', 'Request a free Google Ads proposal for your South African business. We\'ll analyse your market and show you exactly what results to expect.'],
+          '/serp-checker/':        ['Free SERP Rank Checker | Check Google Rankings SA | Indexify', 'Check where your website ranks on Google for any keyword in South Africa. Free SERP position checker — no login required.'],
+          '/cape-town/':           ['SEO & Google Ads Agency Cape Town | Indexify', 'Cape Town\'s top SEO and Google Ads agency. Rank on Google page 1 and get more leads from Cape Town customers. Free audit available.'],
+          '/johannesburg/':        ['SEO & Google Ads Agency Johannesburg | Indexify', 'Johannesburg\'s leading SEO and Google Ads specialists. Grow your Joburg business with data-driven digital marketing. Free consultation.'],
+          '/durban/':              ['SEO & Google Ads Services Durban | Indexify', 'Durban SEO and Google Ads experts. Get your Durban business ranking on Google page 1 and generate consistent leads. From R5,900/month.'],
+          '/pretoria/':            ['SEO & Google Ads Agency Pretoria | Indexify', 'Pretoria\'s trusted SEO and Google Ads agency. Rank higher on Google and grow your Pretoria business with proven digital marketing strategies.'],
+          '/port-elizabeth/':      ['SEO & Google Ads Port Elizabeth | Indexify', 'Port Elizabeth (Gqeberha) SEO and Google Ads specialists. Drive local leads and grow your PE business online. Free audit available.'],
+          '/privacy-policy/':      ['Privacy Policy | Indexify', 'Read the Indexify privacy policy. How we collect, use, and protect your personal data in accordance with South African POPIA regulations.'],
+          '/terms-of-use/':        ['Terms of Use | Indexify', 'Read the Indexify terms of use. Guidelines for using the Indexify website, tools, and services.'],
+        };
+
+        var m = META[clean];
+
+        // Canonical
+        var link = document.querySelector('link[rel="canonical"]');
         if (link) { link.href = url; } else {
           link = document.createElement('link');
           link.rel = 'canonical';
           link.href = url;
           document.head.appendChild(link);
         }
+
+        // OG URL
         var ogUrl = document.querySelector('meta[property="og:url"]');
         if (ogUrl) ogUrl.setAttribute('content', url);
+
+        if (m) {
+          var title = m[0], desc = m[1];
+
+          // <title>
+          document.title = title;
+
+          // description
+          var descTag = document.querySelector('meta[name="description"]');
+          if (descTag) descTag.setAttribute('content', desc);
+
+          // OG title / description
+          var ogTitle = document.querySelector('meta[property="og:title"]');
+          if (ogTitle) ogTitle.setAttribute('content', title);
+          var ogDesc = document.querySelector('meta[property="og:description"]');
+          if (ogDesc) ogDesc.setAttribute('content', desc);
+
+          // Twitter title / description
+          var twTitle = document.querySelector('meta[name="twitter:title"]');
+          if (twTitle) twTitle.setAttribute('content', title);
+          var twDesc = document.querySelector('meta[name="twitter:description"]');
+          if (twDesc) twDesc.setAttribute('content', desc);
+        }
       })();
     </script>
 
@@ -72,21 +126,22 @@
          Visually hidden (sr-only pattern) but fully readable by all bots. -->
     <nav aria-label="Site navigation" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
       <a href="https://indexify.co.za/">Home – SEO &amp; Google Ads Agency South Africa</a>
-      <a href="https://indexify.co.za/services/seo">SEO Services South Africa</a>
-      <a href="https://indexify.co.za/services/google-ads">Google Ads Management South Africa</a>
-      <a href="https://indexify.co.za/pricing">SEO &amp; Google Ads Pricing</a>
-      <a href="https://indexify.co.za/contact">Contact Indexify</a>
-      <a href="https://indexify.co.za/blog">SEO Blog – Tips &amp; Guides</a>
-      <a href="https://indexify.co.za/audit">Free SEO Audit Tool</a>
-      <a href="https://indexify.co.za/ads-audit">Free Google Ads Proposal</a>
-      <a href="https://indexify.co.za/serp-checker">Free SERP Rank Checker</a>
-      <a href="https://indexify.co.za/cape-town">SEO &amp; Google Ads Agency Cape Town</a>
-      <a href="https://indexify.co.za/johannesburg">SEO &amp; Google Ads Agency Johannesburg</a>
-      <a href="https://indexify.co.za/durban">SEO &amp; Google Ads Services Durban</a>
-      <a href="https://indexify.co.za/pretoria">SEO &amp; Google Ads Agency Pretoria</a>
-      <a href="https://indexify.co.za/port-elizabeth">SEO &amp; Google Ads Port Elizabeth</a>
-      <a href="https://indexify.co.za/privacy-policy">Privacy Policy</a>
-      <a href="https://indexify.co.za/terms-of-use">Terms of Use</a>
+      <a href="https://indexify.co.za/services/">Services Overview</a>
+      <a href="https://indexify.co.za/services/seo/">SEO Services South Africa</a>
+      <a href="https://indexify.co.za/services/google-ads/">Google Ads Management South Africa</a>
+      <a href="https://indexify.co.za/pricing/">SEO &amp; Google Ads Pricing</a>
+      <a href="https://indexify.co.za/contact/">Contact Indexify</a>
+      <a href="https://indexify.co.za/blog/">SEO Blog – Tips &amp; Guides</a>
+      <a href="https://indexify.co.za/audit/">Free SEO Audit Tool</a>
+      <a href="https://indexify.co.za/ads-audit/">Free Google Ads Proposal</a>
+      <a href="https://indexify.co.za/serp-checker/">Free SERP Rank Checker</a>
+      <a href="https://indexify.co.za/cape-town/">SEO &amp; Google Ads Agency Cape Town</a>
+      <a href="https://indexify.co.za/johannesburg/">SEO &amp; Google Ads Agency Johannesburg</a>
+      <a href="https://indexify.co.za/durban/">SEO &amp; Google Ads Services Durban</a>
+      <a href="https://indexify.co.za/pretoria/">SEO &amp; Google Ads Agency Pretoria</a>
+      <a href="https://indexify.co.za/port-elizabeth/">SEO &amp; Google Ads Port Elizabeth</a>
+      <a href="https://indexify.co.za/privacy-policy/">Privacy Policy</a>
+      <a href="https://indexify.co.za/terms-of-use/">Terms of Use</a>
       <a href="https://www.facebook.com/FortunedesignSA" rel="noopener noreferrer">Indexify on Facebook</a>
       <a href="https://www.instagram.com/fortunedesign_sa/" rel="noopener noreferrer">Indexify on Instagram</a>
       <a href="https://www.linkedin.com/in/fortune-design-168270213/" rel="noopener noreferrer">Indexify on LinkedIn</a>
@@ -148,14 +203,14 @@
     <!-- Noscript fallback — shown to crawlers that do not execute JavaScript -->
     <noscript>
       <header>
-        <a href="https://indexify.co.za">Indexify – South Africa's SEO &amp; Google Ads Agency</a>
+        <a href="https://indexify.co.za/">Indexify – South Africa's SEO &amp; Google Ads Agency</a>
         <nav>
-          <a href="https://indexify.co.za/services/seo">SEO Services</a> |
-          <a href="https://indexify.co.za/services/google-ads">Google Ads</a> |
-          <a href="https://indexify.co.za/pricing">Pricing</a> |
-          <a href="https://indexify.co.za/blog">Blog</a> |
-          <a href="https://indexify.co.za/contact">Contact</a> |
-          <a href="https://indexify.co.za/audit">Free SEO Audit</a>
+          <a href="https://indexify.co.za/services/seo/">SEO Services</a> |
+          <a href="https://indexify.co.za/services/google-ads/">Google Ads</a> |
+          <a href="https://indexify.co.za/pricing/">Pricing</a> |
+          <a href="https://indexify.co.za/blog/">Blog</a> |
+          <a href="https://indexify.co.za/contact/">Contact</a> |
+          <a href="https://indexify.co.za/audit/">Free SEO Audit</a>
         </nav>
       </header>
       <main>
@@ -164,8 +219,8 @@
 
         <h2>Our Services</h2>
         <ul>
-          <li><a href="https://indexify.co.za/services/seo">Search Engine Optimisation (SEO)</a> — Rank organically on Google Page 1. Packages from R5,900/month.</li>
-          <li><a href="https://indexify.co.za/services/google-ads">Google Ads Management</a> — Instant leads via targeted PPC. Fixed monthly fee from R7,300/month.</li>
+          <li><a href="https://indexify.co.za/services/seo/">Search Engine Optimisation (SEO)</a> — Rank organically on Google Page 1. Packages from R5,900/month.</li>
+          <li><a href="https://indexify.co.za/services/google-ads/">Google Ads Management</a> — Instant leads via targeted PPC. Fixed monthly fee from R7,300/month.</li>
         </ul>
 
         <h2>Why Choose Indexify?</h2>
@@ -178,7 +233,7 @@
         </ul>
 
         <h2>Pricing</h2>
-        <p>See full details at <a href="https://indexify.co.za/pricing">indexify.co.za/pricing</a>.</p>
+        <p>See full details at <a href="https://indexify.co.za/pricing/">indexify.co.za/pricing</a>.</p>
         <ul>
           <li>Basic SEO — R5,900/month</li>
           <li>Advanced SEO — R7,900/month</li>
@@ -189,10 +244,10 @@
         <h2>Contact Us</h2>
         <p>WhatsApp: <a href="https://wa.me/27602988295">+27 60 298 8295</a></p>
         <p>Email: <a href="mailto:info@fortunedesign.co.za">info@fortunedesign.co.za</a></p>
-        <p><a href="https://indexify.co.za/contact">Contact form and office details</a></p>
+        <p><a href="https://indexify.co.za/contact/">Contact form and office details</a></p>
 
         <h2>Read Our SEO Blog</h2>
-        <p>Free SEO tips and Google Ads guides for South African businesses: <a href="https://indexify.co.za/blog">indexify.co.za/blog</a></p>
+        <p>Free SEO tips and Google Ads guides for South African businesses: <a href="https://indexify.co.za/blog/">indexify.co.za/blog</a></p>
 
         <h2>External Resources</h2>
         <ul>
