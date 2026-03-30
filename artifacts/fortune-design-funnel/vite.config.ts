@@ -4,26 +4,26 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-const rawPort = process.env.PORT;
+// PORT is only required when running the dev or preview server, not during a
+// static production build (vite build). Failing here during build would break
+// the deployment even though the port value is never used for static output.
+const isBuild = process.argv.includes("build");
+const rawPort  = process.env.PORT;
 
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
+if (!isBuild && !rawPort) {
+  throw new Error("PORT environment variable is required but was not provided.");
 }
 
-const port = Number(rawPort);
+const port = Number(rawPort ?? "3000");
 
-if (Number.isNaN(port) || port <= 0) {
+if (!isBuild && (Number.isNaN(port) || port <= 0)) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-const basePath = process.env.BASE_PATH;
+const basePath = process.env.BASE_PATH ?? "/";
 
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
+if (!isBuild && !process.env.BASE_PATH) {
+  throw new Error("BASE_PATH environment variable is required but was not provided.");
 }
 
 export default defineConfig({
@@ -63,12 +63,12 @@ export default defineConfig({
     host: "0.0.0.0",
     allowedHosts: true,
     proxy: {
-      "/sitemap.xml":        { target: "http://localhost:8080", changeOrigin: true },
-      "/sitemap_index.xml":  { target: "http://localhost:8080", changeOrigin: true },
-      "/page-sitemap.xml":   { target: "http://localhost:8080", changeOrigin: true },
-      "/post-sitemap.xml":   { target: "http://localhost:8080", changeOrigin: true },
+      "/sitemap.xml":          { target: "http://localhost:8080", changeOrigin: true },
+      "/sitemap_index.xml":    { target: "http://localhost:8080", changeOrigin: true },
+      "/page-sitemap.xml":     { target: "http://localhost:8080", changeOrigin: true },
+      "/post-sitemap.xml":     { target: "http://localhost:8080", changeOrigin: true },
       "/category-sitemap.xml": { target: "http://localhost:8080", changeOrigin: true },
-      "/robots.txt":         { target: "http://localhost:8080", changeOrigin: true },
+      "/robots.txt":           { target: "http://localhost:8080", changeOrigin: true },
     },
     fs: {
       strict: true,
