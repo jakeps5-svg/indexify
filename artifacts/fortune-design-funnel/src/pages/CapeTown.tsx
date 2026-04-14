@@ -165,10 +165,10 @@ export default function CapeTownPage() {
                 Why Cape Town Businesses Choose Indexify
               </motion.h2>
               {[
-                { title: "Local market expertise", desc: "We understand the Cape Town search landscape — from CBD to Northern Suburbs — and what local customers search for." },
-                { title: "Fixed monthly fees", desc: "No percentage of ad spend. No hidden fees. You know exactly what you pay every month." },
-                { title: "Transparent reporting", desc: "Monthly reports showing your rankings, traffic, and leads — not just vanity metrics." },
-                { title: "Quick wins + long-term growth", desc: "We combine Google Ads for immediate leads with SEO for sustainable organic growth." },
+                { title: "Western Cape market expertise", desc: "We understand the Cape Town search landscape — from CBD to Stellenbosch — and what Western Cape customers specifically search for." },
+                { title: "City-wide campaign reach", desc: "We run campaigns across the CBD, Atlantic Seaboard, Southern Suburbs, Northern Suburbs, and Winelands — all under one flat monthly fee." },
+                { title: "Competitor gap analysis", desc: "We benchmark you against your top Cape Town competitors so you always know what rankings you need to overtake them." },
+                { title: "SEO + Ads in one strategy", desc: "Most Cape Town agencies only do one or the other. We combine both — Google Ads for immediate leads while SEO builds long-term organic dominance." },
               ].map((item) => (
                 <motion.div key={item.title} variants={fadeUp} className="flex gap-3 mb-5">
                   <CheckCircle2 size={20} className="text-teal-500 shrink-0 mt-0.5" />
@@ -247,6 +247,50 @@ export default function CapeTownPage() {
       </section>
 
       <Footer />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+        {
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "Indexify – SEO & Google Ads Agency Cape Town",
+          "url": "https://indexify.co.za/cape-town/",
+          "telephone": "+27602988295",
+          "priceRange": "R5,900–R12,500/month",
+          "description": "Cape Town's top-rated SEO and Google Ads agency. Rank higher on Google and get more local leads.",
+          "areaServed": [
+            { "@type": "City", "name": "Cape Town" },
+            { "@type": "City", "name": "Stellenbosch" },
+            { "@type": "City", "name": "Paarl" }
+          ],
+          "address": { "@type": "PostalAddress", "addressLocality": "Cape Town", "addressRegion": "Western Cape", "addressCountry": "ZA" },
+          "parentOrganization": { "@type": "Organization", "name": "Indexify", "url": "https://indexify.co.za" },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Cape Town SEO & Google Ads Services",
+            "itemListElement": [
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Services Cape Town", "url": "https://indexify.co.za/services/seo/" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Google Ads Management Cape Town", "url": "https://indexify.co.za/services/google-ads/" } }
+            ]
+          }
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://indexify.co.za/" },
+            { "@type": "ListItem", "position": 2, "name": "SEO & Google Ads Cape Town", "item": "https://indexify.co.za/cape-town/" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": FAQS.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        }
+      ]) }} />
     </div>
   );
 }

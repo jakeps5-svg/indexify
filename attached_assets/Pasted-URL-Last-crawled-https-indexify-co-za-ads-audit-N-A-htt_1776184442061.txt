@@ -1,0 +1,53 @@
+URL	Last crawled
+https://indexify.co.za/ads-audit/	N/A
+https://indexify.co.za/audit/	N/A
+https://indexify.co.za/blog/	N/A
+https://indexify.co.za/blog/backlinks-domain-authority-south-africa/	N/A
+https://indexify.co.za/blog/content-marketing-and-seo/	N/A
+https://indexify.co.za/blog/core-web-vitals-google-ranking/	N/A
+https://indexify.co.za/blog/digital-marketing-south-african-smes/	N/A
+https://indexify.co.za/blog/generate-more-leads-online-2025/	N/A
+https://indexify.co.za/blog/google-ads-budget-south-africa/	N/A
+https://indexify.co.za/blog/google-ads-campaign-structure-roi/
+
+	Last crawled
+https://indexify.co.za/blog/google-ads-conversion-tracking/	N/A
+https://indexify.co.za/blog/google-ads-copy-that-converts/	N/A
+https://indexify.co.za/blog/google-ads-mistakes-south-african-businesses/	N/A
+https://indexify.co.za/blog/google-ads-remarketing/	N/A
+https://indexify.co.za/blog/google-ads-vs-facebook-ads/	N/A
+https://indexify.co.za/blog/how-long-does-seo-take/	N/A
+https://indexify.co.za/blog/keyword-research-south-african-businesses/	N/A
+https://indexify.co.za/blog/local-seo-south-africa-google-maps/	N/A
+https://indexify.co.za/blog/negative-keywords-stop-wasted-spend/	N/A
+https://indexify.co.za/blog/page-speed-seo-google-ads/	
+URL	Last crawled
+https://indexify.co.za/blog/rank-google-page-1-south-africa/	N/A
+https://indexify.co.za/blog/schema-markup-explained/	N/A
+https://indexify.co.za/blog/seo-content-that-ranks-and-converts/	N/A
+https://indexify.co.za/blog/seo-vs-google-ads/	N/A
+https://indexify.co.za/blog/seo-vs-sem-south-africa/	N/A
+https://indexify.co.za/blog/smart-bidding-strategies-google-ads/	N/A
+https://indexify.co.za/blog/technical-seo-checklist-south-africa/	N/A
+https://indexify.co.za/blog/track-roi-digital-marketing/	N/A
+https://indexify.co.za/blog/website-conversion-rate-optimisation/	N/A
+https://indexify.co.za/blog/what-is-on-page-seo/	
+URL	Last crawled
+https://indexify.co.za/blog/why-competitor-ranks-higher/	N/A
+https://indexify.co.za/blog/why-your-business-isnt-ranking-on-google/	N/A
+https://indexify.co.za/cape-town/	N/A
+https://indexify.co.za/contact/	N/A
+https://indexify.co.za/durban/	N/A
+https://indexify.co.za/johannesburg/	N/A
+https://indexify.co.za/port-elizabeth/	N/A
+https://indexify.co.za/pretoria/	N/A
+https://indexify.co.za/pricing/	N/A
+https://indexify.co.za/privacy-policy/	
+https://indexify.co.za/serp-checker/	N/A
+https://indexify.co.za/services/	N/A
+https://indexify.co.za/services/google-ads/	N/A
+https://indexify.co.za/services/seo/	N/A
+https://indexify.co.za/terms-of-use/
+	N/A
+	N/A
+

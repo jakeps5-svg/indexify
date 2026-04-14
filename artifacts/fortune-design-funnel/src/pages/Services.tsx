@@ -712,6 +712,43 @@ export default function ServicesPage() {
       </section>
 
       <Footer />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+        {
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "SEO & Google Ads Services South Africa",
+          "url": "https://indexify.co.za/services/",
+          "description": "Expert SEO & Google Ads for South African businesses. Rank on Google page 1 and generate more leads. From R5,900/month.",
+          "provider": { "@type": "Organization", "name": "Indexify", "url": "https://indexify.co.za" },
+          "areaServed": { "@type": "Country", "name": "South Africa" },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Digital Marketing Services",
+            "itemListElement": [
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Services", "url": "https://indexify.co.za/services/seo/" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Google Ads Management", "url": "https://indexify.co.za/services/google-ads/" } }
+            ]
+          }
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://indexify.co.za/" },
+            { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://indexify.co.za/services/" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": FAQS.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        }
+      ]) }} />
     </div>
   );
 }

@@ -247,6 +247,51 @@ export default function PortElizabethPage() {
       </section>
 
       <Footer />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+        {
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "Indexify – SEO & Google Ads Agency Port Elizabeth",
+          "url": "https://indexify.co.za/port-elizabeth/",
+          "telephone": "+27602988295",
+          "priceRange": "R5,900–R12,500/month",
+          "description": "Port Elizabeth's trusted SEO and Google Ads agency. Rank higher on Google in Gqeberha and Eastern Cape.",
+          "areaServed": [
+            { "@type": "City", "name": "Port Elizabeth" },
+            { "@type": "City", "name": "Gqeberha" },
+            { "@type": "City", "name": "Uitenhage" },
+            { "@type": "City", "name": "East London" }
+          ],
+          "address": { "@type": "PostalAddress", "addressLocality": "Port Elizabeth", "addressRegion": "Eastern Cape", "addressCountry": "ZA" },
+          "parentOrganization": { "@type": "Organization", "name": "Indexify", "url": "https://indexify.co.za" },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Port Elizabeth SEO & Google Ads Services",
+            "itemListElement": [
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Services Port Elizabeth", "url": "https://indexify.co.za/services/seo/" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Google Ads Management Port Elizabeth", "url": "https://indexify.co.za/services/google-ads/" } }
+            ]
+          }
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://indexify.co.za/" },
+            { "@type": "ListItem", "position": 2, "name": "SEO & Google Ads Port Elizabeth", "item": "https://indexify.co.za/port-elizabeth/" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": FAQS.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        }
+      ]) }} />
     </div>
   );
 }

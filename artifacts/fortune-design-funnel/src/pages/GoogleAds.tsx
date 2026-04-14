@@ -631,6 +631,40 @@ export default function GoogleAdsPage() {
       </section>
 
       <Footer />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+        {
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "Google Ads Management South Africa",
+          "url": "https://indexify.co.za/services/google-ads/",
+          "description": "Expert Google Ads management for SA businesses. Fixed fee from R7,300/month — no % of spend.",
+          "provider": { "@type": "Organization", "name": "Indexify", "url": "https://indexify.co.za" },
+          "areaServed": { "@type": "Country", "name": "South Africa" },
+          "offers": [
+            { "@type": "Offer", "name": "Google Ads Management", "price": "7300", "priceCurrency": "ZAR", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "7300", "priceCurrency": "ZAR", "unitCode": "MON" } },
+            { "@type": "Offer", "name": "Market Leader (SEO + Ads)", "price": "12500", "priceCurrency": "ZAR", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "12500", "priceCurrency": "ZAR", "unitCode": "MON" } }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://indexify.co.za/" },
+            { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://indexify.co.za/services/" },
+            { "@type": "ListItem", "position": 3, "name": "Google Ads Management South Africa", "item": "https://indexify.co.za/services/google-ads/" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": FAQS.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        }
+      ]) }} />
     </div>
   );
 }

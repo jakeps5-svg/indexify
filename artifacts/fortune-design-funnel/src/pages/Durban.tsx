@@ -248,6 +248,51 @@ export default function DurbanPage() {
       </section>
 
       <Footer />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+        {
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "Indexify – SEO & Google Ads Agency Durban",
+          "url": "https://indexify.co.za/durban/",
+          "telephone": "+27602988295",
+          "priceRange": "R5,900–R12,500/month",
+          "description": "Durban's trusted SEO & Google Ads agency. Rank on Google and get more KZN leads. Serving all KwaZulu-Natal.",
+          "areaServed": [
+            { "@type": "City", "name": "Durban" },
+            { "@type": "City", "name": "Umhlanga" },
+            { "@type": "City", "name": "Ballito" },
+            { "@type": "City", "name": "Pietermaritzburg" }
+          ],
+          "address": { "@type": "PostalAddress", "addressLocality": "Durban", "addressRegion": "KwaZulu-Natal", "addressCountry": "ZA" },
+          "parentOrganization": { "@type": "Organization", "name": "Indexify", "url": "https://indexify.co.za" },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Durban SEO & Google Ads Services",
+            "itemListElement": [
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Services Durban", "url": "https://indexify.co.za/services/seo/" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Google Ads Management Durban", "url": "https://indexify.co.za/services/google-ads/" } }
+            ]
+          }
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://indexify.co.za/" },
+            { "@type": "ListItem", "position": 2, "name": "SEO & Google Ads Durban", "item": "https://indexify.co.za/durban/" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": FAQS.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        }
+      ]) }} />
     </div>
   );
 }

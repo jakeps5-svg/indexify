@@ -248,6 +248,51 @@ export default function JohannesburgPage() {
       </section>
 
       <Footer />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+        {
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "Indexify – SEO & Google Ads Agency Johannesburg",
+          "url": "https://indexify.co.za/johannesburg/",
+          "telephone": "+27602988295",
+          "priceRange": "R5,900–R12,500/month",
+          "description": "Johannesburg's trusted SEO and Google Ads agency. Rank on Google page 1 and get more Joburg leads.",
+          "areaServed": [
+            { "@type": "City", "name": "Johannesburg" },
+            { "@type": "City", "name": "Sandton" },
+            { "@type": "City", "name": "Midrand" },
+            { "@type": "City", "name": "Randburg" }
+          ],
+          "address": { "@type": "PostalAddress", "addressLocality": "Johannesburg", "addressRegion": "Gauteng", "addressCountry": "ZA" },
+          "parentOrganization": { "@type": "Organization", "name": "Indexify", "url": "https://indexify.co.za" },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Johannesburg SEO & Google Ads Services",
+            "itemListElement": [
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Services Johannesburg", "url": "https://indexify.co.za/services/seo/" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Google Ads Management Johannesburg", "url": "https://indexify.co.za/services/google-ads/" } }
+            ]
+          }
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://indexify.co.za/" },
+            { "@type": "ListItem", "position": 2, "name": "SEO & Google Ads Johannesburg", "item": "https://indexify.co.za/johannesburg/" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": FAQS.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        }
+      ]) }} />
     </div>
   );
 }

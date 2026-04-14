@@ -247,6 +247,51 @@ export default function PretoriaPage() {
       </section>
 
       <Footer />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+        {
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "Indexify – SEO & Google Ads Agency Pretoria",
+          "url": "https://indexify.co.za/pretoria/",
+          "telephone": "+27602988295",
+          "priceRange": "R5,900–R12,500/month",
+          "description": "Pretoria's trusted SEO & Google Ads agency. Rank across Tshwane. Serving Centurion & Midrand.",
+          "areaServed": [
+            { "@type": "City", "name": "Pretoria" },
+            { "@type": "City", "name": "Centurion" },
+            { "@type": "City", "name": "Midrand" },
+            { "@type": "City", "name": "Hatfield" }
+          ],
+          "address": { "@type": "PostalAddress", "addressLocality": "Pretoria", "addressRegion": "Gauteng", "addressCountry": "ZA" },
+          "parentOrganization": { "@type": "Organization", "name": "Indexify", "url": "https://indexify.co.za" },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Pretoria SEO & Google Ads Services",
+            "itemListElement": [
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Services Pretoria", "url": "https://indexify.co.za/services/seo/" } },
+              { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Google Ads Management Pretoria", "url": "https://indexify.co.za/services/google-ads/" } }
+            ]
+          }
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://indexify.co.za/" },
+            { "@type": "ListItem", "position": 2, "name": "SEO & Google Ads Pretoria", "item": "https://indexify.co.za/pretoria/" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": FAQS.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        }
+      ]) }} />
     </div>
   );
 }

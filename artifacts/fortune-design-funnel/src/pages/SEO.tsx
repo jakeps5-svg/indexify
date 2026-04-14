@@ -634,6 +634,41 @@ export default function SEOPage() {
       </section>
 
       <Footer />
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+        {
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "SEO Services South Africa",
+          "url": "https://indexify.co.za/services/seo/",
+          "description": "Top-rated SEO agency helping SA businesses rank on Google page 1. Affordable SEO packages from R5,900/month.",
+          "provider": { "@type": "Organization", "name": "Indexify", "url": "https://indexify.co.za" },
+          "areaServed": { "@type": "Country", "name": "South Africa" },
+          "offers": [
+            { "@type": "Offer", "name": "Basic SEO", "price": "5900", "priceCurrency": "ZAR", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "5900", "priceCurrency": "ZAR", "unitCode": "MON" } },
+            { "@type": "Offer", "name": "Advanced SEO", "price": "7900", "priceCurrency": "ZAR", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "7900", "priceCurrency": "ZAR", "unitCode": "MON" } },
+            { "@type": "Offer", "name": "Premium SEO", "price": "11900", "priceCurrency": "ZAR", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "11900", "priceCurrency": "ZAR", "unitCode": "MON" } }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://indexify.co.za/" },
+            { "@type": "ListItem", "position": 2, "name": "Services", "item": "https://indexify.co.za/services/" },
+            { "@type": "ListItem", "position": 3, "name": "SEO Services South Africa", "item": "https://indexify.co.za/services/seo/" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": FAQS.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        }
+      ]) }} />
     </div>
   );
 }
