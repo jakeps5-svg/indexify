@@ -469,8 +469,8 @@ export default function Home() {
           {/* Featured client result image */}
           <div className="mb-12 rounded-3xl overflow-hidden shadow-xl relative max-h-72">
             <img
-              src={`${import.meta.env.BASE_URL}images/homepage-results.png`}
-              alt="South African business owner smiling at laptop screen showing their business ranking number one on Google Search, celebrating SEO success with Indexify"
+              src={`${import.meta.env.BASE_URL}images/rank-first-page.png`}
+              alt="SEO expert showing how Indexify helps South African businesses rank on the first page of Google Search"
               className="w-full h-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-gray-900/70 via-gray-900/30 to-transparent flex items-center">
@@ -565,9 +565,17 @@ export default function Home() {
             {/* SEO */}
             <motion.div
               variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className="group relative rounded-3xl border border-gray-200 bg-white p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+              className="group relative rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+              <div className="h-40 overflow-hidden rounded-t-3xl">
+                <img
+                  src={`${BASE}/images/seo-optimization.png`}
+                  alt="Search engine optimization gears illustration"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+              </div>
+              <div className="p-8">
               <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
                 <Search size={24} className="text-primary" />
               </div>
@@ -588,14 +596,23 @@ export default function Home() {
                   Get Started →
                 </a>
               </div>
+              </div>
             </motion.div>
 
             {/* Google Ads */}
             <motion.div
               variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className="group relative rounded-3xl border border-gray-200 bg-white p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+              className="group relative rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-48 h-48 bg-accent/5 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+              <div className="h-40 overflow-hidden rounded-t-3xl">
+                <img
+                  src={`${BASE}/images/google-ads-manager.png`}
+                  alt="Google Ads manager reviewing campaign analytics and performance metrics"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                />
+              </div>
+              <div className="p-8">
               <div className="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mb-5">
                 <MousePointerClick size={24} className="text-accent" />
               </div>
@@ -615,6 +632,7 @@ export default function Home() {
                 <a href={`${BASE}/pricing`} className="flex-1 py-3 rounded-xl text-white font-bold text-sm hover:-translate-y-0.5 transition-all shadow-md text-center" style={{ background: "hsl(259 100% 65%)", boxShadow: "0 4px 16px hsl(259 100% 65% / 0.3)" }}>
                   Get Started →
                 </a>
+              </div>
               </div>
             </motion.div>
 
