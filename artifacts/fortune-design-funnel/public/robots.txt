@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+Disallow: /portal
+Disallow: /portal/
+Disallow: /admin
+Disallow: /admin/
+Disallow: /login
+Disallow: /login/
+Disallow: /admin-login
+Disallow: /admin-login/
+Disallow: /checkout
+Disallow: /checkout/
+Disallow: /payment-success
+Disallow: /payment-success/
+Disallow: /payment-cancelled
+Disallow: /payment-cancelled/
+Disallow: /forgot-password
+Disallow: /forgot-password/
+Disallow: /reset-password
+Disallow: /reset-password/
+
+Sitemap: https://indexify.co.za/sitemap.xml

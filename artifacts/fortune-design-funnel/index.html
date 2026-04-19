@@ -46,31 +46,63 @@
     <script>
       (function() {
         var origin = window.location.origin;
-        var raw    = window.location.pathname.replace(/\/$/, '') || '/';
-        var clean  = raw === '/' ? '/' : raw + '/';
-        var url    = origin + clean;
+        // Normalise path: strip trailing slash, default to '/' for root
+        var path   = window.location.pathname.replace(/\/$/, '') || '/';
+        var url    = origin + path;
 
         // Route → [title, description]
         var META = {
-          '/services/seo/':        ['SEO Services South Africa | SEO Agency | Indexify', 'Top-rated SEO agency helping SA businesses rank on Google page 1. Affordable SEO packages from R5,900/month. Cape Town, JHB, Durban & Pretoria.'],
-          '/services/google-ads/': ['Google Ads Management SA | PPC Agency | Indexify', 'Expert Google Ads management for SA businesses. Fixed fee from R7,300/month — no % of spend. Cape Town, JHB, Durban & Pretoria. Free proposal.'],
-          '/services/':            ['SEO & Google Ads Services South Africa | Indexify', 'Expert SEO & Google Ads for South African businesses. Rank on Google page 1 and generate more leads. Transparent pricing, real results.'],
-          '/pricing/':             ['SEO & Google Ads Pricing South Africa | Indexify', 'Transparent SEO and Google Ads pricing for SA businesses. SEO from R5,900/month. Google Ads management from R7,300/month. No hidden fees.'],
-          '/contact/':             ['Contact Indexify | SEO & Google Ads Agency South Africa', 'Get in touch with Indexify — South Africa\'s leading SEO & Google Ads agency. Free consultation. Cape Town, Johannesburg, Durban & Pretoria.'],
-          '/blog/':                ['SEO Blog | Tips & Guides for South African Businesses | Indexify', 'Free SEO tips, Google Ads guides, and digital marketing advice for South African businesses. Updated monthly by our expert team.'],
-          '/audit/':               ['Free SEO Audit Tool | Check Your Website\'s SEO | Indexify', 'Get a free instant SEO audit for your South African business website. Identify technical issues, on-page problems, and quick wins in seconds.'],
-          '/ads-audit/':           ['Free Google Ads Proposal | Indexify', 'Request a free Google Ads proposal for your South African business. We\'ll analyse your market and show you exactly what results to expect.'],
-          '/serp-checker/':        ['Free SERP Rank Checker | Check Google Rankings SA | Indexify', 'Check where your website ranks on Google for any keyword in South Africa. Free SERP position checker — no login required.'],
-          '/cape-town/':           ['SEO & Google Ads Agency Cape Town | Indexify', 'Cape Town\'s top SEO and Google Ads agency. Rank on Google page 1 and get more leads from Cape Town customers. Free audit available.'],
-          '/johannesburg/':        ['SEO & Google Ads Agency Johannesburg | Indexify', 'Johannesburg\'s leading SEO and Google Ads specialists. Grow your Joburg business with data-driven digital marketing. Free consultation.'],
-          '/durban/':              ['SEO & Google Ads Services Durban | Indexify', 'Durban SEO and Google Ads experts. Get your Durban business ranking on Google page 1 and generate consistent leads. From R5,900/month.'],
-          '/pretoria/':            ['SEO & Google Ads Agency Pretoria | Indexify', 'Pretoria\'s trusted SEO and Google Ads agency. Rank higher on Google and grow your Pretoria business with proven digital marketing strategies.'],
-          '/port-elizabeth/':      ['SEO & Google Ads Port Elizabeth | Indexify', 'Port Elizabeth (Gqeberha) SEO and Google Ads specialists. Drive local leads and grow your PE business online. Free audit available.'],
-          '/privacy-policy/':      ['Privacy Policy | Indexify', 'Read the Indexify privacy policy. How we collect, use, and protect your personal data in accordance with South African POPIA regulations.'],
-          '/terms-of-use/':        ['Terms of Use | Indexify', 'Read the Indexify terms of use. Guidelines for using the Indexify website, tools, and services.'],
+          // Core pages
+          '/':                     ['SEO & Google Ads Agency South Africa | Indexify', 'South Africa\'s top SEO & Google Ads agency. Rank on page 1 and win more clients. Cape Town, JHB, Durban & Pretoria. Free audit included.'],
+          '/services/seo':         ['SEO Services South Africa | SEO Agency | Indexify', 'Top-rated SEO agency helping SA businesses rank on Google page 1. Affordable SEO packages from R5,900/month. Cape Town, JHB, Durban & Pretoria.'],
+          '/services/google-ads':  ['Google Ads Management SA | PPC Agency | Indexify', 'Expert Google Ads management for SA businesses. Fixed fee from R7,300/month — no % of spend. Cape Town, JHB, Durban & Pretoria. Free proposal.'],
+          '/services':             ['SEO & Google Ads Services South Africa | Indexify', 'Expert SEO & Google Ads for South African businesses. Rank on Google page 1 and generate more leads. Transparent pricing, real results.'],
+          '/pricing':              ['SEO & Google Ads Pricing South Africa | Indexify', 'Transparent SEO and Google Ads pricing for SA businesses. SEO from R5,900/month. Google Ads management from R7,300/month. No hidden fees.'],
+          '/contact':              ['Contact Indexify | SEO & Google Ads Agency South Africa', 'Get in touch with Indexify — South Africa\'s leading SEO & Google Ads agency. Free consultation. Cape Town, Johannesburg, Durban & Pretoria.'],
+          // Free tools
+          '/audit':                ['Free SEO Audit Tool | Check Your Website\'s SEO | Indexify', 'Get a free instant SEO audit for your South African business website. Identify technical issues, on-page problems, and quick wins in seconds.'],
+          '/ads-audit':            ['Free Google Ads Proposal | Indexify', 'Request a free Google Ads proposal for your South African business. We\'ll analyse your market and show you exactly what results to expect.'],
+          '/serp-checker':         ['Free SERP Rank Checker | Check Google Rankings SA | Indexify', 'Check where your website ranks on Google for any keyword in South Africa. Free SERP position checker — no login required.'],
+          // City pages
+          '/cape-town':            ['SEO & Google Ads Agency Cape Town | Indexify', 'Cape Town\'s top SEO and Google Ads agency. Rank on Google page 1 and get more leads from Cape Town customers. Free audit available.'],
+          '/johannesburg':         ['SEO & Google Ads Agency Johannesburg | Indexify', 'Johannesburg\'s leading SEO and Google Ads specialists. Grow your Joburg business with data-driven digital marketing. Free consultation.'],
+          '/durban':               ['SEO & Google Ads Services Durban | Indexify', 'Durban SEO and Google Ads experts. Get your Durban business ranking on Google page 1 and generate consistent leads. From R5,900/month.'],
+          '/pretoria':             ['SEO & Google Ads Agency Pretoria | Indexify', 'Pretoria\'s trusted SEO and Google Ads agency. Rank higher on Google and grow your Pretoria business with proven digital marketing strategies.'],
+          '/port-elizabeth':       ['SEO & Google Ads Port Elizabeth | Indexify', 'Port Elizabeth (Gqeberha) SEO and Google Ads specialists. Drive local leads and grow your PE business online. Free audit available.'],
+          // Package pages
+          '/packages/basic-seo':     ['Basic SEO Package South Africa | From R5,900/mo | Indexify', 'Indexify Basic SEO package from R5,900/month. Local keyword ranking, Google My Business optimisation, and monthly reporting for South African businesses.'],
+          '/packages/advanced-seo':  ['Advanced SEO Package South Africa | From R7,900/mo | Indexify', 'Indexify Advanced SEO from R7,900/month. Compete nationally, win high-value keywords, and grow organic traffic for your South African business.'],
+          '/packages/premium-seo':   ['Premium SEO Package South Africa | From R11,900/mo | Indexify', 'Indexify Premium SEO from R11,900/month. Full-scale SEO strategy, authority backlink building, and dominance on Google for ambitious SA businesses.'],
+          '/packages/google-ads':    ['Google Ads Management Package SA | From R7,300/mo | Indexify', 'Indexify Google Ads management from R7,300/month. Full campaign setup, conversion tracking, and ROI-focused PPC management for South African businesses.'],
+          '/packages/market-leader': ['Market Leader Package | SEO + Google Ads SA | Indexify', 'Indexify Market Leader package combining SEO and Google Ads for maximum Google dominance. The ultimate growth package for South African businesses.'],
+          // Blog index
+          '/blog':                 ['SEO Blog | Tips & Guides for South African Businesses | Indexify', 'Free SEO tips, Google Ads guides, and digital marketing advice for South African businesses. Updated monthly by our expert team.'],
+          // Blog posts
+          '/blog/why-your-business-isnt-ranking-on-google':      ['Why Your Business Isn\'t Ranking on Google (And How to Fix It) | Indexify', 'Discover the top reasons your website isn\'t showing up on Google and the exact fixes to start ranking higher on South African search results.'],
+          '/blog/local-seo-south-africa-google-maps':            ['Local SEO in South Africa: How to Dominate Google Maps Results | Indexify', 'Learn how to rank in Google Maps and local search results in South Africa. A practical guide for SA businesses targeting nearby customers.'],
+          '/blog/technical-seo-checklist-south-africa':          ['Technical SEO Checklist for South African Websites in 2025 | Indexify', 'A complete technical SEO checklist for South African websites. Fix crawl errors, improve site speed, and boost your Google rankings in 2025.'],
+          '/blog/what-is-on-page-seo':                           ['What Is On-Page SEO and Why Does It Matter for Your Business? | Indexify', 'Understand what on-page SEO is and how to optimise your pages to rank higher on Google and attract more customers in South Africa.'],
+          '/blog/backlinks-domain-authority-south-africa':       ['The Power of Backlinks: Building Domain Authority in South Africa | Indexify', 'Learn how backlinks and domain authority impact your Google rankings and how to build a strong link profile for your South African website.'],
+          '/blog/seo-vs-google-ads':                             ['SEO vs Google Ads: Which Is Right for Your Business in 2025? | Indexify', 'Compare SEO and Google Ads for South African businesses. Understand the pros, cons, and which strategy delivers the best ROI for your goals.'],
+          '/blog/how-long-does-seo-take':                        ['How Long Does SEO Take to Show Results? The Honest Answer | Indexify', 'Find out how long SEO really takes to work in South Africa. Realistic timelines, what affects progress, and how to accelerate your results.'],
+          '/blog/keyword-research-south-african-businesses':     ['Keyword Research for South African Businesses: A Complete Guide | Indexify', 'A step-by-step keyword research guide for South African businesses. Find the right search terms to target and outrank your local competitors.'],
+          '/blog/core-web-vitals-google-ranking':                ['Core Web Vitals: The Google Ranking Factor You Cannot Ignore | Indexify', 'Core Web Vitals are now a key Google ranking signal. Learn what LCP, FID, and CLS mean and how to improve your scores to rank higher.'],
+          '/blog/seo-content-that-ranks-and-converts':           ['How to Write SEO Content That Ranks on Google and Converts Visitors | Indexify', 'Write content that ranks on Google AND turns visitors into customers. A practical SEO content strategy guide for South African businesses.'],
+          '/blog/schema-markup-explained':                       ['Schema Markup Explained: Boost Your Click-Through Rate on Google | Indexify', 'Learn what schema markup is, how it creates rich snippets on Google, and how to add it to your website to improve click-through rates.'],
+          '/blog/google-ads-vs-facebook-ads':                    ['Google Ads vs Facebook Ads: Which Is Better for Your Business? | Indexify', 'Compare Google Ads and Facebook Ads for South African businesses. Find out which platform delivers better leads and ROI for your industry.'],
+          '/blog/google-ads-budget-south-africa':                ['How Much Should You Spend on Google Ads in South Africa? | Indexify', 'Learn the right Google Ads budget for South African businesses. Industry benchmarks, average CPCs, and how to get the most from your spend.'],
+          '/blog/google-ads-quality-score':                      ['Understanding Google Ads Quality Score and How to Improve It | Indexify', 'Quality Score directly impacts your Google Ads cost and position. Learn what it is and the proven strategies to improve it for better ROI.'],
+          '/blog/smart-bidding-strategies-google-ads':           ['Google Ads Bidding Strategies: Which One Should You Use? | Indexify', 'Compare Google Ads bidding strategies: manual CPC, target CPA, target ROAS, and more. Find the right bidding approach for your campaigns.'],
+          '/blog/google-ads-copy-that-converts':                 ['How to Write Google Ads Copy That Converts in South Africa | Indexify', 'Write high-converting Google Ads copy for South African audiences. Proven headline and description formulas that drive clicks and leads.'],
+          '/blog/google-ads-conversion-tracking':                ['Google Ads Conversion Tracking: Why It\'s Non-Negotiable | Indexify', 'Conversion tracking is the foundation of profitable Google Ads. Learn how to set it up correctly and use the data to optimise your campaigns.'],
+          '/blog/google-ads-mistakes-south-african-businesses':  ['The 8 Biggest Google Ads Mistakes South African Businesses Make | Indexify', 'Avoid the most common Google Ads mistakes that waste budget and kill ROI. Expert fixes for South African businesses running their own campaigns.'],
+          '/blog/negative-keywords-stop-wasted-spend':           ['Negative Keywords: The Secret to Stopping Wasted Google Ads Spend | Indexify', 'Negative keywords are your most powerful tool to stop wasted Google Ads spend. Learn how to find and add them to dramatically improve your ROI.'],
+          // Legal
+          '/privacy-policy':       ['Privacy Policy | Indexify', 'Read the Indexify privacy policy. How we collect, use, and protect your personal data in accordance with South African POPIA regulations.'],
+          '/terms-of-use':         ['Terms of Use | Indexify', 'Read the Indexify terms of use. Guidelines for using the Indexify website, tools, and services.'],
         };
 
-        var m = META[clean];
+        var m = META[path];
 
         // Canonical
         var link = document.querySelector('link[rel="canonical"]');
