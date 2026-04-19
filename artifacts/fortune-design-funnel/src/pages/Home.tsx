@@ -76,7 +76,7 @@ export default function Home() {
       <Navbar />
 
       {/* 1. HERO SECTION */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden" style={{ background: "linear-gradient(135deg, #020b18 0%, #050f22 50%, #080d1e 100%)" }}>
+      <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden" style={{ background: "linear-gradient(135deg, #020b18 0%, #050f22 50%, #080d1e 100%)" }}>
 
         {/* Fine dot grid */}
         <div className="absolute inset-0 z-0" style={{
@@ -102,112 +102,127 @@ export default function Home() {
         <div className="absolute -top-10 right-[8%] w-[480px] h-[480px] rounded-full blur-[120px] pointer-events-none" style={{ background: "rgba(14,165,200,0.22)" }} />
         {/* Bottom-left violet orb */}
         <div className="absolute bottom-10 -left-10 w-80 h-80 rounded-full blur-[90px] pointer-events-none" style={{ background: "rgba(124,77,255,0.25)" }} />
-        {/* Centre deep glow */}
-        <div className="absolute top-[40%] left-[35%] w-[400px] h-[200px] rounded-full blur-[80px] pointer-events-none" style={{ background: "rgba(14,165,200,0.08)" }} />
 
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-primary/30 shadow-sm mb-8 backdrop-blur-sm"
-          >
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="text-sm font-medium text-white/80">South Africa's Top-Rated Marketing Agency</span>
-          </motion.div>
+            {/* Left column — text */}
+            <div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-primary/30 shadow-sm mb-6 backdrop-blur-sm"
+              >
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="text-sm font-medium text-white/80">South Africa's Top-Rated Marketing Agency</span>
+              </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[1.1] text-white"
-          >
-            Dominate <span className="text-gradient">Google.</span><br />
-            Get More Clients.
-          </motion.h1>
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="text-5xl md:text-6xl lg:text-7xl font-black mb-5 leading-[1.05] text-white"
+              >
+                Dominate <span className="text-gradient">Google.</span><br />
+                Get More Clients.
+              </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed"
-          >
-            Stop losing customers to your competitors. We build high-converting SEO and Google Ads campaigns that turn clicks into predictable revenue.
-          </motion.p>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="text-lg text-white/60 mb-8 leading-relaxed"
+              >
+                Stop losing customers to your competitors. We build high-converting SEO and Google Ads campaigns that turn clicks into predictable revenue.
+              </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <a
-              href={`${import.meta.env.BASE_URL}audit`}
-              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-primary text-white font-bold text-lg hover:bg-primary/90 hover:-translate-y-1 transition-all duration-300 shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="flex flex-col sm:flex-row gap-4 mb-8"
+              >
+                <a
+                  href={`${import.meta.env.BASE_URL}audit`}
+                  className="px-8 py-4 rounded-xl bg-primary text-white font-bold text-lg hover:bg-primary/90 hover:-translate-y-1 transition-all duration-300 shadow-lg shadow-primary/30 flex items-center justify-center gap-2"
+                >
+                  Get Free Strategy Audit <ArrowRight size={20} />
+                </a>
+                <button
+                  onClick={() => scrollTo("services")}
+                  className="px-8 py-4 rounded-xl bg-white/10 text-white font-bold text-lg border border-white/20 hover:bg-white/20 hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm"
+                >
+                  View Our Services
+                </button>
+              </motion.div>
+
+              {/* Google Rating Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.45 }}
+                className="flex flex-wrap items-center gap-4"
+              >
+                <a
+                  href="https://share.google/VKvRu96HUIY2AxKnj"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 backdrop-blur-sm hover:bg-white/20 transition-all duration-300 group"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                  </svg>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-white">5.0</span>
+                    <div className="flex gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={13} className="text-amber-400" fill="currentColor" />
+                      ))}
+                    </div>
+                    <span className="text-sm text-white/70">Google Reviews</span>
+                  </div>
+                  <ExternalLink size={12} className="text-white/40 group-hover:text-white/70 transition-colors" />
+                </a>
+
+                <a
+                  href="https://fortunedesign.co.za"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 opacity-60 hover:opacity-90 transition-opacity duration-300"
+                >
+                  <span className="text-xs text-white/40 uppercase tracking-widest font-semibold">Powered by</span>
+                  <img
+                    src={`${import.meta.env.BASE_URL}images/fortune-design-logo.png`}
+                    alt="Fortune Design"
+                    className="h-10 w-auto object-contain"
+                  />
+                </a>
+              </motion.div>
+            </div>
+
+            {/* Right column — image */}
+            <motion.div
+              initial={{ opacity: 0, x: 40, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+              className="hidden lg:flex items-center justify-center"
             >
-              Get Free Strategy Audit <ArrowRight size={20} />
-            </a>
-            <button
-              onClick={() => scrollTo("services")}
-              className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/10 text-white font-bold text-lg border border-white/20 hover:bg-white/20 hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm"
-            >
-              View Our Services
-            </button>
-          </motion.div>
-
-          {/* Google Rating Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-8 flex justify-center"
-          >
-            <a
-              href="https://share.google/VKvRu96HUIY2AxKnj"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm hover:bg-white/20 transition-all duration-300 group"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-              </svg>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-white">5.0</span>
-                <div className="flex gap-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={14} className="text-amber-400" fill="currentColor" />
-                  ))}
-                </div>
-                <span className="text-sm text-white/70">Google Reviews</span>
+              <div className="relative w-full max-w-lg">
+                <div className="absolute inset-0 rounded-3xl bg-primary/20 blur-3xl scale-90" />
+                <img
+                  src={`${import.meta.env.BASE_URL}images/seo-illustration.png`}
+                  alt="SEO and Google Ads results — laptop showing SEO analytics with upward growth arrow"
+                  className="relative w-full h-auto rounded-3xl shadow-2xl object-contain"
+                  style={{ background: "rgba(255,255,255,0.04)", backdropFilter: "blur(2px)" }}
+                />
               </div>
-              <ExternalLink size={13} className="text-white/40 group-hover:text-white/70 transition-colors" />
-            </a>
-          </motion.div>
+            </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="mt-10 flex items-center justify-center gap-3"
-          >
-            <span className="text-base text-white/40 uppercase tracking-widest font-semibold">Powered by</span>
-            <a
-              href="https://fortunedesign.co.za"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 opacity-70 hover:opacity-100 transition-opacity duration-300"
-            >
-              <img
-                src={`${import.meta.env.BASE_URL}images/fortune-design-logo.png`}
-                alt="Fortune Design"
-                className="h-28 w-auto object-contain"
-              />
-            </a>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -374,13 +389,13 @@ export default function Home() {
               className="bg-white rounded-3xl group hover:border-primary/40 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 relative overflow-hidden flex flex-col"
             >
               {/* Image banner */}
-              <div className="relative h-52 overflow-hidden rounded-t-3xl bg-sky-50">
+              <div className="relative h-56 overflow-hidden rounded-t-3xl bg-white flex items-center justify-center p-4">
                 <img
                   src={`${import.meta.env.BASE_URL}images/seo-illustration.png`}
-                  alt="SEO illustration"
-                  className="w-full h-full object-cover"
+                  alt="SEO growth — 3D letters SEO with upward arrow and analytics chart"
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-white/60 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-white/30 to-transparent" />
                 <div className="absolute bottom-4 left-6 w-12 h-12 rounded-xl bg-primary/90 flex items-center justify-center shadow-lg">
                   <Search size={22} className="text-white" />
                 </div>
@@ -417,11 +432,11 @@ export default function Home() {
               className="bg-white rounded-3xl group hover:border-accent/40 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 relative overflow-hidden flex flex-col"
             >
               {/* Image banner */}
-              <div className="relative h-52 overflow-hidden rounded-t-3xl bg-violet-50">
+              <div className="relative h-56 overflow-hidden rounded-t-3xl bg-indigo-900">
                 <img
                   src={`${import.meta.env.BASE_URL}images/ads-illustration.png`}
-                  alt="Google Ads illustration"
-                  className="w-full h-full object-cover"
+                  alt="Google Ads manager reviewing campaign performance and analytics dashboard"
+                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-white/60 to-transparent" />
                 <div className="absolute bottom-4 left-6 w-12 h-12 rounded-xl bg-accent flex items-center justify-center shadow-lg">
