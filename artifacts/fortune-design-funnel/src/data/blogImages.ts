@@ -22,19 +22,22 @@
 // photo-1552664730-d307ca884978    → digital marketing strategy on whiteboard
 // photo-1558618666-fcd25c85cd64    → network of connected people / social graph
 // photo-1563986768609-322da13575f3 → data visualisation / colourful bar charts
-// photo-1568954996886-21c5f8b6e682 → hands typing on a MacBook keyboard
+// photo-1516321318423-f06f85e504b3 → person typing on laptop keyboard
 // photo-1434030216411-0b793f4b4173 → magnifying glass held up to daylight
 // photo-1506784983877-45594efa4cbe → spiral notebook / planner / calendar
 // photo-1541746972996-4e0b0f43e02a → target board with an arrow in the bullseye
-// photo-1538935732373-f7a495fea3f5 → multicolour line-chart data on tablet
+// photo-1590283603385-17ffb3a7f29f → analytics / financial chart on screen
 // photo-1504711434969-e33886168f5c → rocket launch at dusk
 // photo-1432888498266-38ffec3eaf0a → person at laptop in a library / study
 // photo-1586892477838-2b96e85e0f96 → person writing in a notebook at a desk
 // photo-1573804633927-bfcbcd909acd → recording studio / video camera setup
 // photo-1560472354-b33ff0c44a43    → Google Search Console — impressions graph
 // photo-1510519138101-570d1dca3d66 → analytics on a laptop in a dark workspace
-// photo-1522202176988-66273c7fd55a → team collaborating at a laptop
+// photo-1531482615713-2afd69097998 → team having a discussion / strategy meeting
 // photo-1504868584819-f8e8b4b6d7e3 → woman at desk reviewing reports on laptop
+// photo-1521737604893-d14cc237f11d → people collaborating over a laptop
+// photo-1551434678-e076c223a692    → team working together at a desk
+// photo-1562564055-71e051d33c19    → small team in an office setting
 
 const PRIMARY: Record<string, string> = {
   // ── SEO ───────────────────────────────────────────────────────────────────
@@ -49,7 +52,7 @@ const PRIMARY: Record<string, string> = {
   "core-web-vitals-google-ranking":                 "photo-1563986768609-322da13575f3", // data visualisation
   "seo-content-that-ranks-and-converts":            "photo-1455390582262-044cdead277a", // writer at desk
   "schema-markup-explained":                        "photo-1573804633927-bfcbcd909acd", // structured / recorded data
-  "why-competitor-ranks-higher":                    "photo-1522202176988-66273c7fd55a", // team reviewing competitor
+  "why-competitor-ranks-higher":                    "photo-1531482615713-2afd69097998", // team strategy meeting
   "rank-google-page-1-south-africa":                "photo-1541746972996-4e0b0f43e02a", // bullseye target = #1
 
   // ── Google Ads ────────────────────────────────────────────────────────────
@@ -59,10 +62,10 @@ const PRIMARY: Record<string, string> = {
   "smart-bidding-strategies-google-ads":            "photo-1507003211169-0a1dd7228f2d", // strategy sticky notes
   "google-ads-copy-that-converts":                  "photo-1586892477838-2b96e85e0f96", // writing in a notebook
   "google-ads-conversion-tracking":                 "photo-1551288049-bebda4e38f71",    // analytics dashboard
-  "google-ads-mistakes-south-african-businesses":   "photo-1568954996886-21c5f8b6e682", // keyboard / review
+  "google-ads-mistakes-south-african-businesses":   "photo-1516321318423-f06f85e504b3", // person typing on laptop
   "negative-keywords-stop-wasted-spend":            "photo-1504868584819-f8e8b4b6d7e3", // reviewing reports
   "google-ads-remarketing":                         "photo-1557838923-2985c318be48",    // marketing/ad concept
-  "google-ads-campaign-structure-roi":              "photo-1538935732373-f7a495fea3f5", // multiline ROI chart
+  "google-ads-campaign-structure-roi":              "photo-1590283603385-17ffb3a7f29f", // analytics / ROI chart
 
   // ── Digital Marketing ─────────────────────────────────────────────────────
   "digital-marketing-south-african-smes":           "photo-1552664730-d307ca884978",    // digital strategy board
@@ -77,10 +80,10 @@ const PRIMARY: Record<string, string> = {
 const MID: Record<string, string> = {
   // ── SEO ───────────────────────────────────────────────────────────────────
   "why-your-business-isnt-ranking-on-google":      "photo-1560472354-b33ff0c44a43",    // Search Console impressions graph
-  "local-seo-south-africa-google-maps":             "photo-1522202176988-66273c7fd55a", // team / local business reviews
+  "local-seo-south-africa-google-maps":             "photo-1521737604893-d14cc237f11d", // people collaborating over laptop
   "technical-seo-checklist-south-africa":           "photo-1518770660439-4636190af475", // circuit board / server infra
   "what-is-on-page-seo":                            "photo-1432888498266-38ffec3eaf0a", // researching / editing
-  "backlinks-domain-authority-south-africa":        "photo-1522202176988-66273c7fd55a", // partnership / team
+  "backlinks-domain-authority-south-africa":        "photo-1551434678-e076c223a692",    // team working together
   "seo-vs-google-ads":                              "photo-1460925895917-afdab827c52f", // analytics comparing channels
   "how-long-does-seo-take":                         "photo-1541746972996-4e0b0f43e02a", // bullseye target = reaching goal
   "keyword-research-south-african-businesses":      "photo-1507003211169-0a1dd7228f2d", // brainstorm sticky notes
@@ -96,14 +99,14 @@ const MID: Record<string, string> = {
   "google-ads-quality-score":                       "photo-1460925895917-afdab827c52f", // performance metrics
   "smart-bidding-strategies-google-ads":            "photo-1460925895917-afdab827c52f", // analytics / algorithm output
   "google-ads-copy-that-converts":                  "photo-1455390582262-044cdead277a", // copywriting / typewriter
-  "google-ads-conversion-tracking":                 "photo-1538935732373-f7a495fea3f5", // conversion data / chart
+  "google-ads-conversion-tracking":                 "photo-1590283603385-17ffb3a7f29f", // conversion / analytics chart
   "google-ads-mistakes-south-african-businesses":   "photo-1507003211169-0a1dd7228f2d", // planning to fix mistakes
   "negative-keywords-stop-wasted-spend":            "photo-1434030216411-0b793f4b4173", // magnifying glass = filtering
   "google-ads-remarketing":                         "photo-1552664730-d307ca884978",    // marketing strategy / follow-up
   "google-ads-campaign-structure-roi":              "photo-1541746972996-4e0b0f43e02a", // target / ROI achieved
 
   // ── Digital Marketing ─────────────────────────────────────────────────────
-  "digital-marketing-south-african-smes":           "photo-1522202176988-66273c7fd55a", // small team collaboration
+  "digital-marketing-south-african-smes":           "photo-1562564055-71e051d33c19",    // small team in office
   "generate-more-leads-online-2025":                "photo-1557838923-2985c318be48",    // converting visitors to leads
   "seo-vs-sem-south-africa":                        "photo-1460925895917-afdab827c52f", // both channels analytics
   "website-conversion-rate-optimisation":           "photo-1563986768609-322da13575f3", // A/B test data
