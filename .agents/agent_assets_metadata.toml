@@ -1,5 +1,28 @@
 uploads = []
-generated = []
+
+[[generated]]
+id = "sKfwfmu8igwRMjYn1JAUc"
+uri = "file://artifacts/fortune-design-funnel/public/images/city-johannesburg.png"
+type = "image"
+title = "Johannesburg SEO Google Ads marketing banner"
+
+[[generated]]
+id = "-tbBKZloWsG_Yv8cJnGDt"
+uri = "file://artifacts/fortune-design-funnel/public/images/city-durban.png"
+type = "image"
+title = "Durban SEO Google Ads marketing banner"
+
+[[generated]]
+id = "uqXgYh980szufMzV04_Et"
+uri = "file://artifacts/fortune-design-funnel/public/images/city-pretoria.png"
+type = "image"
+title = "Pretoria SEO Google Ads marketing banner"
+
+[[generated]]
+id = "q_M8qIfdIdJGXde99A-i8"
+uri = "file://artifacts/fortune-design-funnel/public/images/city-port-elizabeth.png"
+type = "image"
+title = "Port Elizabeth SEO Google Ads marketing banner"
 
 [[outputs]]
 id = "40oJz9IhZyymkV4WUcwwe"
