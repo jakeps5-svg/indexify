@@ -93,12 +93,12 @@ export default function DurbanPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="rounded-2xl overflow-hidden shadow-xl border border-gray-100">
             <img
-              src={`${BASE}/images/homepage-results.png`}
-              alt="Google search results showing a Durban KwaZulu-Natal business ranking on page 1 of Google after Indexify's SEO campaign"
+              src={`${BASE}/images/city-durban.png`}
+              alt="SEO and Google Ads agency Durban — Indexify helps KwaZulu-Natal businesses rank on Google page 1"
               className="w-full h-auto"
               loading="lazy"
               width="1200"
-              height="630"
+              height="900"
             />
           </div>
           <p className="text-center text-sm text-gray-400 mt-3">Real results from Indexify clients — Durban businesses ranking on page 1 of Google.</p>
