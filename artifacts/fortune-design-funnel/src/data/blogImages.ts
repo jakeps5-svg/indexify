@@ -41,6 +41,8 @@
 
 const PRIMARY: Record<string, string> = {
   // ── SEO ───────────────────────────────────────────────────────────────────
+  "seo-service-south-africa":                       "photo-1432888498266-38ffec3eaf0a", // person researching at laptop
+  "how-to-choose-seo-company-south-africa":         "photo-1434030216411-0b793f4b4173", // magnifying glass = research
   "why-your-business-isnt-ranking-on-google":      "photo-1460925895917-afdab827c52f", // analytics dashboard
   "local-seo-south-africa-google-maps":             "photo-1524661135-423995f22d0b",    // map with location pins
   "technical-seo-checklist-south-africa":           "photo-1555949963-ff9fe0c870eb",    // code / terminal
@@ -56,6 +58,7 @@ const PRIMARY: Record<string, string> = {
   "rank-google-page-1-south-africa":                "photo-1541746972996-4e0b0f43e02a", // bullseye target = #1
 
   // ── Google Ads ────────────────────────────────────────────────────────────
+  "google-ads-management-south-africa":             "photo-1563986768609-322da13575f3", // data visualisation / charts
   "google-ads-vs-facebook-ads":                     "photo-1611532736597-de2d4265fba3", // phone with social icons
   "google-ads-budget-south-africa":                 "photo-1554224155-8d04cb21cd6c",    // hand + calculator
   "google-ads-quality-score":                       "photo-1563986768609-322da13575f3", // metrics / charts
@@ -79,6 +82,8 @@ const PRIMARY: Record<string, string> = {
 
 const MID: Record<string, string> = {
   // ── SEO ───────────────────────────────────────────────────────────────────
+  "seo-service-south-africa":                       "photo-1551288049-bebda4e38f71",    // analytics dashboard
+  "how-to-choose-seo-company-south-africa":         "photo-1460925895917-afdab827c52f", // analytics / rankings overview
   "why-your-business-isnt-ranking-on-google":      "photo-1560472354-b33ff0c44a43",    // Search Console impressions graph
   "local-seo-south-africa-google-maps":             "photo-1521737604893-d14cc237f11d", // people collaborating over laptop
   "technical-seo-checklist-south-africa":           "photo-1518770660439-4636190af475", // circuit board / server infra
@@ -94,6 +99,7 @@ const MID: Record<string, string> = {
   "rank-google-page-1-south-africa":                "photo-1460925895917-afdab827c52f", // analytics dashboard
 
   // ── Google Ads ────────────────────────────────────────────────────────────
+  "google-ads-management-south-africa":             "photo-1554224155-8d04cb21cd6c",    // hand + calculator = budget/ROI
   "google-ads-vs-facebook-ads":                     "photo-1557838923-2985c318be48",    // advertising concept
   "google-ads-budget-south-africa":                 "photo-1579621970795-87facc2f976d", // coins in jar = budget growth
   "google-ads-quality-score":                       "photo-1460925895917-afdab827c52f", // performance metrics

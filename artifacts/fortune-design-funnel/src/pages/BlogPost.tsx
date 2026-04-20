@@ -21,6 +21,9 @@ function injectMidImage(html: string, imgUrl: string, alt: string, caption: stri
 }
 
 const MID_CAPTIONS: Record<string, string> = {
+  "seo-service-south-africa":                       "A professional SEO service tracks keyword rankings, organic traffic, and conversions monthly",
+  "how-to-choose-seo-company-south-africa":         "Reviewing an SEO agency's analytics data before signing a contract is essential due diligence",
+  "google-ads-management-south-africa":             "Calculating cost-per-lead and ROI is central to any Google Ads management strategy",
   "why-your-business-isnt-ranking-on-google":       "Google Search Console showing impressions, CTR and average position data",
   "local-seo-south-africa-google-maps":             "Local businesses that invest in Google Business Profile see more foot traffic and calls",
   "technical-seo-checklist-south-africa":           "A solid technical foundation is what lets Google crawl and index your site efficiently",

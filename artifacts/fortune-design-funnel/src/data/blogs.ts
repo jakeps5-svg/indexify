@@ -13,6 +13,236 @@ export interface BlogPost {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "seo-service-south-africa",
+    title: "SEO Service in South Africa: What's Included, What It Costs, and What to Expect",
+    metaTitle: "SEO Service South Africa: What's Included & What It Costs | Indexify",
+    metaDescription: "Looking for an SEO service in South Africa? Discover exactly what's included, realistic timelines, pricing in ZAR, and how to choose the right provider in 2026.",
+    keywords: ["seo service south africa", "seo services south africa", "seo service cape town", "seo service johannesburg", "seo service durban", "seo service pretoria", "seo company south africa", "seo agency south africa", "affordable seo south africa", "professional seo south africa", "seo specialist south africa", "seo packages south africa"],
+    excerpt: "Thinking of investing in an SEO service in South Africa? Here's a plain-English breakdown of what a reputable agency actually does, what results to expect, and what you should be paying.",
+    category: "SEO",
+    readTime: 8,
+    date: "2026-04-05",
+    content: `
+<h2>What Does an SEO Service in South Africa Actually Do?</h2>
+<p>When South African businesses search for an SEO service, they're often met with vague promises — "we'll get you to page 1" — with little explanation of how. The reality is that professional SEO is a multi-layered process that takes months to compound into meaningful results. Here's what a legitimate SEO service in South Africa should be doing for you every month.</p>
+
+<h2>The Core Components of a Proper SEO Service</h2>
+
+<h3>1. Technical SEO Audit and Ongoing Maintenance</h3>
+<p>Before any optimisation can happen, a professional SEO service will audit your website's technical foundation. This covers crawlability (can Google actually read your site?), indexation issues, broken links, duplicate content, page speed, Core Web Vitals, and mobile responsiveness. In South Africa, many SME websites are built on WordPress or Wix with no technical configuration — making this step critical.</p>
+<p>Ongoing technical maintenance ensures new pages are indexed quickly, site speed is maintained, and any crawl errors are fixed before they impact rankings.</p>
+
+<h3>2. Keyword Research Tailored to South African Search Behaviour</h3>
+<p>South African searchers use different terms than their UK or US counterparts. A local SEO service must understand how people in Cape Town, Johannesburg, Durban, Pretoria, and Port Elizabeth actually search for your product or service. This includes research into local intent keywords, long-tail phrases, and location-modified queries like "accountant in Sandton" or "solar installation Cape Town".</p>
+<p>Good keyword research identifies not just high-volume terms, but terms where your site can realistically rank within 3–6 months based on your current domain authority.</p>
+
+<h3>3. On-Page Optimisation</h3>
+<p>Every page on your website needs to be optimised for a specific primary keyword plus supporting terms. This includes title tags, meta descriptions, heading structure (H1–H3), image alt text, URL structure, internal linking, and the actual copy. A proper SEO service will rewrite or improve your service and landing pages to align with what Google is looking for — while still reading naturally for human visitors.</p>
+
+<h3>4. Content Strategy and Publication</h3>
+<p>Google rewards websites that consistently publish helpful, authoritative content. A good SEO service will develop a content calendar targeting keywords your ideal customers search for at different stages of their buying journey. For a South African business, this means blog posts, FAQ pages, location-specific service pages, and in some cases, resource guides that earn backlinks naturally over time.</p>
+
+<h3>5. Link Building</h3>
+<p>Backlinks — links from other websites to yours — remain one of Google's top-three ranking signals. A trustworthy SEO service in South Africa will build links through editorial outreach, guest posting, local business directories, and PR-style content. What they will <em>not</em> do is buy links from low-quality networks, which can result in Google penalties that take years to recover from.</p>
+
+<h3>6. Local SEO (Google Business Profile Management)</h3>
+<p>For businesses that serve specific locations — whether that's a single city or multiple branches across South Africa — Google Business Profile optimisation is essential. This involves keeping your NAP (Name, Address, Phone) consistent, posting regular updates, managing reviews, and optimising your service descriptions so you appear in the Google Maps local pack for relevant searches.</p>
+
+<h3>7. Reporting and Analytics</h3>
+<p>A professional SEO service provides monthly reporting that shows real metrics: keyword ranking movements, organic traffic growth, click-through rates from Google Search Console, and leads or conversions attributed to organic search. If your SEO provider can't show you clear data, that's a red flag.</p>
+
+<h2>How Much Does an SEO Service Cost in South Africa?</h2>
+<p>SEO pricing in South Africa varies widely. Here's a general guide:</p>
+<ul>
+<li><strong>Freelancers (R2,000–R4,000/month):</strong> Can be effective for very small, low-competition niches. Limited capacity and often no technical expertise.</li>
+<li><strong>Small agencies (R5,000–R9,000/month):</strong> The sweet spot for most South African SMEs. Full-service approach with dedicated account management. This is the bracket most businesses should be operating in.</li>
+<li><strong>Mid-size agencies (R10,000–R20,000/month):</strong> Suitable for businesses in competitive industries (legal, finance, property, healthcare) or those targeting national rankings.</li>
+<li><strong>Enterprise SEO (R20,000+/month):</strong> Comprehensive campaigns for large businesses, e-commerce stores, or national brands.</li>
+</ul>
+<p>Be cautious of any SEO service in South Africa charging under R2,000/month. At that rate, there's not enough time allocated to do meaningful work — and you may end up with black-hat tactics that do more harm than good.</p>
+
+<h2>What Results Can You Realistically Expect?</h2>
+<p>This is where many businesses get frustrated, because SEO doesn't produce overnight results. Here's a realistic timeline for an SEO service in South Africa:</p>
+<ul>
+<li><strong>Month 1–2:</strong> Technical audit complete, on-page optimisation underway, keyword strategy confirmed. You may not see ranking changes yet.</li>
+<li><strong>Month 3–4:</strong> Initial ranking improvements for lower-competition keywords. Traffic begins to tick upward. Google starts to recognise the improved signals.</li>
+<li><strong>Month 5–6:</strong> Meaningful ranking improvements for primary keywords. Organic lead volume begins to increase noticeably.</li>
+<li><strong>Month 9–12:</strong> Strong rankings across your target keyword set. Compounding content and link equity creates a widening gap between you and competitors.</li>
+</ul>
+<p>The businesses that benefit most from SEO are those that commit to at least 6–12 months of consistent work. SEO is not a campaign with a start and end date — it's an ongoing investment in your digital market share.</p>
+
+<h2>Red Flags to Watch for in an SEO Provider</h2>
+<ul>
+<li>Guaranteed page 1 rankings (no one can guarantee this)</li>
+<li>No reporting or vague reports with vanity metrics only</li>
+<li>Contracts longer than 3–6 months without a clear exit clause</li>
+<li>No explanation of their link-building approach</li>
+<li>Offshore providers with no understanding of the South African market</li>
+</ul>
+
+<h2>Why Choose a South African SEO Specialist?</h2>
+<p>A local SEO service understands the nuances of the South African digital landscape — from local search behaviour and competitor dynamics to the importance of Rand-based pricing transparency. South African consumers search differently, and an agency that has worked in this market will have data and experience that an offshore provider simply doesn't.</p>
+<p>At Indexify, we've helped businesses across Cape Town, Johannesburg, Durban, Pretoria, and Port Elizabeth build sustainable organic traffic that converts into real leads and revenue. <a href="/audit">Get your free SEO audit today</a> and see exactly where your website stands.</p>
+    `,
+  },
+  {
+    slug: "how-to-choose-seo-company-south-africa",
+    title: "How to Choose the Right SEO Company in South Africa (Without Getting Burned)",
+    metaTitle: "How to Choose an SEO Company in South Africa | Indexify",
+    metaDescription: "Choosing the wrong SEO service in South Africa wastes money and time. Here's a step-by-step guide to finding an agency that delivers real, measurable results.",
+    keywords: ["choose seo company south africa", "seo company south africa", "best seo service south africa", "seo agency south africa", "seo service south africa", "seo company cape town", "seo company johannesburg", "seo company durban", "seo service provider south africa", "reliable seo south africa", "top seo company south africa"],
+    excerpt: "The South African SEO market is full of agencies making big promises. Here's how to separate the ones that deliver real results from the ones that'll drain your budget with nothing to show for it.",
+    category: "SEO",
+    readTime: 7,
+    date: "2026-04-12",
+    content: `
+<h2>The Problem with Choosing an SEO Service in South Africa</h2>
+<p>There are hundreds of SEO companies operating in South Africa — from solo freelancers running campaigns from their living room to full-service digital agencies with 50 staff. The challenge is that bad SEO looks exactly like good SEO on the surface. Both can promise page 1 rankings, both can produce monthly reports, and both can show you a nicely formatted PDF. The difference only becomes clear 6–12 months later when one delivers compounding organic traffic and the other leaves you with a penalty or nothing to show at all.</p>
+<p>This guide gives you a practical framework for evaluating any SEO company in South Africa before you sign a contract.</p>
+
+<h2>Step 1: Ask to See Real Client Results</h2>
+<p>Any legitimate SEO service in South Africa should be able to show you anonymised case studies with real data — keyword ranking movements over time, Google Search Console screenshots, and organic traffic trends from Google Analytics. Look for:</p>
+<ul>
+<li>Before-and-after ranking screenshots (not just the good months)</li>
+<li>Traffic data over 6–12 months showing growth, not just a single spike</li>
+<li>Business outcomes — leads, phone calls, enquiry form submissions</li>
+<li>References from clients in your industry or a similar one</li>
+</ul>
+<p>If an SEO company can't or won't show you results for other clients, walk away.</p>
+
+<h2>Step 2: Understand Exactly What's in Their Service</h2>
+<p>A reputable SEO service in South Africa should be able to explain, in plain language, what they will do for you each month. Ask specifically:</p>
+<ul>
+<li>How many hours per month are allocated to my account?</li>
+<li>Who exactly will work on my account — senior strategist or junior executor?</li>
+<li>How many pieces of content will be produced per month?</li>
+<li>How many backlinks will be built, and what is your link-building method?</li>
+<li>How will you handle technical SEO issues on my site?</li>
+</ul>
+<p>Vague answers like "we do everything that's needed" are a red flag. Professional agencies can quantify their deliverables clearly.</p>
+
+<h2>Step 3: Evaluate Their Own SEO</h2>
+<p>Here's a simple but highly effective test: Google "SEO company [your city]" or "SEO service South Africa" and see if they rank. An SEO company that can't rank their own website has either not tried or is not capable. Check their domain authority using a free tool like Moz or Ahrefs — a legitimate agency should have a domain authority above 20 at minimum.</p>
+<p>Also check how long they've been operating. An agency established in 2018 has lived through multiple Google algorithm updates — Bert, Helpful Content, Core Updates — and has adapted their approach. A provider that launched last year hasn't been battle-tested.</p>
+
+<h2>Step 4: Scrutinise Their Reporting</h2>
+<p>Before signing anything, ask to see a sample monthly report. Legitimate SEO companies in South Africa report on:</p>
+<ul>
+<li>Keyword rankings (position changes over the month)</li>
+<li>Organic traffic from Google Analytics or GA4</li>
+<li>Click-through rate and impressions from Google Search Console</li>
+<li>Domain authority changes</li>
+<li>Work completed that month (pages optimised, content published, links built)</li>
+<li>Planned work for next month</li>
+</ul>
+<p>If the report is a single page with three screenshots, that's not a reporting system — it's a cover. You should be receiving detailed insight into exactly what has been done and what has moved as a result.</p>
+
+<h2>Step 5: Understand Their Pricing Model</h2>
+<p>There are three common pricing models for SEO services in South Africa:</p>
+<ul>
+<li><strong>Monthly retainer (most common):</strong> You pay a fixed amount per month for a defined scope of work. This is the most transparent model and typically the best value for ongoing campaigns.</li>
+<li><strong>Project-based:</strong> Suitable for one-off work like a technical audit or site migration. Not appropriate for ongoing ranking improvement.</li>
+<li><strong>Performance-based (commission per lead):</strong> Can work, but creates misaligned incentives — agencies may chase easy keywords rather than the ones that matter to your business.</li>
+</ul>
+<p>Typical monthly retainers for a credible SEO service in South Africa range from R5,000 to R15,000 for most SMEs. Below R3,000/month, the time allocated is rarely sufficient to move the needle. Above R20,000/month is typically for enterprise or e-commerce operations in highly competitive verticals.</p>
+
+<h2>Step 6: Check Their Contract Terms</h2>
+<p>Be wary of long lock-in periods. A confident SEO company in South Africa will offer 3–6 month initial terms (with clear renewal terms), because they're confident they'll retain you based on results, not because they need to trap you. Watch for:</p>
+<ul>
+<li>Automatic renewal clauses without notification</li>
+<li>Ownership of your content — you should own all content produced for you</li>
+<li>Ownership of your data — your Analytics, Search Console, and Google Ads accounts should always be in your name</li>
+<li>Exit terms — what happens to your website if you leave?</li>
+</ul>
+
+<h2>Questions That Separate Good from Bad SEO Companies</h2>
+<p>In your initial consultation, ask these questions and pay close attention to the answers:</p>
+<ol>
+<li><em>"What would you do in month one for my website?"</em> — Good answer: a detailed technical audit and keyword strategy. Bad answer: "we'd start optimising your pages."</li>
+<li><em>"How do you build backlinks?"</em> — Good answer: editorial outreach, guest content, digital PR. Bad answer: "we have a network of sites."</li>
+<li><em>"What happens to my rankings if I stop paying you?"</em> — Good answer: rankings are built in Google's index and aren't removed if you leave. Bad answer: evasive or threatening.</li>
+<li><em>"Can you guarantee page 1?"</em> — Good answer: no one can guarantee rankings. Bad answer: "yes."</li>
+</ol>
+
+<h2>The Bottom Line</h2>
+<p>Choosing the right SEO company in South Africa is one of the highest-leverage decisions a business owner can make. Done well, SEO delivers leads while you sleep — for years. Done poorly, it wastes budget and can actively harm your website's standing with Google.</p>
+<p>At Indexify, we start every engagement with a free audit so you see exactly where you stand before spending a rand. <a href="/audit">Book your free SEO audit here</a> — no pressure, no hard sell.</p>
+    `,
+  },
+  {
+    slug: "google-ads-management-south-africa",
+    title: "Google Ads Management in South Africa: What It Costs, What You Get, and How to Measure ROI",
+    metaTitle: "Google Ads Management South Africa: Costs, Process & ROI | Indexify",
+    metaDescription: "Everything South African businesses need to know about professional Google Ads management — what's included, what it costs in ZAR, and how to track real ROI.",
+    keywords: ["google ads management south africa", "google ads management company south africa", "google ads agency south africa", "google ads management cape town", "google ads management johannesburg", "google ads management durban", "google ads management pretoria", "ppc management south africa", "google ads specialist south africa", "adwords management south africa", "google ads service south africa"],
+    excerpt: "Running Google Ads without professional management is like driving blind. Here's what Google Ads management in South Africa actually involves — and why DIY campaigns almost always underperform.",
+    category: "Google Ads",
+    readTime: 8,
+    date: "2026-04-19",
+    content: `
+<h2>Why Google Ads Management in South Africa Is Different</h2>
+<p>Google Ads is the most powerful paid advertising platform in the world — but it's also one of the easiest ways to burn through budget with nothing to show for it. South African businesses face a unique set of challenges: fluctuating exchange rates affect CPC benchmarks, local competition varies dramatically between cities, and consumer search behaviour is distinctly different from global norms.</p>
+<p>Professional Google Ads management isn't just about setting up a campaign. It's a continuous process of optimisation, testing, and refinement that requires specialised expertise — and the difference between a managed account and a self-managed one is typically 2–4× better return on spend.</p>
+
+<h2>What Does Google Ads Management in South Africa Include?</h2>
+
+<h3>1. Campaign Strategy and Account Structure</h3>
+<p>Before a single ad goes live, a professional Google Ads management company in South Africa will develop a campaign strategy aligned to your business goals. This means identifying your highest-value services or products, mapping out the keywords your ideal customers are searching for, and structuring campaigns and ad groups in a way that maximises Quality Score — which directly determines what you pay per click.</p>
+<p>Poor account structure is the single biggest reason South African businesses waste money on Google Ads. A well-structured account organises campaigns by product or service, keeps closely related keywords in tight ad groups, and ensures every ad is highly relevant to the search query that triggered it.</p>
+
+<h3>2. Keyword Research and Match Type Strategy</h3>
+<p>Keyword research for Google Ads is different from SEO keyword research. You need to identify not just what people search for, but the commercial intent behind those searches — and the price you're likely to pay per click for each term. In South Africa, CPCs (cost-per-click) range from R2 for low-competition services to R80+ for high-competition legal or financial keywords.</p>
+<p>Match type strategy — choosing between broad match, phrase match, and exact match — is critical to controlling who sees your ads and at what cost. Most self-managed accounts use broad match exclusively, which leads to ads showing for irrelevant searches and wasted spend.</p>
+
+<h3>3. Ad Copywriting and Testing</h3>
+<p>Google Ads runs on Responsive Search Ads (RSAs), which allow multiple headlines and descriptions to be tested in combination. A Google Ads specialist will write compelling ad copy that includes your primary keyword, a clear differentiator, and a strong call to action — then test combinations systematically to identify which messaging resonates most with South African searchers.</p>
+<p>This testing is ongoing. The ad copy that worked 3 months ago may not perform as well today as competitor messaging shifts and seasonality changes.</p>
+
+<h3>4. Negative Keyword Management</h3>
+<p>One of the most valuable things a Google Ads management company does is continuously build and refine your negative keyword list — the terms your ads should <em>not</em> show for. Without active negative keyword management, your budget leaks to irrelevant searches: a plumber advertising "plumbing Cape Town" ending up on searches for "plumbing courses Cape Town" or "plumbing jobs Cape Town."</p>
+<p>In a well-managed account, negative keywords can save 15–30% of your monthly budget and redirect it to searches that actually convert.</p>
+
+<h3>5. Bidding and Budget Optimisation</h3>
+<p>Google offers automated bidding strategies like Target CPA (cost per acquisition), Target ROAS (return on ad spend), and Maximise Conversions. A Google Ads specialist knows when to use each, when to override automation with manual controls, and how to adjust bids by device, time of day, location, and audience segment.</p>
+<p>For South African businesses, this might mean reducing bids during load-shedding hours when conversion rates drop, or increasing bids for searchers in specific suburbs where your highest-value customers are located.</p>
+
+<h3>6. Conversion Tracking Setup and Optimisation</h3>
+<p>You cannot optimise what you cannot measure. Professional Google Ads management includes setting up conversion tracking — whether that's phone calls, form submissions, WhatsApp clicks, or e-commerce purchases — so every rand of ad spend is accountable. Most self-managed South African accounts have no conversion tracking at all, meaning they're bidding blindly on keywords with no idea which ones generate actual business.</p>
+
+<h3>7. Landing Page Recommendations</h3>
+<p>Traffic is only half the equation. If your landing page doesn't convert visitors into enquiries, even perfect Google Ads management won't fix your ROI. A good Google Ads agency in South Africa will review and make recommendations on your landing pages — load speed, messaging alignment with the ad, clear CTAs, trust signals like testimonials and Google ratings, and mobile experience.</p>
+
+<h3>8. Monthly Reporting and Strategic Reviews</h3>
+<p>Every month, your Google Ads management company should deliver a clear report showing: impressions, clicks, click-through rate (CTR), average CPC, conversions, cost per conversion, and budget utilisation. More importantly, they should tell you what they're changing next month and why.</p>
+
+<h2>How Much Does Google Ads Management Cost in South Africa?</h2>
+<p>There are two costs to understand: your ad spend (what you pay Google) and the management fee (what you pay the agency).</p>
+<ul>
+<li><strong>Ad spend:</strong> Most South African SMEs start with R5,000–R15,000/month. Less than R5,000/month rarely provides enough data to optimise effectively. Competitive industries may need R20,000–R50,000/month to make meaningful impact.</li>
+<li><strong>Management fee:</strong> Credible Google Ads management in South Africa typically costs R3,000–R8,000/month for SME accounts. Some agencies charge a percentage of ad spend (usually 10–15%). Avoid providers charging under R2,000/month — at that rate, accounts receive minimal attention.</li>
+</ul>
+<p>At Indexify, our Google Ads Management package starts at R7,300/month (management fee) and includes full setup, ongoing optimisation, conversion tracking, and monthly reporting.</p>
+
+<h2>DIY vs. Managed Google Ads: The Real Cost Comparison</h2>
+<p>Many South African business owners start by running Google Ads themselves. Here's the reality of what typically happens:</p>
+<ul>
+<li>No conversion tracking → you don't know what's working</li>
+<li>Broad match keywords → 40–60% of spend on irrelevant searches</li>
+<li>No negative keywords → budget leaks continuously</li>
+<li>Generic ad copy → low Quality Scores → higher CPCs than competitors</li>
+<li>No landing page alignment → visitors click but don't enquire</li>
+</ul>
+<p>A common outcome: R10,000/month in ad spend generating 2–3 leads at a cost of R3,000–R5,000 per lead. With professional management, that same R10,000 in ad spend typically generates 8–15 leads at R700–R1,200 per lead — a 4× improvement in efficiency.</p>
+
+<h2>How to Measure ROI on Google Ads Management</h2>
+<p>The right metric isn't cost-per-click or even cost-per-lead — it's cost-per-customer and lifetime value. If your service is worth R30,000 to a new client and your managed Google Ads generates leads at R1,000 each with a 20% close rate, your cost per customer is R5,000 — a 6× return. That's the conversation your Google Ads management company should be helping you have.</p>
+
+<h2>Ready to Stop Guessing and Start Scaling?</h2>
+<p>Indexify provides professional Google Ads management across South Africa — serving businesses in Cape Town, Johannesburg, Durban, Pretoria, and Port Elizabeth. Our campaigns are built on strategy, data, and continuous optimisation rather than set-and-forget automation.</p>
+<p><a href="/ads-audit">Get a free Google Ads audit</a> and see exactly what's costing you money in your current campaigns — or where you're leaving leads on the table.</p>
+    `,
+  },
+  {
     slug: "why-your-business-isnt-ranking-on-google",
     title: "Why Your Business Isn't Ranking on Google (And How to Fix It)",
     metaTitle: "Why Your Business Isn't Ranking on Google | Indexify",
