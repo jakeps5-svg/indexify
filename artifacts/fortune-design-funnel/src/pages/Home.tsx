@@ -490,8 +490,8 @@ export default function Home() {
               },
               {
                 text: "Indexify has provided outstanding service. Our Google ranking skyrocketed from virtually nowhere to one of the top positions, and we began receiving significantly more inquiries almost immediately. Their team identified numerous gaps and errors that our previous SEO provider had missed. We highly recommend Indexify for anyone seeking expert Google optimization.",
-                author: "Serenity Villa Daniela",
-                role: "Luxury Villa Rentals"
+                author: "Daniela Ciman",
+                role: "Serenity Villa"
               },
               {
                 text: "Indexify's SEO work has completely changed our online presence. We are now ranking on page 1 for our most important search terms and the leads coming through Google have grown steadily every month. Very happy with the results and the service.",
