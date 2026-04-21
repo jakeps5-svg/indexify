@@ -5,6 +5,7 @@ import { useLocation } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useYocoPopup } from "@/hooks/useYocoPopup";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 
 const API = import.meta.env.VITE_API_URL ?? "";
 
@@ -75,6 +76,7 @@ export default function CheckoutPage() {
   const [unlockToken, setUnlockToken] = useState("");
 
   const { showPopup, loading: yocoLoading, error: yocoError, clearError } = useYocoPopup();
+  const { getToken } = useRecaptcha();
 
   function validate() {
     if (!name.trim()) return "Please enter your full name.";
@@ -82,11 +84,13 @@ export default function CheckoutPage() {
     return "";
   }
 
-  function handlePay() {
+  async function handlePay() {
     const err = validate();
     if (err) { setFormError(err); return; }
     setFormError("");
     clearError();
+
+    const recaptchaToken = await getToken("checkout").catch(() => "");
 
     void showPopup({
       amountInCents: service.amountInCents,
@@ -107,10 +111,11 @@ export default function CheckoutPage() {
         if (type !== "proposal") {
           if (password.trim().length >= 8) {
             try {
+              const regToken = await getToken("register").catch(() => "");
               const res = await fetch(`${API}/api/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: name.trim(), email: email.trim(), password, phone: phone.trim() || undefined, company: company.trim() || undefined }),
+                body: JSON.stringify({ name: name.trim(), email: email.trim(), password, phone: phone.trim() || undefined, company: company.trim() || undefined, recaptchaToken: regToken }),
               });
               if (res.ok) setPortalCreated(true);
             } catch { }

@@ -383,7 +383,7 @@ export function BookingModal() {
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ delay: 1.2, type: "spring", damping: 20 }}
-      className="fixed bottom-28 right-5 z-[9000] flex items-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-primary to-[#7c4dff] text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 text-sm font-bold"
+      className="fixed bottom-44 right-5 z-[9000] flex items-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-primary to-[#7c4dff] text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 text-sm font-bold"
       aria-label="Book a Meeting"
     >
       <CalendarIcon />

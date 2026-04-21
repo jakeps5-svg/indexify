@@ -4,12 +4,14 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, LogIn, Shield } from "lucide-react";
 import { usePortalAuth } from "@/hooks/usePortalAuth";
 import { useSEO } from "@/hooks/useSEO";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 
 export default function LoginPage() {
   useSEO({ title: "Client Portal Login | Indexify", description: "Log in to your Indexify client portal to track services, view invoices, and chat with your account manager." });
 
   const [, navigate] = useLocation();
   const { login } = usePortalAuth();
+  const { getToken } = useRecaptcha();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -21,7 +23,8 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const user = await login(email, password);
+      const recaptchaToken = await getToken("login").catch(() => "");
+      const user = await login(email, password, recaptchaToken);
       navigate(user.role === "admin" ? "/admin" : "/portal");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");

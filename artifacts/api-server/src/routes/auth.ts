@@ -6,13 +6,17 @@ import { usersTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { signToken, requireAuth } from "../middlewares/auth.js";
 import { sendPasswordResetEmail, sendWelcomeEmail } from "../lib/email.js";
+import { verifyRecaptcha } from "../lib/recaptcha.js";
 
 const router = Router();
 
 router.post("/auth/login", async (req, res) => {
   try {
-    const { email, password } = req.body as { email: string; password: string };
+    const { email, password, recaptchaToken } = req.body as { email: string; password: string; recaptchaToken?: string };
     if (!email || !password) return res.status(400).json({ error: "Email and password required" });
+
+    const captcha = await verifyRecaptcha(recaptchaToken, "login");
+    if (!captcha.ok) return res.status(400).json({ error: "Security check failed. Please try again." });
 
     const [user] = await db.select().from(usersTable).where(eq(usersTable.email, email.toLowerCase().trim()));
     if (!user) return res.status(401).json({ error: "Invalid email or password" });
@@ -33,11 +37,14 @@ router.post("/auth/login", async (req, res) => {
 
 router.post("/auth/register", async (req, res) => {
   try {
-    const { name, email, password, phone, company } = req.body as {
+    const { name, email, password, phone, company, recaptchaToken } = req.body as {
       name: string; email: string; password: string;
-      phone?: string; company?: string;
+      phone?: string; company?: string; recaptchaToken?: string;
     };
     if (!name || !email || !password) return res.status(400).json({ error: "Name, email and password required" });
+
+    const captcha = await verifyRecaptcha(recaptchaToken, "register");
+    if (!captcha.ok) return res.status(400).json({ error: "Security check failed. Please try again." });
     if (password.length < 8) return res.status(400).json({ error: "Password must be at least 8 characters" });
 
     const existing = await db.select({ id: usersTable.id }).from(usersTable).where(eq(usersTable.email, email.toLowerCase().trim()));
@@ -68,8 +75,11 @@ router.post("/auth/register", async (req, res) => {
 
 router.post("/auth/forgot-password", async (req, res) => {
   try {
-    const { email } = req.body as { email: string };
+    const { email, recaptchaToken } = req.body as { email: string; recaptchaToken?: string };
     if (!email) return res.status(400).json({ error: "Email required" });
+
+    const captcha = await verifyRecaptcha(recaptchaToken, "forgot_password");
+    if (!captcha.ok) return res.status(400).json({ error: "Security check failed. Please try again." });
 
     const [user] = await db.select().from(usersTable).where(eq(usersTable.email, email.toLowerCase().trim()));
     if (!user) {

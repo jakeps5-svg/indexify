@@ -2,12 +2,14 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, ArrowLeft, CheckCircle2, Send } from "lucide-react";
 import { useSEO } from "@/hooks/useSEO";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 
 const API = import.meta.env.VITE_API_URL ?? "";
 
 export default function ForgotPasswordPage() {
   useSEO({ title: "Reset Password | Indexify Portal", description: "Reset your Indexify client portal password." });
 
+  const { getToken } = useRecaptcha();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -18,10 +20,11 @@ export default function ForgotPasswordPage() {
     setError(null);
     setLoading(true);
     try {
+      const recaptchaToken = await getToken("forgot_password").catch(() => "");
       const res = await fetch(`${API}/api/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: email.trim(), recaptchaToken }),
       });
       if (!res.ok) {
         const d = await res.json();

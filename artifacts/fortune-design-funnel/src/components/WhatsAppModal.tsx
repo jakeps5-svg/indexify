@@ -83,7 +83,7 @@ export function WhatsAppModal() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-full flex items-center justify-center shadow-2xl hover:-translate-y-1 transition-all duration-300 whatsapp-pulse"
+        className="fixed bottom-24 right-6 z-50 w-16 h-16 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-full flex items-center justify-center shadow-2xl hover:-translate-y-1 transition-all duration-300 whatsapp-pulse"
         aria-label="Chat on WhatsApp"
       >
         <WhatsAppIcon size={32} />
