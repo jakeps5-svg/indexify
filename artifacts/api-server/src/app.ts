@@ -22,21 +22,26 @@ app.use(express.urlencoded({ extended: true }));
 // ─── Shared data ─────────────────────────────────────────────────────────────
 
 const PAGES = [
-  { path: "/",                    priority: "1.0", changefreq: "weekly",  lastmod: () => iso() },
-  { path: "/services/seo/",       priority: "0.9", changefreq: "monthly", lastmod: () => iso() },
-  { path: "/services/google-ads/",priority: "0.9", changefreq: "monthly", lastmod: () => iso() },
-  { path: "/pricing/",            priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
-  { path: "/contact/",            priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
-  { path: "/audit/",              priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
-  { path: "/serp-checker/",       priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
-  { path: "/ads-audit/",          priority: "0.7", changefreq: "monthly", lastmod: () => iso() },
-  { path: "/cape-town/",          priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
-  { path: "/johannesburg/",       priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
-  { path: "/durban/",             priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
-  { path: "/pretoria/",           priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
-  { path: "/port-elizabeth/",     priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
-  { path: "/privacy-policy/",     priority: "0.3", changefreq: "yearly",  lastmod: () => "2026-03-18T00:00:00+02:00" },
-  { path: "/terms-of-use/",       priority: "0.3", changefreq: "yearly",  lastmod: () => "2026-03-18T00:00:00+02:00" },
+  { path: "/",                          priority: "1.0", changefreq: "weekly",  lastmod: () => iso() },
+  { path: "/services/seo/",             priority: "0.9", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/services/google-ads/",      priority: "0.9", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/pricing/",                  priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/contact/",                  priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/audit/",                    priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/serp-checker/",             priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/ads-audit/",                priority: "0.7", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/cape-town/",                priority: "0.9", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/johannesburg/",             priority: "0.9", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/durban/",                   priority: "0.9", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/pretoria/",                 priority: "0.9", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/port-elizabeth/",           priority: "0.9", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/packages/basic-seo/",       priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/packages/advanced-seo/",    priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/packages/premium-seo/",     priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/packages/google-ads/",      priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/packages/market-leader/",   priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/privacy-policy/",           priority: "0.3", changefreq: "yearly",  lastmod: () => "2026-03-18T00:00:00+02:00" },
+  { path: "/terms-of-use/",             priority: "0.3", changefreq: "yearly",  lastmod: () => "2026-03-18T00:00:00+02:00" },
 ];
 
 const CATEGORIES = [
@@ -45,7 +50,10 @@ const CATEGORIES = [
 ];
 
 const POSTS = [
-  { path: "/blog/why-your-business-isnt-ranking-on-google/",      lastmod: "2026-03-17T00:00:00+02:00" },
+  { path: "/blog/seo-service-south-africa/",                       lastmod: "2026-04-05T00:00:00+02:00" },
+  { path: "/blog/how-to-choose-seo-company-south-africa/",         lastmod: "2026-04-12T00:00:00+02:00" },
+  { path: "/blog/google-ads-management-south-africa/",             lastmod: "2026-04-19T00:00:00+02:00" },
+  { path: "/blog/why-your-business-isnt-ranking-on-google/",       lastmod: "2026-03-17T00:00:00+02:00" },
   { path: "/blog/local-seo-south-africa-google-maps/",            lastmod: "2026-03-10T00:00:00+02:00" },
   { path: "/blog/technical-seo-checklist-south-africa/",          lastmod: "2026-03-03T00:00:00+02:00" },
   { path: "/blog/what-is-on-page-seo/",                           lastmod: "2026-02-24T00:00:00+02:00" },
@@ -183,10 +191,27 @@ app.get("/robots.txt", (req: Request, res: Response) => {
   const txt = `User-agent: *
 Allow: /
 
-Sitemap: ${base}/sitemap_index.xml
-Sitemap: ${base}/page-sitemap.xml
-Sitemap: ${base}/post-sitemap.xml
-Sitemap: ${base}/category-sitemap.xml`;
+Disallow: /portal
+Disallow: /portal/
+Disallow: /admin
+Disallow: /admin/
+Disallow: /login
+Disallow: /login/
+Disallow: /admin-login
+Disallow: /admin-login/
+Disallow: /checkout
+Disallow: /checkout/
+Disallow: /payment-success
+Disallow: /payment-success/
+Disallow: /payment-cancelled
+Disallow: /payment-cancelled/
+Disallow: /forgot-password
+Disallow: /forgot-password/
+Disallow: /reset-password
+Disallow: /reset-password/
+
+Sitemap: ${base}/sitemap.xml
+Sitemap: ${base}/sitemap_index.xml`;
 
   res.setHeader("Content-Type", "text/plain; charset=utf-8");
   res.setHeader("Cache-Control", "public, max-age=3600");
