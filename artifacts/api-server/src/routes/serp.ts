@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as cheerio from "cheerio";
 import { execFile } from "child_process";
 import { promisify } from "util";
+import { verifyRecaptcha } from "../lib/recaptcha.js";
 
 const execFileAsync = promisify(execFile);
 const router = Router();
@@ -146,10 +147,15 @@ async function fetchSerpResults(
 }
 
 router.post("/serp-check", async (req, res) => {
-  const { domain, keyword, country = "za" } = req.body;
+  const { domain, keyword, country = "za", recaptchaToken } = req.body;
 
   if (!domain || !keyword) {
     return res.status(400).json({ error: "domain and keyword are required" });
+  }
+
+  const captcha = await verifyRecaptcha(recaptchaToken, "serp_check");
+  if (!captcha.ok) {
+    return res.status(400).json({ error: "Security check failed. Please try again." });
   }
 
   const cleanDomain = domain

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSEO } from "@/hooks/useSEO";
 import {
@@ -568,6 +569,7 @@ export default function AdsAuditPage() {
 
   });
 
+  const { getToken } = useRecaptcha();
   const [inputUrl, setInputUrl] = useState("");
   const [inputServices, setInputServices] = useState("");
   const [inputCountry, setInputCountry] = useState("South Africa");
@@ -592,6 +594,7 @@ export default function AdsAuditPage() {
     setCodeInput("");
     setLoading(true);
     try {
+      const recaptchaToken = await getToken("ads_audit").catch(() => "");
       const res = await fetch(`${BASE}/api/ads-audit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -600,6 +603,7 @@ export default function AdsAuditPage() {
           services: inputServices,
           country: inputCountry,
           serviceLinks: serviceLinks.filter(l => l.name.trim().length > 0),
+          recaptchaToken,
         }),
       });
       const data = await res.json();

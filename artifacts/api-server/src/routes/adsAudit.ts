@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import * as cheerio from "cheerio";
+import { verifyRecaptcha } from "../lib/recaptcha.js";
 
 const router: IRouter = Router();
 
@@ -569,13 +570,20 @@ function parseUserServices(raw: string): string[] {
 
 // ── ROUTE ────────────────────────────────────────────────────────────────────
 router.post("/ads-audit", async (req, res) => {
-  let { url, services: rawServices, country: rawCountry, serviceLinks: rawServiceLinks } = req.body as {
+  let { url, services: rawServices, country: rawCountry, serviceLinks: rawServiceLinks, recaptchaToken } = req.body as {
     url: string; services?: string; country?: string;
     serviceLinks?: { name: string; url: string }[];
+    recaptchaToken?: string;
   };
 
   if (!url || typeof url !== "string") {
     res.status(400).json({ error: "URL is required" });
+    return;
+  }
+
+  const captcha = await verifyRecaptcha(recaptchaToken, "ads_audit");
+  if (!captcha.ok) {
+    res.status(400).json({ error: "Security check failed. Please try again." });
     return;
   }
 

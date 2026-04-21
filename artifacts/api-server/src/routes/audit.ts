@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import * as cheerio from "cheerio";
 import * as whoisLib from "whois";
+import { verifyRecaptcha } from "../lib/recaptcha.js";
 
 const router: IRouter = Router();
 
@@ -270,9 +271,16 @@ function scoreSection(checks: AuditCheck[]): number {
 }
 
 router.post("/audit", async (req, res) => {
+  const { recaptchaToken } = req.body as { url: string; recaptchaToken?: string };
   let { url } = req.body as { url: string };
   if (!url || typeof url !== "string") {
     res.status(400).json({ error: "URL is required" });
+    return;
+  }
+
+  const captcha = await verifyRecaptcha(recaptchaToken, "audit");
+  if (!captcha.ok) {
+    res.status(400).json({ error: "Security check failed. Please try again." });
     return;
   }
 

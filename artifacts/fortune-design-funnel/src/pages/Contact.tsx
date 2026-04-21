@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { useSEO } from "@/hooks/useSEO";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
 import { openWhatsAppModal } from "@/components/WhatsAppModal";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -41,6 +42,7 @@ export default function Contact() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const { getToken } = useRecaptcha();
 
   function set(field: string, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -51,10 +53,11 @@ export default function Contact() {
     setSubmitting(true);
     setError("");
     try {
+      const recaptchaToken = await getToken("contact").catch(() => "");
       const res = await fetch(`${BASE}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, recaptchaToken }),
       });
       if (!res.ok) throw new Error("Failed");
       setSubmitted(true);

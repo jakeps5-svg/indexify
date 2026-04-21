@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 import { motion } from "framer-motion";
 import { useSEO } from "@/hooks/useSEO";
 import { jsPDF } from "jspdf";
@@ -147,6 +148,7 @@ export default function SerpCheckerPage() {
 
   });
 
+  const { getToken } = useRecaptcha();
   const [domain, setDomain]     = useState("");
   const [keyword, setKeyword]   = useState("");
   const [country, setCountry]   = useState("za");
@@ -160,10 +162,11 @@ export default function SerpCheckerPage() {
     setResult(null);
     setLoading(true);
     try {
+      const recaptchaToken = await getToken("serp_check").catch(() => "");
       const res = await fetch(`${BASE}/api/serp-check`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domain, keyword, country }),
+        body: JSON.stringify({ domain, keyword, country, recaptchaToken }),
       });
       const data: SerpResponse = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Check failed");

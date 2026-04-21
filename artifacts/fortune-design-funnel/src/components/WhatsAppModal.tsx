@@ -1,8 +1,17 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2, Loader2, Send } from "lucide-react";
-import { useSubmitInquiry } from "@workspace/api-client-react";
-import type { InquiryInput } from "@workspace/api-client-react/src/generated/api.schemas";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
+
+const API_BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
+
+interface InquiryInput {
+  name: string;
+  email: string;
+  phone?: string;
+  service: "seo" | "google-ads" | "both";
+  message: string;
+}
 
 function WhatsAppIcon({ size = 32 }: { size?: number }) {
   return (
@@ -37,28 +46,36 @@ export function WhatsAppModal() {
     message: ""
   });
 
-  const { mutate: submitInquiry, isPending } = useSubmitInquiry();
+  const [isPending, setIsPending] = useState(false);
+  const { getToken } = useRecaptcha();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    submitInquiry({ data: formData }, {
-      onSuccess: (response) => {
-        setIsSuccess(true);
+    setIsPending(true);
+    try {
+      const recaptchaToken = await getToken("whatsapp").catch(() => "");
+      const res = await fetch(`${API_BASE}/api/inquiries`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, recaptchaToken }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      const response = await res.json();
+      setIsSuccess(true);
+      setTimeout(() => {
+        window.open(response.whatsappUrl, "_blank");
         setTimeout(() => {
-          window.open(response.whatsappUrl, '_blank');
-          setTimeout(() => {
-            setIsOpen(false);
-            setIsSuccess(false);
-            setFormData({ name: "", email: "", phone: "", service: "seo", message: "" });
-          }, 500);
-        }, 1500);
-      },
-      onError: (error) => {
-        console.error("Failed to submit inquiry:", error);
-        alert("Something went wrong. Please try again.");
-      }
-    });
+          setIsOpen(false);
+          setIsSuccess(false);
+          setFormData({ name: "", email: "", phone: "", service: "seo", message: "" });
+        }, 500);
+      }, 1500);
+    } catch (error) {
+      console.error("Failed to submit inquiry:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (

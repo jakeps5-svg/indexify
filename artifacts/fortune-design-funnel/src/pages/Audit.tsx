@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 import { motion } from "framer-motion";
 import { useSEO } from "@/hooks/useSEO";
 import { jsPDF } from "jspdf";
@@ -768,6 +769,7 @@ export default function AuditPage() {
 
   });
 
+  const { getToken } = useRecaptcha();
   const [inputUrl, setInputUrl]     = useState("");
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState<string | null>(null);
@@ -781,10 +783,11 @@ export default function AuditPage() {
     setResult(null);
     setLoading(true);
     try {
+      const recaptchaToken = await getToken("audit").catch(() => "");
       const res = await fetch(`${BASE}/api/audit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: inputUrl }),
+        body: JSON.stringify({ url: inputUrl, recaptchaToken }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Audit failed");

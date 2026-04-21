@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar, User, Mail, Phone, Globe, Clock, CheckCircle2, Loader2, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
@@ -87,6 +88,7 @@ export function BookingModal() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const { getToken } = useRecaptcha();
 
   function handleClose() {
     setOpen(false);
@@ -120,6 +122,7 @@ export function BookingModal() {
     setLoading(true);
     setError("");
     try {
+      const recaptchaToken = await getToken("booking").catch(() => "");
       const res = await fetch(`${API_BASE}/api/book-meeting`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -127,6 +130,7 @@ export function BookingModal() {
           ...form,
           date: formatDate(form.date),
           time: formatTime(form.time),
+          recaptchaToken,
         }),
       });
       if (!res.ok) {
