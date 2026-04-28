@@ -235,8 +235,6 @@ const FRONTEND_DIR = (() => {
   return candidates.find(existsSync) ?? candidates[0];
 })();
 
-console.log("[static] FRONTEND_DIR:", FRONTEND_DIR, "exists:", existsSync(FRONTEND_DIR));
-
 if (existsSync(FRONTEND_DIR)) {
   app.use(express.static(FRONTEND_DIR, { maxAge: "1h" }));
   // SPA fallback — serve index.html for all non-API routes
