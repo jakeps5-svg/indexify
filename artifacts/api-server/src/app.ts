@@ -3,6 +3,7 @@ import cors from "cors";
 import router from "./routes";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { existsSync } from "node:fs";
 
 const UPLOADS_DIR = (() => {
   try {
@@ -223,15 +224,19 @@ app.use("/api", router);
 
 // Serve the React frontend static files (production)
 const FRONTEND_DIR = (() => {
-  try {
-    // When running as dist/index.cjs, public/ is a sibling folder
-    return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../public");
-  } catch {
-    return path.resolve(process.cwd(), "public");
-  }
+  const candidates = [
+    // Running as artifacts/api-server/dist/index.cjs → ../public
+    (() => { try { return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../public"); } catch { return null; } })(),
+    // Fallback: relative to cwd
+    path.resolve(process.cwd(), "artifacts/api-server/public"),
+    path.resolve(process.cwd(), "public"),
+  ].filter(Boolean) as string[];
+
+  return candidates.find(existsSync) ?? candidates[0];
 })();
 
-import { existsSync } from "node:fs";
+console.log("[static] FRONTEND_DIR:", FRONTEND_DIR, "exists:", existsSync(FRONTEND_DIR));
+
 if (existsSync(FRONTEND_DIR)) {
   app.use(express.static(FRONTEND_DIR, { maxAge: "1h" }));
   // SPA fallback — serve index.html for all non-API routes
