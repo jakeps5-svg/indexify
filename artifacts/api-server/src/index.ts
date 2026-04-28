@@ -14,10 +14,6 @@ const rawPort = process.env["PORT"] ?? "3000";
 const port = Number(rawPort);
 const resolvedPort = Number.isNaN(port) || port <= 0 ? 3000 : port;
 
-console.log(`[startup] PORT env="${process.env["PORT"]}" resolvedPort=${resolvedPort}`);
-console.log(`[startup] DATABASE_URL set=${!!process.env["DATABASE_URL"]}`);
-console.log(`[startup] NODE_ENV=${process.env["NODE_ENV"]}`);
-
 // Start listening immediately so the port is bound before any DB work
 app.listen(resolvedPort, () => {
   console.log(`[startup] Server listening on port ${resolvedPort}`);
