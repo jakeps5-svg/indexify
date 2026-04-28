@@ -14,6 +14,7 @@ const allowlist = [
   "axios",
   "bcryptjs",
   "cheerio",
+  "dotenv",
   "connect-pg-simple",
   "cookie-parser",
   "cors",
