@@ -1,0 +1,46 @@
+Scope: all 9 workspace projects
+Progress: resolved 1, reused 0, downloaded 0, added 0
+artifacts/api-server                     |  WARN  deprecated @types/bcryptjs@3.0.0
+Progress: resolved 89, reused 89, downloaded 0, added 0
+Progress: resolved 447, reused 445, downloaded 0, added 0
+Progress: resolved 554, reused 552, downloaded 0, added 0
+ WARN  1 deprecated subdependencies found: whatwg-encoding@3.1.1
+Packages: +552
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 554, reused 552, downloaded 0, added 263
+Progress: resolved 554, reused 552, downloaded 0, added 356
+Progress: resolved 554, reused 552, downloaded 0, added 551
+Progress: resolved 554, reused 552, downloaded 0, added 552, done
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock'
+. preinstall: Done
+
+devDependencies:
++ esbuild 0.27.3 (0.28.0 is available)
++ prettier 3.8.1 (3.8.3 is available)
++ tsx 4.21.0
++ typescript 5.9.3 (6.0.3 is available)
+
+╭ Warning ─────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│   Ignored build scripts: core-js@3.49.0.                                     │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+│   to run scripts.                                                            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Done in 10.4s using pnpm v10.33.2
+
+> workspace@0.0.0 build /home/u479057245/domains/new.indexify.co.za/public_html/.builds/source/repository
+> ./node_modules/.bin/tsx artifacts/api-server/build.ts
+
+building server...
+▲ [WARNING] Import "default" will always be undefined because there is no matching export in "node_modules/.pnpm/whois@2.16.1/node_modules/whois/index.js" [import-is-undefined]
+
+    artifacts/api-server/src/routes/audit.ts:674:69:
+      674 │ ... = (whoisLib as any).lookup ?? (whoisLib as any).default?.lookup;
+          ╵                                                     ~~~~~~~
+
+1 warning
+
+  artifacts/api-server/dist/index.cjs  2.9mb ⚠️
+
+⚡ Done in 348ms
