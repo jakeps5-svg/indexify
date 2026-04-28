@@ -1,0 +1,62 @@
+Scope: all 9 workspace projects
+Progress: resolved 1, reused 0, downloaded 0, added 0
+artifacts/api-server                     |  WARN  deprecated @types/bcryptjs@3.0.0
+Progress: resolved 288, reused 288, downloaded 0, added 0
+Progress: resolved 554, reused 552, downloaded 0, added 0
+ WARN  1 deprecated subdependencies found: whatwg-encoding@3.1.1
+Packages: +552
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 554, reused 552, downloaded 0, added 227
+Progress: resolved 554, reused 552, downloaded 0, added 323
+Progress: resolved 554, reused 552, downloaded 0, added 342
+Progress: resolved 554, reused 552, downloaded 0, added 376
+Progress: resolved 554, reused 552, downloaded 0, added 407
+Progress: resolved 554, reused 552, downloaded 0, added 529
+Progress: resolved 554, reused 552, downloaded 0, added 551
+Progress: resolved 554, reused 552, downloaded 0, added 552
+Progress: resolved 554, reused 552, downloaded 0, added 552, done
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock'
+. preinstall: Done
+. postinstall$ sh -c 'if [ "$NODE_ENV" = "production" ]; then ./node_modules/.bin/tsx artifacts/api-server/build.ts && ./node_modules/.bin/vite build --config artifacts/fortune-design-funnel/vite.config.ts && cp -r artifacts/fortune-design-funnel/dist/public artifacts/api-server/public; fi'
+. postinstall: building server...
+. postinstall: ▲ [WARNING] Import "default" will always be undefined because there is no matching export in "node_modules/.pnpm/whois@2.16.1/node_modules/whois/index.js" [import-is-undefined]
+. postinstall:     artifacts/api-server/src/routes/audit.ts:674:69:
+. postinstall:       674 │ ... = (whoisLib as any).lookup ?? (whoisLib as any).default?.lookup;
+. postinstall:           ╵                                                     ~~~~~~~
+. postinstall: 1 warning
+. postinstall:   artifacts/api-server/dist/index.cjs  2.9mb ⚠️
+. postinstall: ⚡ Done in 630ms
+. postinstall: vite v7.3.1 building client environment for production...
+. postinstall: transforming...
+. postinstall: artifacts/fortune-design-funnel/src/components/ui/tooltip.tsx (2:0): Error when using sourcemap for reporting an error: Can't resolve original location of error.
+. postinstall: ✓ 2453 modules transformed.
+. postinstall: rendering chunks...
+. postinstall: computing gzip size...
+. postinstall: dist/public/index.html                             23.66 kB │ gzip:   6.84 kB
+. postinstall: dist/public/assets/index-BCMXuQZb.css             175.67 kB │ gzip:  25.31 kB
+. postinstall: dist/public/assets/purify.es-CovBOfck.js           22.58 kB │ gzip:   8.63 kB
+. postinstall: dist/public/assets/index.es-D6VThyjn.js           158.79 kB │ gzip:  52.90 kB
+. postinstall: dist/public/assets/html2canvas.esm-DXEQVQnt.js    201.04 kB │ gzip:  47.07 kB
+. postinstall: dist/public/assets/index-HcwYAbvl.js            1,581.51 kB │ gzip: 445.36 kB
+. postinstall: ✓ built in 21.42s
+. postinstall: (!) Some chunks are larger than 500 kB after minification. Consider:
+. postinstall: - Using dynamic import() to code-split the application
+. postinstall: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+. postinstall: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+. postinstall: Done
+
+devDependencies:
++ esbuild 0.27.3 (0.28.0 is available)
++ prettier 3.8.1 (3.8.3 is available)
++ tsx 4.21.0
++ typescript 5.9.3 (6.0.3 is available)
++ vite 7.3.1 (8.0.10 is available)
+
+╭ Warning ─────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│   Ignored build scripts: core-js@3.49.0.                                     │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+│   to run scripts.                                                            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Done in 41.6s using pnpm v10.33.2
