@@ -10,6 +10,8 @@
   "scripts": {
     "preinstall": "sh -c 'rm -f package-lock.json yarn.lock'",
     "build": "./node_modules/.bin/tsx artifacts/api-server/build.ts && ./node_modules/.bin/vite build --config artifacts/fortune-design-funnel/vite.config.ts && cp -r artifacts/fortune-design-funnel/dist/public artifacts/api-server/public",
+    "postinstall": "sh -c 'if [ \"$NODE_ENV\" = \"production\" ]; then ./node_modules/.bin/tsx artifacts/api-server/build.ts && ./node_modules/.bin/vite build --config artifacts/fortune-design-funnel/vite.config.ts && cp -r artifacts/fortune-design-funnel/dist/public artifacts/api-server/public; fi'",
+    "start": "node artifacts/api-server/dist/index.cjs",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },
