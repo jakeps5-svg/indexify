@@ -240,7 +240,7 @@ console.log("[static] FRONTEND_DIR:", FRONTEND_DIR, "exists:", existsSync(FRONTE
 if (existsSync(FRONTEND_DIR)) {
   app.use(express.static(FRONTEND_DIR, { maxAge: "1h" }));
   // SPA fallback — serve index.html for all non-API routes
-  app.get("*", (_req: Request, res: Response) => {
+  app.get(/.*/, (_req: Request, res: Response) => {
     res.sendFile(path.join(FRONTEND_DIR, "index.html"));
   });
 }
