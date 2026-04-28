@@ -221,4 +221,23 @@ Sitemap: ${base}/sitemap_index.xml`;
 app.use("/api/uploads", express.static(UPLOADS_DIR, { maxAge: "7d" }));
 app.use("/api", router);
 
+// Serve the React frontend static files (production)
+const FRONTEND_DIR = (() => {
+  try {
+    // When running as dist/index.cjs, public/ is a sibling folder
+    return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../public");
+  } catch {
+    return path.resolve(process.cwd(), "public");
+  }
+})();
+
+import { existsSync } from "node:fs";
+if (existsSync(FRONTEND_DIR)) {
+  app.use(express.static(FRONTEND_DIR, { maxAge: "1h" }));
+  // SPA fallback — serve index.html for all non-API routes
+  app.get("*", (_req: Request, res: Response) => {
+    res.sendFile(path.join(FRONTEND_DIR, "index.html"));
+  });
+}
+
 export default app;

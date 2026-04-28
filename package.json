@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "sh -c 'rm -f package-lock.json yarn.lock'",
-    "build": "./node_modules/.bin/tsx artifacts/api-server/build.ts",
+    "build": "./node_modules/.bin/tsx artifacts/api-server/build.ts && ./node_modules/.bin/vite build --config artifacts/fortune-design-funnel/vite.config.ts && cp -r artifacts/fortune-design-funnel/dist/public artifacts/api-server/public",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
   },
@@ -13,6 +13,7 @@
     "typescript": "~5.9.2",
     "prettier": "^3.8.1",
     "tsx": "catalog:",
-    "esbuild": "^0.27.3"
+    "esbuild": "^0.27.3",
+    "vite": "catalog:"
   }
 }

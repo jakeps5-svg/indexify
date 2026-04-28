@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+xmlns:content="http://purl.org/rss/1.0/modules/content/"
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:atom="http://www.w3.org/2005/Atom"
+xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+>
+<channel>
+<title>Indexify Blog – SEO &amp; Google Ads Insights</title>
+<atom:link href="https://indexify.co.za/rss.xml" rel="self" type="application/rss+xml" />
+<link>https://indexify.co.za/blog/</link>
+<description>Expert guides on SEO and Google Ads for South African businesses. No fluff — only strategies that move the needle.</description>
+<lastBuildDate>Tue, 18 Mar 2026 00:00:00 +0200</lastBuildDate>
+<language>en-ZA</language>
+<sy:updatePeriod>
+weekly</sy:updatePeriod>
+<sy:updateFrequency>
+1</sy:updateFrequency>
+<image>
+<url>https://indexify.co.za/indexify-logo.png</url>
+<title>Indexify</title>
+<link>https://indexify.co.za</link>
+<width>32</width>
+<height>32</height>
+</image>
+<item>
+<title><![CDATA[Why Your Business Isn't Ranking on Google (And How to Fix It)]]></title>
+<link>https://indexify.co.za/blog/why-your-business-isnt-ranking-on-google/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Mon, 17 Mar 2026 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/why-your-business-isnt-ranking-on-google/</guid>
+<description><![CDATA[Discover the most common reasons South African businesses don't rank on Google and the exact steps to fix your visibility in 2026.]]></description>
+</item>
+<item>
+<title><![CDATA[Local SEO in South Africa: How to Dominate Google Maps Results]]></title>
+<link>https://indexify.co.za/blog/local-seo-south-africa-google-maps/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Mon, 10 Mar 2026 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/local-seo-south-africa-google-maps/</guid>
+<description><![CDATA[Learn how to rank in Google Maps and the local pack for your South African business. Step-by-step local SEO strategy for 2026.]]></description>
+</item>
+<item>
+<title><![CDATA[Technical SEO Checklist for South African Websites in 2026]]></title>
+<link>https://indexify.co.za/blog/technical-seo-checklist-south-africa/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Mon, 03 Mar 2026 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/technical-seo-checklist-south-africa/</guid>
+<description><![CDATA[A complete technical SEO checklist for South African businesses. Fix crawling, indexing, speed, and mobile issues that are killing your rankings.]]></description>
+</item>
+<item>
+<title><![CDATA[What Is On-Page SEO and Why Does It Matter for Your Business?]]></title>
+<link>https://indexify.co.za/blog/what-is-on-page-seo/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Mon, 24 Feb 2026 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/what-is-on-page-seo/</guid>
+<description><![CDATA[On-page SEO explained for South African business owners. Learn what it is, why it matters, and how to optimise every page to rank higher on Google.]]></description>
+</item>
+<item>
+<title><![CDATA[The Power of Backlinks: Building Domain Authority in South Africa]]></title>
+<link>https://indexify.co.za/blog/backlinks-domain-authority-south-africa/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Mon, 17 Feb 2026 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/backlinks-domain-authority-south-africa/</guid>
+<description><![CDATA[Learn why backlinks are Google's #1 ranking factor and how South African businesses can build authoritative links that push them to page 1.]]></description>
+</item>
+<item>
+<title><![CDATA[SEO vs Google Ads: Which Is Right for Your Business in 2026?]]></title>
+<link>https://indexify.co.za/blog/seo-vs-google-ads/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Mon, 10 Feb 2026 00:00:00 +0200</pubDate>
+<category><![CDATA[Digital Marketing]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/seo-vs-google-ads/</guid>
+<description><![CDATA[SEO or Google Ads — which delivers better ROI for South African businesses? Compare both strategies with real numbers and find out which fits your goals.]]></description>
+</item>
+<item>
+<title><![CDATA[How Long Does SEO Take to Show Results? The Honest Answer]]></title>
+<link>https://indexify.co.za/blog/how-long-does-seo-take/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Mon, 03 Feb 2026 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/how-long-does-seo-take/</guid>
+<description><![CDATA[How long before SEO delivers results? We break down realistic timelines for South African businesses and what you can expect month by month.]]></description>
+</item>
+<item>
+<title><![CDATA[Keyword Research for South African Businesses: A Complete Guide]]></title>
+<link>https://indexify.co.za/blog/keyword-research-south-african-businesses/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Mon, 27 Jan 2026 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/keyword-research-south-african-businesses/</guid>
+<description><![CDATA[How to find the right keywords for your South African business. A step-by-step keyword research guide tailored to the local search landscape.]]></description>
+</item>
+<item>
+<title><![CDATA[Core Web Vitals: The Google Ranking Factor You Cannot Ignore]]></title>
+<link>https://indexify.co.za/blog/core-web-vitals-google-ranking/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Mon, 20 Jan 2026 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/core-web-vitals-google-ranking/</guid>
+<description><![CDATA[Understand Core Web Vitals and how they affect your Google rankings. Learn what LCP, INP, and CLS mean and how to improve them for your South African website.]]></description>
+</item>
+<item>
+<title><![CDATA[How to Write SEO Content That Ranks on Google and Converts Visitors]]></title>
+<link>https://indexify.co.za/blog/seo-content-that-ranks-and-converts/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Mon, 13 Jan 2026 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/seo-content-that-ranks-and-converts/</guid>
+<description><![CDATA[Learn how to write SEO-optimised content that ranks on Google AND converts visitors into paying clients. A practical guide for South African businesses.]]></description>
+</item>
+<item>
+<title><![CDATA[Schema Markup Explained: Boost Your Click-Through Rate on Google]]></title>
+<link>https://indexify.co.za/blog/schema-markup-explained/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Mon, 06 Jan 2026 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/schema-markup-explained/</guid>
+<description><![CDATA[Schema markup helps your website appear with rich results on Google — star ratings, FAQs, prices. Here's how to implement it for your South African business.]]></description>
+</item>
+<item>
+<title><![CDATA[Google Ads vs Facebook Ads: Which Is Better for Your Business?]]></title>
+<link>https://indexify.co.za/blog/google-ads-vs-facebook-ads/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 30 Dec 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Google Ads]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/google-ads-vs-facebook-ads/</guid>
+<description><![CDATA[Google Ads vs Facebook Ads for South African businesses. Compare targeting, costs, conversion rates, and ROI to choose the right platform for your goals.]]></description>
+</item>
+<item>
+<title><![CDATA[How Much Should You Spend on Google Ads in South Africa?]]></title>
+<link>https://indexify.co.za/blog/google-ads-budget-south-africa/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 23 Dec 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Google Ads]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/google-ads-budget-south-africa/</guid>
+<description><![CDATA[How much does Google Ads cost in South Africa? We break down realistic budgets by industry and explain how to calculate the right spend for your goals.]]></description>
+</item>
+<item>
+<title><![CDATA[Understanding Google Ads Quality Score and How to Improve It]]></title>
+<link>https://indexify.co.za/blog/google-ads-quality-score/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 16 Dec 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Google Ads]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/google-ads-quality-score/</guid>
+<description><![CDATA[Quality Score determines what you pay per click on Google Ads. Learn how it's calculated and how to improve it to pay less and rank higher than competitors.]]></description>
+</item>
+<item>
+<title><![CDATA[Google Ads Bidding Strategies: Which One Should You Use?]]></title>
+<link>https://indexify.co.za/blog/smart-bidding-strategies-google-ads/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 09 Dec 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Google Ads]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/smart-bidding-strategies-google-ads/</guid>
+<description><![CDATA[Manual CPC, Target CPA, Maximise Conversions — which Google Ads bidding strategy is right for your campaign? A clear guide for South African advertisers.]]></description>
+</item>
+<item>
+<title><![CDATA[How to Write Google Ads Copy That Converts in South Africa]]></title>
+<link>https://indexify.co.za/blog/google-ads-copy-that-converts/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 02 Dec 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Google Ads]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/google-ads-copy-that-converts/</guid>
+<description><![CDATA[Learn how to write Google Ads headlines and descriptions that get clicks and drive conversions for South African businesses. Includes proven frameworks and examples.]]></description>
+</item>
+<item>
+<title><![CDATA[Google Ads Conversion Tracking: Why It's Non-Negotiable]]></title>
+<link>https://indexify.co.za/blog/google-ads-conversion-tracking/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 25 Nov 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Google Ads]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/google-ads-conversion-tracking/</guid>
+<description><![CDATA[Without conversion tracking, Google Ads is just guesswork. Learn how to set up conversion tracking for your South African business and make data-driven decisions.]]></description>
+</item>
+<item>
+<title><![CDATA[The 8 Biggest Google Ads Mistakes South African Businesses Make]]></title>
+<link>https://indexify.co.za/blog/google-ads-mistakes-south-african-businesses/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 18 Nov 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Google Ads]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/google-ads-mistakes-south-african-businesses/</guid>
+<description><![CDATA[Avoid these costly Google Ads mistakes that waste thousands of rands monthly for South African businesses. Our expert analysis of what goes wrong and why.]]></description>
+</item>
+<item>
+<title><![CDATA[Negative Keywords: The Secret to Stopping Wasted Google Ads Spend]]></title>
+<link>https://indexify.co.za/blog/negative-keywords-stop-wasted-spend/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 11 Nov 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Google Ads]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/negative-keywords-stop-wasted-spend/</guid>
+<description><![CDATA[Negative keywords prevent your Google Ads from showing for irrelevant searches. Learn how to build a negative keyword list that protects your budget in South Africa.]]></description>
+</item>
+<item>
+<title><![CDATA[Google Ads Remarketing: How to Re-Capture Lost Visitors and Convert Them]]></title>
+<link>https://indexify.co.za/blog/google-ads-remarketing/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 04 Nov 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Google Ads]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/google-ads-remarketing/</guid>
+<description><![CDATA[Google Ads remarketing shows ads to people who already visited your website. Learn how to set up remarketing campaigns that re-engage and convert lost visitors.]]></description>
+</item>
+<item>
+<title><![CDATA[How to Structure Your Google Ads Campaigns for Maximum ROI]]></title>
+<link>https://indexify.co.za/blog/google-ads-campaign-structure-roi/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 28 Oct 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Google Ads]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/google-ads-campaign-structure-roi/</guid>
+<description><![CDATA[The right Google Ads structure maximises Quality Score and ROI. Learn the campaign, ad group, and keyword hierarchy that consistently delivers the best results.]]></description>
+</item>
+<item>
+<title><![CDATA[Digital Marketing for South African SMEs: Where to Start in 2026]]></title>
+<link>https://indexify.co.za/blog/digital-marketing-south-african-smes/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 21 Oct 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Digital Marketing]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/digital-marketing-south-african-smes/</guid>
+<description><![CDATA[A practical guide to digital marketing for small and medium businesses in South Africa. Learn where to start, what to prioritise, and how to avoid common mistakes.]]></description>
+</item>
+<item>
+<title><![CDATA[How to Generate More Leads Online for Your South African Business in 2026]]></title>
+<link>https://indexify.co.za/blog/generate-more-leads-online-2025/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 14 Oct 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Digital Marketing]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/generate-more-leads-online-2025/</guid>
+<description><![CDATA[Proven strategies to generate more online leads for South African businesses in 2026. From SEO to Google Ads to conversion optimisation — here's what works.]]></description>
+</item>
+<item>
+<title><![CDATA[The Difference Between SEO and SEM: What SA Businesses Need to Know]]></title>
+<link>https://indexify.co.za/blog/seo-vs-sem-south-africa/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 07 Oct 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Digital Marketing]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/seo-vs-sem-south-africa/</guid>
+<description><![CDATA[SEO vs SEM — what's the difference and which should you invest in? A clear guide for South African businesses on organic vs paid search strategy.]]></description>
+</item>
+<item>
+<title><![CDATA[Website Conversion Rate Optimisation: Turn Visitors Into Paying Clients]]></title>
+<link>https://indexify.co.za/blog/website-conversion-rate-optimisation/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 30 Sep 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Digital Marketing]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/website-conversion-rate-optimisation/</guid>
+<description><![CDATA[Learn conversion rate optimisation (CRO) strategies to turn more website visitors into paying clients. Practical CRO tips for South African businesses.]]></description>
+</item>
+<item>
+<title><![CDATA[Why Page Speed Affects Both Your SEO Rankings and Google Ads Quality Score]]></title>
+<link>https://indexify.co.za/blog/page-speed-seo-google-ads/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 23 Sep 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/page-speed-seo-google-ads/</guid>
+<description><![CDATA[Page speed is a ranking factor for both organic SEO and Google Ads Quality Score. Learn how slow pages cost you money in both channels and how to fix them.]]></description>
+</item>
+<item>
+<title><![CDATA[How to Track ROI from Your Digital Marketing Campaigns in South Africa]]></title>
+<link>https://indexify.co.za/blog/track-roi-digital-marketing/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 16 Sep 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[Digital Marketing]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/track-roi-digital-marketing/</guid>
+<description><![CDATA[Learn how to properly measure return on investment from your digital marketing. Track SEO, Google Ads, and social media performance with the right tools.]]></description>
+</item>
+<item>
+<title><![CDATA[Content Marketing and SEO: Why They Work Better Together]]></title>
+<link>https://indexify.co.za/blog/content-marketing-and-seo/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 09 Sep 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/content-marketing-and-seo/</guid>
+<description><![CDATA[Content marketing and SEO are most powerful when aligned. Learn how a unified content-SEO strategy drives organic traffic and qualified leads for South African businesses.]]></description>
+</item>
+<item>
+<title><![CDATA[The Ultimate Guide to Ranking on Google Page 1 in South Africa]]></title>
+<link>https://indexify.co.za/blog/rank-google-page-1-south-africa/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 02 Sep 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/rank-google-page-1-south-africa/</guid>
+<description><![CDATA[A comprehensive guide to ranking on Google's first page for South African businesses. Covers SEO strategy, timeline, and what it takes to reach the top.]]></description>
+</item>
+<item>
+<title><![CDATA[Why Your Competitor Ranks Higher Than You on Google (And How to Overtake Them)]]></title>
+<link>https://indexify.co.za/blog/why-competitor-ranks-higher/</link>
+<dc:creator><![CDATA[Indexify]]></dc:creator>
+<pubDate>Tue, 26 Aug 2025 00:00:00 +0200</pubDate>
+<category><![CDATA[SEO]]></category>
+<guid isPermaLink="true">https://indexify.co.za/blog/why-competitor-ranks-higher/</guid>
+<description><![CDATA[Understand exactly why competitors outrank you on Google and the step-by-step process to analyse, match, and surpass them in search results.]]></description>
+</item>
+</channel>
+</rss>
