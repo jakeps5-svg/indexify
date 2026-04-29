@@ -4,6 +4,7 @@ import { db } from "@workspace/db";
 import {
   usersTable, subscriptionsTable, invoicesTable,
   chatMessagesTable, meetingRequestsTable, serviceUpdatesTable,
+  inquiriesTable,
 } from "@workspace/db/schema";
 import { eq, and, desc, ne } from "drizzle-orm";
 import { requireAdmin } from "../middlewares/auth.js";
@@ -22,6 +23,28 @@ const UPLOADS_DIR = (() => {
 })();
 
 const router = Router();
+
+// ── Enquiries ──────────────────────────────────────────────────────────────
+
+router.get("/admin/enquiries", requireAdmin, async (req, res) => {
+  try {
+    const rows = await db.select().from(inquiriesTable).orderBy(desc(inquiriesTable.createdAt));
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load enquiries" });
+  }
+});
+
+router.delete("/admin/enquiries/:id", requireAdmin, async (req, res) => {
+  try {
+    await db.delete(inquiriesTable).where(eq(inquiriesTable.id, Number(req.params.id)));
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete enquiry" });
+  }
+});
 
 // ── Customers ──────────────────────────────────────────────────────────────
 

@@ -7,13 +7,13 @@ import {
   X, ChevronDown, AlertCircle, Clock, Search,
   Package, RefreshCw, BarChart3, Bell,
   Trash2, Pencil, Paperclip, ImagePlus, Download, ExternalLink,
-  MousePointerClick,
+  MousePointerClick, Inbox, Phone, Mail,
 } from "lucide-react";
 import { usePortalAuth } from "@/hooks/usePortalAuth";
 import { cn } from "@/lib/utils";
 import { useSEO } from "@/hooks/useSEO";
 
-type Tab = "overview" | "customers" | "invoices" | "chat" | "meetings";
+type Tab = "overview" | "customers" | "invoices" | "chat" | "meetings" | "enquiries";
 
 interface Customer {
   id: number; name: string; email: string; phone?: string; company?: string;
@@ -40,6 +40,10 @@ interface Meeting {
   customerName?: string; customerEmail?: string;
 }
 interface Attachment { url: string; name: string; mime: string; }
+interface Enquiry {
+  id: number; name: string; email: string; phone?: string | null;
+  service: string; message: string; createdAt: string;
+}
 
 const STATUS_COLORS: Record<string, string> = {
   active: "text-emerald-600 bg-emerald-50 border-emerald-200",
@@ -91,6 +95,7 @@ export default function AdminDashboard() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMsg[]>([]);
   const [chatInput, setChatInput] = useState("");
@@ -153,6 +158,10 @@ export default function AdminDashboard() {
     const r = await authFetch("/api/admin/meetings");
     setMeetings(await r.json());
   };
+  const loadEnquiries = async () => {
+    const r = await authFetch("/api/admin/enquiries");
+    setEnquiries(await r.json());
+  };
 
   const loadGadsStatus = async () => {
     try {
@@ -184,6 +193,7 @@ export default function AdminDashboard() {
     loadCustomers();
     loadInvoices();
     loadMeetings();
+    loadEnquiries();
     loadGadsStatus();
   }, [user]);
 
@@ -402,6 +412,7 @@ export default function AdminDashboard() {
 
   const TABS = [
     { id: "overview" as Tab, label: "Overview", icon: BarChart3 },
+    { id: "enquiries" as Tab, label: "Enquiries", icon: Inbox, badge: enquiries.length > 0 ? enquiries.length : undefined },
     { id: "customers" as Tab, label: `Customers (${customers.length})`, icon: Users },
     { id: "invoices" as Tab, label: `Invoices`, icon: FileText, badge: pendingInvoicesCount },
     { id: "chat" as Tab, label: "Chat", icon: MessageSquare, badge: totalUnread },
@@ -567,6 +578,80 @@ export default function AdminDashboard() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* ── Enquiries ── */}
+        {tab === "enquiries" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <h2 className="text-lg font-black text-gray-900">Website Enquiries</h2>
+                <p className="text-sm text-gray-400">{enquiries.length} total submission{enquiries.length !== 1 ? "s" : ""}</p>
+              </div>
+              <button onClick={loadEnquiries} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-600 font-semibold text-sm hover:bg-gray-50 transition-all">
+                <RefreshCw size={13} /> Refresh
+              </button>
+            </div>
+
+            {enquiries.length === 0 ? (
+              <div className="bg-white border border-gray-100 rounded-2xl p-12 text-center shadow-sm">
+                <Inbox size={32} className="mx-auto text-gray-300 mb-3" />
+                <p className="text-gray-400 font-medium">No enquiries yet</p>
+                <p className="text-gray-300 text-sm mt-1">Enquiries submitted through the website will appear here.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {enquiries.map((enq) => (
+                  <div key={enq.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:border-gray-200 transition-all">
+                    <div className="flex items-start justify-between gap-4 flex-wrap">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-2">
+                          <span className="font-black text-gray-900 text-base">{enq.name}</span>
+                          <span className={cn(
+                            "text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full border",
+                            enq.service === "seo" ? "text-sky-600 bg-sky-50 border-sky-200" :
+                            enq.service === "google-ads" ? "text-amber-600 bg-amber-50 border-amber-200" :
+                            "text-violet-600 bg-violet-50 border-violet-200"
+                          )}>
+                            {enq.service === "both" ? "SEO + Google Ads" : enq.service === "seo" ? "SEO" : "Google Ads"}
+                          </span>
+                          <span className="text-xs text-gray-400 ml-auto">
+                            {new Date(enq.createdAt).toLocaleDateString("en-ZA", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-500 mb-3 flex-wrap">
+                          <a href={`mailto:${enq.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors">
+                            <Mail size={12} /> {enq.email}
+                          </a>
+                          {enq.phone && (
+                            <a href={`tel:${enq.phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors">
+                              <Phone size={12} /> {enq.phone}
+                            </a>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 bg-gray-50 rounded-xl px-4 py-3 leading-relaxed">{enq.message}</p>
+                      </div>
+                      <div className="flex flex-col gap-2 shrink-0">
+                        <a href={`mailto:${enq.email}`}
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-all">
+                          <Send size={11} /> Reply
+                        </a>
+                        <button
+                          onClick={async () => {
+                            if (!confirm(`Delete enquiry from ${enq.name}?`)) return;
+                            await authFetch(`/api/admin/enquiries/${enq.id}`, { method: "DELETE" });
+                            loadEnquiries();
+                          }}
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-red-200 text-red-500 text-xs font-bold hover:bg-red-50 transition-all">
+                          <Trash2 size={11} /> Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </motion.div>
