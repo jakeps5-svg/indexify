@@ -47,3 +47,10 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Local env reference files — contain secrets, never commit
+hostinger.env
+hostinger-env.txt
+hostinger-env*.txt
+*.env.local
+*.env.production.local
