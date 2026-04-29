@@ -35,6 +35,29 @@ router.post("/auth/login", async (req, res) => {
   }
 });
 
+// Admin-only login — no reCAPTCHA required (internal staff page)
+router.post("/auth/admin-login", async (req, res) => {
+  try {
+    const { email, password } = req.body as { email: string; password: string };
+    if (!email || !password) return res.status(400).json({ error: "Email and password required" });
+
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.email, email.toLowerCase().trim()));
+    if (!user || user.role !== "admin") return res.status(401).json({ error: "Invalid email or password" });
+
+    const valid = await bcrypt.compare(password, user.passwordHash);
+    if (!valid) return res.status(401).json({ error: "Invalid email or password" });
+
+    const token = signToken({ userId: user.id, role: "admin", email: user.email });
+    res.json({
+      token,
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, company: user.company },
+    });
+  } catch (err) {
+    console.error("Admin login error:", err);
+    res.status(500).json({ error: "Login failed" });
+  }
+});
+
 router.post("/auth/register", async (req, res) => {
   try {
     const { name, email, password, phone, company, recaptchaToken } = req.body as {

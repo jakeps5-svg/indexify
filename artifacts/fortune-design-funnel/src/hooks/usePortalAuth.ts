@@ -80,6 +80,12 @@ export function usePortalAuth() {
     return data.user as PortalUser;
   };
 
+  const setSession = (token: string, userData: PortalUser) => {
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    setUser(userData);
+  };
+
   const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
@@ -99,5 +105,5 @@ export function usePortalAuth() {
     });
   };
 
-  return { user, loading, login, logout, authFetch };
+  return { user, loading, login, setSession, logout, authFetch };
 }

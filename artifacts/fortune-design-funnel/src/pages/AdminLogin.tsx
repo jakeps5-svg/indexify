@@ -9,7 +9,7 @@ export default function AdminLoginPage() {
   useSEO({ title: "Admin Login | Indexify", description: "Indexify admin login." });
 
   const [, navigate] = useLocation();
-  const { user, loading: authLoading, login } = usePortalAuth();
+  const { user, loading: authLoading, setSession } = usePortalAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,11 +27,17 @@ export default function AdminLoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const loggedIn = await login(email, password);
-      if (loggedIn.role !== "admin") {
-        setError("This login is for admin accounts only. Clients please use the client portal login.");
-        return;
+      const res = await fetch("/api/auth/admin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Login failed");
+      if (data.user.role !== "admin") {
+        throw new Error("This login is for admin accounts only. Clients please use the client portal login.");
       }
+      setSession(data.token, data.user);
       navigate("/admin");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
