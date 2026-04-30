@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { CheckCircle2, Star, ArrowRight, Search, MousePointerClick, FileText, MessageCircle } from "lucide-react";
+import { CheckCircle2, Star, ArrowRight, Search, MousePointerClick, FileText, MessageCircle, Palette } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PoweredByBadge } from "@/components/PoweredByBadge";
@@ -73,10 +73,67 @@ const SEO_PACKAGES = [
   },
 ];
 
+const WEB_DESIGN_PACKAGES = [
+  {
+    name: "Starter Website",
+    price: "8,500",
+    slug: "web-design-starter",
+    pages: "Up to 5 pages",
+    popular: false,
+    features: [
+      "Custom Design (No Templates)",
+      "Up to 5 Pages",
+      "Mobile-Responsive Layout",
+      "Contact Form Integration",
+      "Basic On-Page SEO Setup",
+      "Google Analytics Integration",
+      "Fast Hosting-Ready Delivery",
+    ],
+  },
+  {
+    name: "Business Website",
+    price: "14,500",
+    slug: "web-design-business",
+    pages: "Up to 10 pages",
+    popular: true,
+    features: [
+      "Custom Design (No Templates)",
+      "Up to 10 Pages",
+      "Mobile-Responsive Layout",
+      "Contact & Quote Forms",
+      "Full On-Page SEO Setup",
+      "Google Analytics & Search Console",
+      "Blog / News Section",
+      "Image Gallery / Portfolio",
+      "Social Media Integration",
+      "Fast Hosting-Ready Delivery",
+    ],
+  },
+  {
+    name: "eCommerce Website",
+    price: "22,000",
+    slug: "web-design-ecommerce",
+    pages: "Full online store",
+    popular: false,
+    features: [
+      "Custom eCommerce Design",
+      "Full Product Catalogue Setup",
+      "Secure Payment Gateway (Yoco/PayFast)",
+      "Mobile-Responsive Layout",
+      "Full On-Page SEO Setup",
+      "Google Analytics & Search Console",
+      "Inventory Management",
+      "Order & Customer Dashboard",
+      "Blog / News Section",
+      "Social Media Integration",
+    ],
+  },
+];
+
 export default function PricingPage() {
   useSEO({
-    title: "SEO & Google Ads Pricing SA | Packages | Indexify",
-    description: "Transparent SEO and Google Ads packages for South African businesses. Affordable pricing from R5,900/month. No hidden fees. Free audit. Cape Town, JHB & Durban.",
+    title: "SEO, Google Ads & Web Design Pricing SA | Packages | Indexify",
+    description: "Transparent SEO, Google Ads and Web Design packages for South African businesses. SEO from R5,900/mo. Web Design from R8,500 once-off. No hidden fees. Cape Town, JHB & Durban.",
     keywords: [
       "SEO pricing South Africa", "Google Ads pricing South Africa",
       "SEO services pricing South Africa", "Google Ads management packages SA",
@@ -113,7 +170,7 @@ export default function PricingPage() {
               Invest in <span className="text-gradient">Predictable Growth</span>
             </h1>
             <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-              Fixed monthly fees. No percentage of ad spend. Cancel after 3 months if we don't deliver.
+              Fixed monthly fees for SEO & Google Ads. Once-off pricing for Web Design. No hidden costs, ever.
             </p>
           </motion.div>
         </div>
@@ -412,6 +469,95 @@ export default function PricingPage() {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Web Design Pricing */}
+      <section className="py-24 bg-slate-50 border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="text-center mb-14"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-100 text-rose-600 font-bold text-sm mb-4">
+              <Palette size={14} /> Web Design
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-3">
+              Professional <span className="bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">Web Design</span>
+            </h2>
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto">Once-off investment. Custom-designed, mobile-responsive, and SEO-ready from day one.</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+            {WEB_DESIGN_PACKAGES.map((pkg, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                className={`relative rounded-3xl flex flex-col ${
+                  pkg.popular
+                    ? "text-white shadow-2xl scale-105 z-10"
+                    : "bg-white border border-gray-200 shadow-sm"
+                }`}
+                style={pkg.popular ? { background: "linear-gradient(135deg, #f43f5e, #ec4899)" } : {}}
+              >
+                {pkg.popular && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-rose-700 text-white text-xs font-bold uppercase tracking-wider shadow-lg">
+                      <Star size={12} fill="currentColor" /> Most Popular
+                    </span>
+                  </div>
+                )}
+                <div className="p-8 pb-0 flex-1">
+                  <h3 className={`text-xl font-bold mb-1 ${pkg.popular ? "text-white" : "text-gray-900"}`}>{pkg.name}</h3>
+                  <p className={`text-xs font-semibold uppercase tracking-widest mb-6 ${pkg.popular ? "text-white/70" : "text-rose-400"}`}>{pkg.pages}</p>
+                  <div className="mb-8">
+                    <div className={`flex items-baseline gap-1 ${pkg.popular ? "text-white" : "text-gray-900"}`}>
+                      <span className="text-2xl font-semibold">R</span>
+                      <span className="text-5xl font-black">{pkg.price}</span>
+                    </div>
+                    <p className={`text-sm mt-1 font-medium ${pkg.popular ? "text-white/70" : "text-gray-400"}`}>once-off</p>
+                  </div>
+                  <ul className="space-y-3 mb-8">
+                    {pkg.features.map((f, j) => (
+                      <li key={j} className="flex items-start gap-3">
+                        <CheckCircle2 size={15} className={`mt-0.5 shrink-0 ${pkg.popular ? "text-white" : "text-rose-500"}`} />
+                        <span className={`text-sm leading-relaxed ${pkg.popular ? "text-white/90" : "text-gray-600"}`}>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="p-8 pt-0 space-y-3">
+                  <a
+                    href={`${BASE}/contact?service=web-design`}
+                    className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2 ${
+                      pkg.popular
+                        ? "bg-white text-rose-600 hover:bg-white/90 shadow-lg"
+                        : "bg-gradient-to-r from-rose-500 to-pink-500 text-white hover:opacity-90 shadow-md"
+                    }`}
+                  >
+                    Get a Quote — R{pkg.price} <ArrowRight size={14} />
+                  </a>
+                  <button
+                    onClick={() => openWhatsApp(`Hi! I'm interested in the ${pkg.name} web design package at R${pkg.price}. Can we chat?`)}
+                    className={`w-full py-2.5 rounded-xl font-medium text-xs transition-all ${
+                      pkg.popular
+                        ? "border border-white/20 text-white/70 hover:bg-white/10"
+                        : "border border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    Questions? Chat on WhatsApp first
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <p className="text-center text-sm text-gray-400 mt-10">
+            Need something custom? <button onClick={() => openWhatsApp("Hi! I need a custom web design quote.")} className="text-rose-500 font-semibold hover:underline">Chat with us — we'll tailor a package for you.</button>
+          </p>
         </div>
       </section>
 
