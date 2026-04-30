@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle2, Target, TrendingUp, Search, MousePointerClick, BarChart3, Users, Star, ChevronDown, MessageCircle, ExternalLink } from "lucide-react";
+import { ArrowRight, CheckCircle2, Target, TrendingUp, Search, MousePointerClick, BarChart3, Users, Star, ChevronDown, MessageCircle, ExternalLink, Palette } from "lucide-react";
 import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -365,10 +365,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-4xl md:text-5xl font-black mb-6 text-white">Our Core <span className="text-primary">Services</span></h2>
-            <p className="text-lg text-white/60">We don't do everything. We focus exclusively on search marketing to deliver unmatched results for our clients.</p>
+            <p className="text-lg text-white/60">Everything your business needs to get found online and turn visitors into customers.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* SEO Card */}
             <div
               className="bg-white rounded-3xl group hover:border-primary/40 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 relative overflow-hidden flex flex-col"
@@ -451,6 +451,49 @@ export default function Home() {
 
                 <a href={`${import.meta.env.BASE_URL}services/google-ads`} className="w-full py-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 font-semibold hover:bg-accent hover:text-white hover:border-accent transition-all duration-300 flex items-center justify-center gap-2">
                   Learn More About Google Ads <ArrowRight size={16} />
+                </a>
+              </div>
+            </div>
+
+            {/* Web Design Card */}
+            <div className="bg-white rounded-3xl group hover:border-rose-400/40 border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 relative overflow-hidden flex flex-col md:col-span-2 lg:col-span-1">
+              <div className="relative h-52 overflow-hidden rounded-t-3xl bg-rose-50">
+                <div className="absolute inset-0 bg-gradient-to-br from-rose-100 to-pink-50 flex items-center justify-center">
+                  <div className="grid grid-cols-3 gap-2 opacity-30 scale-110">
+                    {Array.from({ length: 9 }).map((_, i) => (
+                      <div key={i} className={`rounded-lg ${i === 0 ? "col-span-2 h-8 bg-rose-400" : i === 3 ? "col-span-3 h-4 bg-rose-300" : "h-6 bg-rose-200"}`} />
+                    ))}
+                  </div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-white/60 to-transparent" />
+                <div className="absolute bottom-4 left-6 w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center shadow-lg">
+                  <Palette size={22} className="text-white" />
+                </div>
+                <div className="absolute top-4 right-4 bg-rose-500 text-white text-xs font-black px-3 py-1 rounded-full">NEW</div>
+              </div>
+
+              <div className="p-8 md:p-10 flex-1 flex flex-col">
+                <h3 className="text-3xl font-bold mb-4 text-gray-900">Web Design</h3>
+                <p className="text-gray-500 mb-8 leading-relaxed">
+                  Professional, mobile-first websites built to convert. SEO-ready from day one — so your new site ranks as well as it looks.
+                </p>
+
+                <ul className="space-y-4 mb-10 flex-1">
+                  {[
+                    "Custom Design — No Templates",
+                    "Mobile-Responsive & Fast Loading",
+                    "SEO-Ready Structure Built In",
+                    "From R8,500 Once-Off",
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 text-gray-700">
+                      <CheckCircle2 className="text-rose-500 shrink-0 mt-0.5" size={20} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <a href={`${import.meta.env.BASE_URL}services/web-design`} className="w-full py-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 font-semibold hover:bg-gradient-to-r hover:from-rose-500 hover:to-pink-500 hover:text-white hover:border-rose-400 transition-all duration-300 flex items-center justify-center gap-2">
+                  Learn More About Web Design <ArrowRight size={16} />
                 </a>
               </div>
             </div>
