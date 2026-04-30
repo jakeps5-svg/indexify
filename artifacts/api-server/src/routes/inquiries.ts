@@ -34,7 +34,9 @@ router.post("/inquiries", async (req, res) => {
       ? "SEO"
       : service === "google-ads"
         ? "Google Ads"
-        : "SEO & Google Ads";
+        : service === "web-design"
+          ? "Web Design"
+          : "SEO & Google Ads";
 
   const whatsappMessage = encodeURIComponent(
     `Hi Fortune Design! I'm interested in your ${serviceLabel} services.\n\nName: ${name}\nEmail: ${email}${phone ? `\nPhone: ${phone}` : ""}\n\nMessage: ${message}`

@@ -13,4 +13,5 @@ export const InquiryInputService = {
   seo: "seo",
   "google-ads": "google-ads",
   both: "both",
+  "web-design": "web-design",
 } as const;

@@ -26,6 +26,7 @@ const PAGES = [
   { path: "/",                          priority: "1.0", changefreq: "weekly",  lastmod: () => iso() },
   { path: "/services/seo/",             priority: "0.9", changefreq: "monthly", lastmod: () => iso() },
   { path: "/services/google-ads/",      priority: "0.9", changefreq: "monthly", lastmod: () => iso() },
+  { path: "/services/web-design/",      priority: "0.9", changefreq: "monthly", lastmod: () => iso() },
   { path: "/pricing/",                  priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
   { path: "/contact/",                  priority: "0.8", changefreq: "monthly", lastmod: () => iso() },
   { path: "/audit/",                    priority: "0.8", changefreq: "monthly", lastmod: () => iso() },

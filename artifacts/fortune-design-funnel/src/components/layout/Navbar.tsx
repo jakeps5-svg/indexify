@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown, Search, MousePointerClick, BarChart3, TrendingUp, MapPin, LogIn, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, ChevronDown, Search, MousePointerClick, BarChart3, TrendingUp, MapPin, LogIn, LogOut, LayoutDashboard, Palette } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface StoredUser { name: string; email: string; role: string; }
@@ -72,6 +72,14 @@ export function Navbar() {
       icon: MousePointerClick,
       color: "text-accent",
       bg: "bg-accent/10",
+    },
+    {
+      name: "Web Design",
+      desc: "Professional websites that convert",
+      href: `${BASE}services/web-design`,
+      icon: Palette,
+      color: "text-rose-500",
+      bg: "bg-rose-50",
     },
   ];
 

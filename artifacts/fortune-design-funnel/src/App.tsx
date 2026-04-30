@@ -10,6 +10,7 @@ import AuditPage from "@/pages/Audit";
 import AdsAuditPage from "@/pages/AdsAudit";
 import SEOPage from "@/pages/SEO";
 import GoogleAdsPage from "@/pages/GoogleAds";
+import WebDesignPage from "@/pages/WebDesign";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentCancelled from "@/pages/PaymentCancelled";
 import CheckoutPage from "@/pages/Checkout";
@@ -58,6 +59,7 @@ function Router() {
       <Route path="/services" component={ServicesPage} />
       <Route path="/services/seo" component={SEOPage} />
       <Route path="/services/google-ads" component={GoogleAdsPage} />
+      <Route path="/services/web-design" component={WebDesignPage} />
       <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/payment-cancelled" component={PaymentCancelled} />
       <Route path="/checkout" component={CheckoutPage} />

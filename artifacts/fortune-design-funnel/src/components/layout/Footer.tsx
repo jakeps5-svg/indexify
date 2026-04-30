@@ -107,6 +107,7 @@ export function Footer() {
             <ul className="space-y-3">
               <li><a href={`${BASE}services/seo`} className="text-gray-400 hover:text-primary transition-colors text-sm">Search Engine Optimization</a></li>
               <li><a href={`${BASE}services/google-ads`} className="text-gray-400 hover:text-primary transition-colors text-sm">Google Ads Management</a></li>
+              <li><a href={`${BASE}services/web-design`} className="text-gray-400 hover:text-primary transition-colors text-sm">Web Design</a></li>
               <li><a href={`${BASE}audit`} className="text-gray-400 hover:text-primary transition-colors text-sm">Free SEO Audit</a></li>
               <li><a href={`${BASE}ads-audit`} className="text-gray-400 hover:text-primary transition-colors text-sm">Google Ads Proposal</a></li>
             </ul>

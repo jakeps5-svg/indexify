@@ -81,6 +81,12 @@ const PACKAGES = [
     color: "from-amber-500 to-orange-500", border: "border-amber-200",
     includes: ["Search & Display campaigns", "Conversion tracking", "A/B ad testing", "Bid management"],
   },
+  {
+    slug: "web-design", name: "Web Design", price: "From R8,500", period: " once-off",
+    tag: "Custom-built for South Africa", img: `${BASE}/images/packages/web-design.png`,
+    color: "from-rose-500 to-pink-500", border: "border-rose-200",
+    includes: ["Mobile-responsive design", "SEO-ready structure", "Contact forms & CTAs", "Up to 8 pages"],
+  },
 ];
 
 const FAQS = [

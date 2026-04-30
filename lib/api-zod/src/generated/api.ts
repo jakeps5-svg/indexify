@@ -22,7 +22,7 @@ export const SubmitInquiryBody = zod.object({
   name: zod.string().min(1),
   email: zod.string().email(),
   phone: zod.string().optional(),
-  service: zod.enum(["seo", "google-ads", "both"]),
+  service: zod.enum(["seo", "google-ads", "both", "web-design"]),
   message: zod.string().min(1),
 });
 

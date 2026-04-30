@@ -62,6 +62,9 @@ const SERVICES = [
   { name: "Premium SEO", slug: "premium-seo", price: "11900" },
   { name: "Google Ads Management", slug: "google-ads", price: "7300" },
   { name: "Market Leader Bundle", slug: "market-leader", price: "12500" },
+  { name: "Web Design – Starter", slug: "web-design-starter", price: "8500" },
+  { name: "Web Design – Business", slug: "web-design-business", price: "14500" },
+  { name: "Web Design – eCommerce", slug: "web-design-ecommerce", price: "22000" },
 ];
 
 function AttachmentPreview({ url, name, mime, className }: { url: string; name: string; mime?: string | null; className?: string }) {
