@@ -9,7 +9,7 @@ interface InquiryInput {
   name: string;
   email: string;
   phone?: string;
-  service: "seo" | "google-ads" | "both";
+  service: "seo" | "google-ads" | "both" | "web-design";
   message: string;
 }
 
@@ -188,7 +188,8 @@ export function WhatsAppModal() {
                       >
                         <option value="seo">Search Engine Optimization (SEO)</option>
                         <option value="google-ads">Google Ads Management</option>
-                        <option value="both">Both Services</option>
+                        <option value="both">Both Services (SEO + Google Ads)</option>
+                        <option value="web-design">Web Design</option>
                       </select>
                     </div>
 
